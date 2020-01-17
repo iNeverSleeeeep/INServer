@@ -8,8 +8,7 @@ var Instance *World
 
 type (
 	World struct {
-		DeltaTime float32
-		gameMaps  map[string]*gamemap.Map
+		gameMaps map[string]*gamemap.Map
 	}
 )
 

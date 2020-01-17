@@ -7,11 +7,11 @@ import "INServer/src/proto/data"
 import "INServer/src/proto/engine"
 
 type (
-	Move struct {
+	move struct {
 	}
 )
 
-func (m *Move) Tick(dt float32, entities []*ecs.Entity) {
+func (m *move) Tick(dt float32, entities []*ecs.Entity) {
 	for _, entity := range entities {
 		physics := entity.GetComponent(data.ComponentType_Physics).Physics
 		if physics != nil {

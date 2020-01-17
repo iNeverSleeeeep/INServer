@@ -2,6 +2,8 @@ syntax = "proto3";
 
 option go_package = "INServer/src/proto/data";
 
+import "component.proto";
+
 enum EntityType {
     OAAEntity = 0; // one above all
     RoleEntity = 1;
@@ -16,5 +18,7 @@ message EntityRealtimeData {
 }
 
 message EntityData {
-    EntityRealtimeData RealTimeData = 1;
+    string EntityUUID = 1;
+    EntityRealtimeData RealTimeData = 2;
+    repeated Component Components = 3;
 }

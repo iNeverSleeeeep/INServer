@@ -6,11 +6,11 @@ import (
 )
 
 type (
-	Physics struct {
+	physics struct {
 	}
 )
 
-func (m *Physics) Tick(dt float32, entities []*ecs.Entity) {
+func (m *physics) Tick(dt float32, entities []*ecs.Entity) {
 	for _, entity := range entities {
 		physics := entity.GetComponent(data.ComponentType_Physics).Physics
 		if physics != nil {
