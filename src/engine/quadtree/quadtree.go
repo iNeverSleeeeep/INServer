@@ -2,7 +2,6 @@
 package quadtree
 
 import (
-	"INServer/src/common/logger"
 	"INServer/src/engine/extensions/rect"
 	"INServer/src/proto/engine"
 	"errors"
@@ -68,10 +67,10 @@ type consumer func(treeEntry) bool
 // Returns a Quadtree.
 func NewQuadtree(bounds *engine.Rect, maxDepth, maxItemsPerNode int) (*Quadtree, error) {
 	if maxDepth <= 0 {
-		return nil, logger.Error("Creating tree failed: maxDepth must be larger than 1")
+		return nil, errors.New("Creating tree failed: maxDepth must be larger than 1")
 	}
 	if maxItemsPerNode <= 0 {
-		return nil, logger.Error("Creating tree failed: maxItemsPerNode must be larger than 0")
+		return nil, errors.New("Creating tree failed: maxItemsPerNode must be larger than 0")
 	}
 	return &Quadtree{
 		maxDepth:        maxDepth,

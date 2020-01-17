@@ -35,7 +35,7 @@ func Setup() {
 
 func format(level string, v ...interface{}) string {
 	now := time.Now().Format(timeFormat)
-	return fmt.Sprintf("{\"server\": {\"type\":\"%s\", \"id\":\"%d\"}, \"level\":\"%s\" \"@timestamp\":\"%s\", \"message\":\"%s\"}", global.ServerType, global.ServerID, level, now, fmt.Sprint(v...))
+	return fmt.Sprintf("{\"server\": {\"type\":\"%s\", \"id\":\"%d\"}, \"level\":\"%s\", \"@timestamp\":\"%s\", \"message\":\"%s\"}", global.ServerType, global.ServerID, level, now, fmt.Sprint(v...))
 }
 
 func Debug(v ...interface{}) {

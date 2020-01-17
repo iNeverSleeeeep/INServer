@@ -1,16 +1,15 @@
 package gamemap
 
 import (
-	"INServer/src/gameplay/entity"
+	"INServer/src/gameplay/ecs"
 	"INServer/src/proto/config"
-	"INServer/src/proto/data"
 )
 
 type (
 	Map struct {
 		scenes     []*Scene
 		firstScene *Scene
-		entities    map[string]*ecs.Entity
+		entities   map[string]*ecs.Entity
 	}
 )
 
@@ -26,7 +25,7 @@ func (m *Map) EntityEnter(uuid string, entity *ecs.Entity) {
 	m.firstScene.EntityEnter(uuid, entity)
 }
 
-func (m *Map) EntityLeave(uuid string, entityData *data.EntityData) {
+func (m *Map) EntityLeave(uuid string, entity *ecs.Entity) {
 	m.firstScene.EntityLeave(uuid, entity)
 	delete(m.entities, uuid)
 }

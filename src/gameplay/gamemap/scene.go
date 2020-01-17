@@ -3,8 +3,8 @@ package gamemap
 import (
 	"INServer/src/common/logger"
 	"INServer/src/engine/quadtree"
+	"INServer/src/gameplay/ecs"
 	"INServer/src/proto/config"
-	"INServer/src/proto/data"
 )
 
 type (
@@ -26,10 +26,10 @@ func NewScene(masterMap *Map, sceneConfig *config.Scene) *Scene {
 	return s
 }
 
-func (s *Scene) EntityEnter(uuid string, entity *gameentity.Entity) {
+func (s *Scene) EntityEnter(uuid string, entity *ecs.Entity) {
 
 }
 
-func (s *Scene) EntityLeave(uuid string, entity *gameentity.Entity) {
+func (s *Scene) EntityLeave(uuid string, entity *ecs.Entity) {
 
 }
