@@ -9,14 +9,14 @@ const (
 	InvalidServerID int32  = -1
 	InvalidServer   string = "InvalidServer"
 
-	CenterServer     string = "Center"
-	GateServer       string = "Gate"
-	LoginServer      string = "Login"
-	ChatServer       string = "Chat"
-	DispatcherServer string = "Dispatcher"
-	WorldServer      string = "World"
-	DatabaseServer   string = "Database"
-	WebServer        string = "Web"
+	CenterServer   string = "Center"
+	GateServer     string = "Gate"
+	LoginServer    string = "Login"
+	ChatServer     string = "Chat"
+	GPSServer      string = "GPS"
+	WorldServer    string = "World"
+	DatabaseServer string = "Database"
+	WebServer      string = "Web"
 
 	ZoneStateOpen   string = "Open"
 	ZoneStateClosed string = "Closed"
