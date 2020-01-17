@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/db";
+
+import "gogo.proto";
+
+message DBAccount {
+    string Name = 1 [(gogoproto.moretags) = "db:\"Name\""];
+    string PasswordHash = 2 [(gogoproto.moretags) = "db:\"PasswordHash\""];
+    string PlayerUUID = 3 [(gogoproto.moretags) = "db:\"PlayerUUID\""];
+}
+
+message DBPlayer {
+    string UUID = 1 [(gogoproto.moretags) = "db:\"UUID\""];
+    bytes SerializedData = 2 [(gogoproto.moretags) = "db:\"SerializedData\""];
+}

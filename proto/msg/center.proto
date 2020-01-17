@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+import "servers.proto";
+import "zones.proto";
+
+option go_package = "INServer/src/proto/msg";
+
+enum ServerState {
+    Start = 0;
+    Ready = 1;
+    Running = 2;
+    Offline = 3;
+}
+
+message ServerStateReq {
+    ServerInfo Info = 1;
+}
+
+message StaticMapLocation {
+    int32 MapID = 1;
+    int32 ServerID = 2;
+}
+
+message ZoneLocation {
+    int32 ZoneID = 1;
+    repeated StaticMapLocation StaticMapLocations = 2;
+}
+
+message ServerStateResp {
+    string ServerType = 1; 
+    string Message = 2;
+    ServerConfig ServerConfig = 3;
+    repeated Server Servers = 4;
+    repeated Zone Zones = 5;
+    repeated ZoneLocation ZoneLocations = 6;
+}
+
+message ServerInfo {
+    int32 ServerID = 1;
+    bytes Address = 2;
+    ServerState State = 3;
+}
+
+message ServerInfoList {
+    repeated ServerInfo Servers = 1;
+}
+
+message UpdateETC {
+    ServerConfig ServerConfig = 1;
+    repeated Server Servers = 2;
+    repeated Zone Zones = 3;
+    repeated ZoneLocation ZoneLocations = 4;
+}

@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/msg";
+
+import "command.proto";
+import "player.proto";
+
+message SessionCert {
+    string UUID = 1;
+    string Key = 2;
+}
+
+message CGTransmission {
+    Command Command = 1;
+    bytes Buffer = 2;
+}
+
+message ConnectGateReq {
+    SessionCert SessionCert = 1;
+    uint64 Sequence = 2;
+}
+
+message ConnectGateResp {
+    bool Success = 1;
+    Player Player = 2;
+}
+
+message ClientToGate {
+    ConnectGateReq Connect = 1;
+    CGTransmission Request = 2;
+    CGTransmission Notify = 3;
+}

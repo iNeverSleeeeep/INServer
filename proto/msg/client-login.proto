@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/msg";
+
+import "client-gate.proto";
+
+message CLLogon {
+    string Name = 1;
+    string PasswordHash = 2;
+}
+
+message CLLogin {
+    string Name = 1;
+    string PasswordHash = 2;
+}
+
+message CLChangePassword {
+    string Name = 1;
+    string OldPasswordHash = 2;
+    string NewPasswordHash = 3;
+}
+
+message ClientToLogin {
+    CLLogon Logon = 1;
+    CLLogin Login = 2;
+    CLChangePassword ChangePassword = 3;
+}
+
+message LoginToClient {
+    bool Success = 1;
+    SessionCert SessionCert = 2;
+    bytes GateIP = 3;
+    int32 GatePort = 4;
+}

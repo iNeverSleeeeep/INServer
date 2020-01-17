@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/data";
+
+import "player.proto";
+
+enum SessionState {
+    Offline = 0; // 无连接 默认状态 可以认为无连接的用户应该被Gate删除
+    Connected = 1; // 连接状态，但是没有经过验证
+    Online = 2; // 验证通过状态
+    OutOfContact = 3;  // 短暂失联状态，可以断线重连
+}
+
+message PlayerSessionInfo {
+    string UUID = 1;
+    PlayerAddress Address = 2;
+    SessionState State = 3;
+}
+
+message SessionCertData {
+    string Key = 1;
+    int64 OutOfDateTime = 2;
+}

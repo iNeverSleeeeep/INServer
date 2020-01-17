@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/msg";
+
+enum Command {
+    KEEP_ALIVE = 0; // any -> center
+    RESP = 1;
+    GATE = 2; // client -> gate -> any
+    SERVER_STATE = 3; // any -> center
+    SERVER_LIST_CHANGED = 4; // center -> any
+    SERVER_RESET = 5; // center -> any
+    CONNECT_GATE_REQ = 6; // client -> gate
+    SESSION_CERT_NTF = 7; // gate -> client
+    CCHAT_CHAT = 8; // client -> chat
+    DISPATCH = 9; // any -> dispatcher
+    LD_CREATE_PLAYER_REQ = 10; // login -> database
+    GD_LOAD_PLAYER_REQ = 11; // gate -> database
+    GD_RELEASE_PLAYER_NTF = 12; // gate -> database
+    GD_CREATE_ROLE_REQ = 13; // gate -> database
+    GD_LOAD_ROLE_REQ = 14; // gate -> database
+    RELOAD_ETC_REQ = 15; // web -> center
+    UPDATE_ETC_NTF = 16; // center -> any
+}

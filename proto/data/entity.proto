@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/data";
+
+enum EntityType {
+    OAAEntity = 0; // one above all
+    RoleEntity = 1;
+    MonsterEntity = 2;
+    BulletEntity = 3;
+    NPCEntity = 4;
+    TriggerEntity = 5;
+}
+
+message EntityRealtimeData {
+    string LastStaticMapUUID = 1;   
+}
+
+message EntityData {
+    EntityRealtimeData RealTimeData = 1;
+}

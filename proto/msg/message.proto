@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/msg";
+
+import "command.proto";
+
+message MessageHeader {
+    Command Command = 1;
+    uint64 Sequence = 2;
+    int32 From = 3;
+}
+
+message Message {
+    MessageHeader Header = 1;
+    bytes Buffer = 2;
+}
+
+message Package {
+    uint64 UniqueID = 1;
+    int32 From = 2;
+    int32 Index = 3;
+    int32 Total = 4;
+    bytes Buffer = 5;
+}
+
+message KeepAlive {
+    int32 ServerID = 1;
+}

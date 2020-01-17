@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/etc";
+
+message Database {
+    string IP = 1; // 数据库IP地址
+    string UserName = 2; // 用户名
+    string Password = 3; // 密码
+    int64 ConnMaxLifetime = 4; // 最大连接周期，超过时间的连接就close 单位秒
+    int32 MaxOpenConns = 5; // 最大连接数
+    int32 MaxIdleConns = 6; // 闲置连接数
+}

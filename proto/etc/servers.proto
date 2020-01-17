@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/etc";
+
+import "database.proto";
+
+// 服务器的各种配置
+
+message GateConfig {
+    int32 Port = 1; // 监听客户端连接的端口
+    int64 OutOfDateTimeout = 2; // 断开连接后Session删除的Timeout
+}
+
+message LoginConfig {
+    int32 Port = 1; // 监听客户端连接的端口
+    Database Database = 2; // 账号数据库
+}
+
+message ChatConfig {
+
+}
+
+message DatabaseConfig {
+    Database Database = 1;
+}
+
+message WebConfig {
+    int32 Port = 1; // 监听Http请求的端口
+}
+
+message ZoneWorld {
+    int32 ZoneID = 1; // 游戏区ID
+    repeated int32 StaticMaps = 2; // 世界地图列表
+}
+
+message WorldConfig {
+    repeated ZoneWorld Zones = 1; // 游戏区配置
+}
+
+message ServerConfig {
+    GateConfig GateConfig = 1; // 门服务器配置
+    LoginConfig LoginConfig = 2; // 登录服务器
+    ChatConfig ChatConfig = 3; // 聊天服务器
+    DatabaseConfig DatabaseConfig = 4; // 数据库服务器
+    WebConfig WebConfig = 5; // Http服务器
+    WorldConfig WorldConfig = 6; // 世界服务器
+}
+
+message Server {
+    int32 ServerID = 1;
+    string ServerType = 2;
+    ServerConfig ServerConfig = 3;
+    string Describe = 4;
+}
+
+message ServerList {
+    repeated Server Servers = 1;
+}

@@ -1,0 +1,26 @@
+{
+    "Zones": [
+        {
+            "ZoneID": 0,
+            "Name": "沙漠之鹰",
+            "State": "Open"
+        },
+        {
+            "ZoneID": 1,
+            "Name": "加特林",
+            "State": "Open"
+        },
+        {
+            "ZoneID": 2,
+            "Name": "AK47",
+            "State": "Open"
+        },
+        {
+            "ZoneID": 3,
+            "Name": "M4A1",
+            "State": "Open"
+        }
+    ]
+
+    
+}

@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/config";
+
+message Map {
+    int32 MapID = 1;
+    repeated int32 Scenes = 2;
+}
+

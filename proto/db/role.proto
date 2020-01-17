@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/db";
+
+import "gogo.proto";
+
+message DBRole {
+    string UUID = 1 [(gogoproto.moretags) = "db:\"UUID\""];
+    bytes SummaryData = 2 [(gogoproto.moretags) = "db:\"SummaryData\""];
+    bytes OnlineData = 3 [(gogoproto.moretags) = "db:\"OnlineData\""];
+}

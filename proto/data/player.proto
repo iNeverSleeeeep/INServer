@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/data";
+
+import "role.proto";
+
+message PlayerAddress {
+    int32 Gate = 1;
+    int32 Entity = 2;
+}
+
+message Player {
+    repeated RoleSummaryData RoleList = 1;
+}

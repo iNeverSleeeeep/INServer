@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/msg";
+
+import "client-gate.proto";
+
+message LoginToGate {
+    SessionCert Cert = 1;
+}

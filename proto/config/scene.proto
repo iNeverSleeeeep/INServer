@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/config";
+
+import "math.proto";
+
+message Scene {
+    int32 SceneID = 1;
+    Rect Rect = 2;
+}

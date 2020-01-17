@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/msg";
+
+import "player.proto";
+
+message CreatePlayerReq {
+    string PlayerUUID = 1;
+}
+
+message CreatePlayerResp {
+    bool Success = 1;
+}
+
+message LoadPlayerReq {
+    string PlayerUUID = 1;
+}
+
+message LoadPlayerResp {
+    bool Success = 1;
+    Player Player = 2;
+}
+
+message ReleasePlayerNtf {
+    string PlayerUUID = 1;
+}
+
+message CreateRoleReq {
+    string PlayerUUID = 1;
+    string RoleName = 2;
+    int32 Zone = 3;
+}
+
+message CreateRoleResp {
+    bool Success = 1;
+    string RoleUUID = 2;
+}
+
+message LoadRoleReq {
+    string RoleUUID = 1;
+}
+
+message LoadRoleResp {
+    bool Success = 1;
+}

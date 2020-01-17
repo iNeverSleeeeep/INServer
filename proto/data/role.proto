@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/data";
+
+import "entity.proto";
+
+// 离线数据
+message RoleSummaryData {
+    string Name = 1; // 角色名
+    int32 Zone = 2; // 游戏区
+    string MapUUID = 3; // 所在地图
+    string MailUUID = 4; // 邮件地址
+}
+
+// 在线数据
+message RoleOnlineData {
+    EntityData EntityData = 1;
+}
+
+// 实时数据 与场景相关的数据
+message RoleRealtimeData {
+    string LastStaticMapUUID = 1;
+}
+
+message Role {
+    RoleSummaryData SummaryData = 1;
+    RoleOnlineData OnlineData = 2;
+}

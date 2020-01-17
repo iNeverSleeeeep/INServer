@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/etc";
+
+// 游戏区的各种配置
+
+message Zone {
+    int32 ZoneID = 1;
+    string Name = 2;
+    string State = 3;
+}
+
+message ZoneList {
+    repeated Zone Zones = 1;
+}

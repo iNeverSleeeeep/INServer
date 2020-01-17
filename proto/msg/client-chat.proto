@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/msg";
+
+enum ChatType {
+    LOCAL = 0;
+    WORLD = 1;
+    PRIVATE = 3;
+}
+
+message ClientToChat {
+    ChatType ChatType = 1;
+    string Message = 2;
+    string ReceiverUUID = 3; // 私聊的时候需要发接受者ID
+}
+
+message ChatToClient {
+    ChatType ChatType = 1;
+    string Message = 2;
+    string SenderUUID = 3;
+}
