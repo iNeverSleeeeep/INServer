@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/data";
+
+import "math.proto";
+
+// 注意 新加的ComponentType加在Max之前
+enum ComponentType {
+    Invalid = 0;
+    Transofrm = 1;
+    Physics = 2;
+}
+
+message TransformComponent {
+    Vector3 Position = 1;
+    Quaternion rotation = 2;
+}
+
+message PhysicsComponent {
+    float Mass = 1;
+    Vector3 RawSpeed = 2; // 玩家操作的移动速度
+    Vector3 PassiveSpeed = 3; // 其他外力影响的速度
+}
+
+message Component {
+    ComponentType Type = 1;
+    TransformComponent Transform = 2;
+    PhysicsComponent Physics = 3;
+}

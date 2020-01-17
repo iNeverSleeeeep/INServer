@@ -21,7 +21,7 @@ echo "--------- data ---------"
 for file in `ls data`
 do
 echo $file
-protoc --gofast_out=../../  --go-json_out=../src/proto/data --proto_path=./data $file
+protoc --gofast_out=../../  --go-json_out=../src/proto/data --proto_path=./data --proto_path=./engine $file
 done
 
 # msg

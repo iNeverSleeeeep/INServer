@@ -19,3 +19,10 @@ message Rect {
     float Width = 3;
     float Height = 4;
 }
+
+message Quaternion {
+    float X = 1;
+    float Y = 2;
+    float Z = 3;
+    float W = 4;
+}

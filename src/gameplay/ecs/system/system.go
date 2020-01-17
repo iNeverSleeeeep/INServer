@@ -8,6 +8,6 @@ var (
 
 type (
 	ISystem interface {
-		Tick(entities []*ecs.Entity)
+		Tick(dt float32, entities []*ecs.Entity)
 	}
 )
