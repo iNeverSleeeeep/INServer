@@ -1,3 +1,4 @@
 [submodule "ELK"]
 	path = ELK
 	url = https://gitee.com/iNeverSleeeeep/ELK.git
+    ignore = dirty
