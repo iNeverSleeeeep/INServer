@@ -15,6 +15,7 @@ enum EntityType {
 
 message EntityRealtimeData {
     string LastStaticMapUUID = 1;   
+    string CurrentMapUUID = 2;   
 }
 
 message EntityData {

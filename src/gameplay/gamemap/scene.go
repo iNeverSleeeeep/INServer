@@ -33,3 +33,7 @@ func (s *Scene) EntityEnter(uuid string, entity *ecs.Entity) {
 func (s *Scene) EntityLeave(uuid string, entity *ecs.Entity) {
 
 }
+
+func (s *Scene) SyncEntityPosition(uuid string, entity *ecs.Entity) {
+
+}

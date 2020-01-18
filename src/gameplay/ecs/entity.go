@@ -28,3 +28,7 @@ func (e *Entity) GetComponent(componentType data.ComponentType) *data.Component 
 		return e.entityData.Components[componentType]
 	}
 }
+
+func (e *Entity) RealTimeData() *data.EntityRealtimeData {
+	return e.entityData.RealTimeData
+}

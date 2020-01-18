@@ -24,8 +24,8 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type Vector2 struct {
-	X                    float32  `protobuf:"fixed32,1,opt,name=X,proto3" json:"X,omitempty"`
-	Z                    float32  `protobuf:"fixed32,2,opt,name=Z,proto3" json:"Z,omitempty"`
+	X                    float64  `protobuf:"fixed64,1,opt,name=X,proto3" json:"X,omitempty"`
+	Z                    float64  `protobuf:"fixed64,2,opt,name=Z,proto3" json:"Z,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -64,14 +64,14 @@ func (m *Vector2) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Vector2 proto.InternalMessageInfo
 
-func (m *Vector2) GetX() float32 {
+func (m *Vector2) GetX() float64 {
 	if m != nil {
 		return m.X
 	}
 	return 0
 }
 
-func (m *Vector2) GetZ() float32 {
+func (m *Vector2) GetZ() float64 {
 	if m != nil {
 		return m.Z
 	}
@@ -79,9 +79,9 @@ func (m *Vector2) GetZ() float32 {
 }
 
 type Vector3 struct {
-	X                    float32  `protobuf:"fixed32,1,opt,name=X,proto3" json:"X,omitempty"`
-	Y                    float32  `protobuf:"fixed32,2,opt,name=Y,proto3" json:"Y,omitempty"`
-	Z                    float32  `protobuf:"fixed32,3,opt,name=Z,proto3" json:"Z,omitempty"`
+	X                    float64  `protobuf:"fixed64,1,opt,name=X,proto3" json:"X,omitempty"`
+	Y                    float64  `protobuf:"fixed64,2,opt,name=Y,proto3" json:"Y,omitempty"`
+	Z                    float64  `protobuf:"fixed64,3,opt,name=Z,proto3" json:"Z,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -120,21 +120,21 @@ func (m *Vector3) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Vector3 proto.InternalMessageInfo
 
-func (m *Vector3) GetX() float32 {
+func (m *Vector3) GetX() float64 {
 	if m != nil {
 		return m.X
 	}
 	return 0
 }
 
-func (m *Vector3) GetY() float32 {
+func (m *Vector3) GetY() float64 {
 	if m != nil {
 		return m.Y
 	}
 	return 0
 }
 
-func (m *Vector3) GetZ() float32 {
+func (m *Vector3) GetZ() float64 {
 	if m != nil {
 		return m.Z
 	}
@@ -142,10 +142,10 @@ func (m *Vector3) GetZ() float32 {
 }
 
 type Rect struct {
-	X                    float32  `protobuf:"fixed32,1,opt,name=X,proto3" json:"X,omitempty"`
-	Z                    float32  `protobuf:"fixed32,2,opt,name=Z,proto3" json:"Z,omitempty"`
-	Width                float32  `protobuf:"fixed32,3,opt,name=Width,proto3" json:"Width,omitempty"`
-	Height               float32  `protobuf:"fixed32,4,opt,name=Height,proto3" json:"Height,omitempty"`
+	X                    float64  `protobuf:"fixed64,1,opt,name=X,proto3" json:"X,omitempty"`
+	Z                    float64  `protobuf:"fixed64,2,opt,name=Z,proto3" json:"Z,omitempty"`
+	Width                float64  `protobuf:"fixed64,3,opt,name=Width,proto3" json:"Width,omitempty"`
+	Height               float64  `protobuf:"fixed64,4,opt,name=Height,proto3" json:"Height,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -184,28 +184,28 @@ func (m *Rect) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Rect proto.InternalMessageInfo
 
-func (m *Rect) GetX() float32 {
+func (m *Rect) GetX() float64 {
 	if m != nil {
 		return m.X
 	}
 	return 0
 }
 
-func (m *Rect) GetZ() float32 {
+func (m *Rect) GetZ() float64 {
 	if m != nil {
 		return m.Z
 	}
 	return 0
 }
 
-func (m *Rect) GetWidth() float32 {
+func (m *Rect) GetWidth() float64 {
 	if m != nil {
 		return m.Width
 	}
 	return 0
 }
 
-func (m *Rect) GetHeight() float32 {
+func (m *Rect) GetHeight() float64 {
 	if m != nil {
 		return m.Height
 	}
@@ -213,10 +213,10 @@ func (m *Rect) GetHeight() float32 {
 }
 
 type Quaternion struct {
-	X                    float32  `protobuf:"fixed32,1,opt,name=X,proto3" json:"X,omitempty"`
-	Y                    float32  `protobuf:"fixed32,2,opt,name=Y,proto3" json:"Y,omitempty"`
-	Z                    float32  `protobuf:"fixed32,3,opt,name=Z,proto3" json:"Z,omitempty"`
-	W                    float32  `protobuf:"fixed32,4,opt,name=W,proto3" json:"W,omitempty"`
+	X                    float64  `protobuf:"fixed64,1,opt,name=X,proto3" json:"X,omitempty"`
+	Y                    float64  `protobuf:"fixed64,2,opt,name=Y,proto3" json:"Y,omitempty"`
+	Z                    float64  `protobuf:"fixed64,3,opt,name=Z,proto3" json:"Z,omitempty"`
+	W                    float64  `protobuf:"fixed64,4,opt,name=W,proto3" json:"W,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -255,28 +255,28 @@ func (m *Quaternion) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Quaternion proto.InternalMessageInfo
 
-func (m *Quaternion) GetX() float32 {
+func (m *Quaternion) GetX() float64 {
 	if m != nil {
 		return m.X
 	}
 	return 0
 }
 
-func (m *Quaternion) GetY() float32 {
+func (m *Quaternion) GetY() float64 {
 	if m != nil {
 		return m.Y
 	}
 	return 0
 }
 
-func (m *Quaternion) GetZ() float32 {
+func (m *Quaternion) GetZ() float64 {
 	if m != nil {
 		return m.Z
 	}
 	return 0
 }
 
-func (m *Quaternion) GetW() float32 {
+func (m *Quaternion) GetW() float64 {
 	if m != nil {
 		return m.W
 	}
@@ -296,7 +296,7 @@ var fileDescriptor_f139a3799a86a974 = []byte{
 	// 194 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xca, 0x4d, 0x2c, 0xc9,
 	0xd0, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x57, 0x52, 0xe5, 0x62, 0x0f, 0x4b, 0x4d, 0x2e, 0xc9, 0x2f,
-	0x32, 0x12, 0xe2, 0xe1, 0x62, 0x8c, 0x90, 0x60, 0x54, 0x60, 0xd4, 0x60, 0x0a, 0x62, 0x8c, 0x00,
+	0x32, 0x12, 0xe2, 0xe1, 0x62, 0x8c, 0x90, 0x60, 0x54, 0x60, 0xd4, 0x60, 0x0c, 0x62, 0x8c, 0x00,
 	0xf1, 0xa2, 0x24, 0x98, 0x20, 0xbc, 0x28, 0x25, 0x63, 0x98, 0x32, 0x63, 0x4c, 0x65, 0x91, 0x30,
 	0x65, 0x91, 0x10, 0x4d, 0xcc, 0x30, 0x4d, 0x01, 0x5c, 0x2c, 0x41, 0xa9, 0xc9, 0x25, 0xf8, 0x0c,
 	0x16, 0x12, 0xe1, 0x62, 0x0d, 0xcf, 0x4c, 0x29, 0xc9, 0x80, 0xea, 0x82, 0x70, 0x84, 0xc4, 0xb8,
@@ -305,7 +305,7 @@ var fileDescriptor_f139a3799a86a974 = []byte{
 	0xa1, 0x46, 0x31, 0x86, 0x3b, 0x69, 0x9f, 0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c, 0xe3, 0x83,
 	0x47, 0x72, 0x8c, 0x33, 0x1e, 0xcb, 0x31, 0x44, 0x49, 0x7a, 0xfa, 0x05, 0xa7, 0x16, 0x95, 0xa5,
 	0x16, 0xe9, 0x17, 0x17, 0x25, 0xeb, 0x83, 0x43, 0x46, 0x3f, 0x35, 0x2f, 0x3d, 0x33, 0x2f, 0x35,
-	0x89, 0x0d, 0xcc, 0x33, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0x05, 0x4b, 0x40, 0xec, 0x35, 0x01,
+	0x89, 0x0d, 0xcc, 0x33, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0x33, 0x4e, 0x6a, 0x4f, 0x35, 0x01,
 	0x00, 0x00,
 }
 
@@ -334,16 +334,16 @@ func (m *Vector2) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.XXX_unrecognized)
 	}
 	if m.Z != 0 {
-		i -= 4
-		encoding_binary.LittleEndian.PutUint32(dAtA[i:], uint32(math.Float32bits(float32(m.Z))))
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.Z))))
 		i--
-		dAtA[i] = 0x15
+		dAtA[i] = 0x11
 	}
 	if m.X != 0 {
-		i -= 4
-		encoding_binary.LittleEndian.PutUint32(dAtA[i:], uint32(math.Float32bits(float32(m.X))))
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.X))))
 		i--
-		dAtA[i] = 0xd
+		dAtA[i] = 0x9
 	}
 	return len(dAtA) - i, nil
 }
@@ -373,22 +373,22 @@ func (m *Vector3) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.XXX_unrecognized)
 	}
 	if m.Z != 0 {
-		i -= 4
-		encoding_binary.LittleEndian.PutUint32(dAtA[i:], uint32(math.Float32bits(float32(m.Z))))
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.Z))))
 		i--
-		dAtA[i] = 0x1d
+		dAtA[i] = 0x19
 	}
 	if m.Y != 0 {
-		i -= 4
-		encoding_binary.LittleEndian.PutUint32(dAtA[i:], uint32(math.Float32bits(float32(m.Y))))
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.Y))))
 		i--
-		dAtA[i] = 0x15
+		dAtA[i] = 0x11
 	}
 	if m.X != 0 {
-		i -= 4
-		encoding_binary.LittleEndian.PutUint32(dAtA[i:], uint32(math.Float32bits(float32(m.X))))
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.X))))
 		i--
-		dAtA[i] = 0xd
+		dAtA[i] = 0x9
 	}
 	return len(dAtA) - i, nil
 }
@@ -418,28 +418,28 @@ func (m *Rect) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.XXX_unrecognized)
 	}
 	if m.Height != 0 {
-		i -= 4
-		encoding_binary.LittleEndian.PutUint32(dAtA[i:], uint32(math.Float32bits(float32(m.Height))))
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.Height))))
 		i--
-		dAtA[i] = 0x25
+		dAtA[i] = 0x21
 	}
 	if m.Width != 0 {
-		i -= 4
-		encoding_binary.LittleEndian.PutUint32(dAtA[i:], uint32(math.Float32bits(float32(m.Width))))
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.Width))))
 		i--
-		dAtA[i] = 0x1d
+		dAtA[i] = 0x19
 	}
 	if m.Z != 0 {
-		i -= 4
-		encoding_binary.LittleEndian.PutUint32(dAtA[i:], uint32(math.Float32bits(float32(m.Z))))
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.Z))))
 		i--
-		dAtA[i] = 0x15
+		dAtA[i] = 0x11
 	}
 	if m.X != 0 {
-		i -= 4
-		encoding_binary.LittleEndian.PutUint32(dAtA[i:], uint32(math.Float32bits(float32(m.X))))
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.X))))
 		i--
-		dAtA[i] = 0xd
+		dAtA[i] = 0x9
 	}
 	return len(dAtA) - i, nil
 }
@@ -469,28 +469,28 @@ func (m *Quaternion) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.XXX_unrecognized)
 	}
 	if m.W != 0 {
-		i -= 4
-		encoding_binary.LittleEndian.PutUint32(dAtA[i:], uint32(math.Float32bits(float32(m.W))))
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.W))))
 		i--
-		dAtA[i] = 0x25
+		dAtA[i] = 0x21
 	}
 	if m.Z != 0 {
-		i -= 4
-		encoding_binary.LittleEndian.PutUint32(dAtA[i:], uint32(math.Float32bits(float32(m.Z))))
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.Z))))
 		i--
-		dAtA[i] = 0x1d
+		dAtA[i] = 0x19
 	}
 	if m.Y != 0 {
-		i -= 4
-		encoding_binary.LittleEndian.PutUint32(dAtA[i:], uint32(math.Float32bits(float32(m.Y))))
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.Y))))
 		i--
-		dAtA[i] = 0x15
+		dAtA[i] = 0x11
 	}
 	if m.X != 0 {
-		i -= 4
-		encoding_binary.LittleEndian.PutUint32(dAtA[i:], uint32(math.Float32bits(float32(m.X))))
+		i -= 8
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.X))))
 		i--
-		dAtA[i] = 0xd
+		dAtA[i] = 0x9
 	}
 	return len(dAtA) - i, nil
 }
@@ -513,10 +513,10 @@ func (m *Vector2) Size() (n int) {
 	var l int
 	_ = l
 	if m.X != 0 {
-		n += 5
+		n += 9
 	}
 	if m.Z != 0 {
-		n += 5
+		n += 9
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -531,13 +531,13 @@ func (m *Vector3) Size() (n int) {
 	var l int
 	_ = l
 	if m.X != 0 {
-		n += 5
+		n += 9
 	}
 	if m.Y != 0 {
-		n += 5
+		n += 9
 	}
 	if m.Z != 0 {
-		n += 5
+		n += 9
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -552,16 +552,16 @@ func (m *Rect) Size() (n int) {
 	var l int
 	_ = l
 	if m.X != 0 {
-		n += 5
+		n += 9
 	}
 	if m.Z != 0 {
-		n += 5
+		n += 9
 	}
 	if m.Width != 0 {
-		n += 5
+		n += 9
 	}
 	if m.Height != 0 {
-		n += 5
+		n += 9
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -576,16 +576,16 @@ func (m *Quaternion) Size() (n int) {
 	var l int
 	_ = l
 	if m.X != 0 {
-		n += 5
+		n += 9
 	}
 	if m.Y != 0 {
-		n += 5
+		n += 9
 	}
 	if m.Z != 0 {
-		n += 5
+		n += 9
 	}
 	if m.W != 0 {
-		n += 5
+		n += 9
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -629,27 +629,27 @@ func (m *Vector2) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 5 {
+			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field X", wireType)
 			}
-			var v uint32
-			if (iNdEx + 4) > l {
+			var v uint64
+			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
-			v = uint32(encoding_binary.LittleEndian.Uint32(dAtA[iNdEx:]))
-			iNdEx += 4
-			m.X = float32(math.Float32frombits(v))
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.X = float64(math.Float64frombits(v))
 		case 2:
-			if wireType != 5 {
+			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Z", wireType)
 			}
-			var v uint32
-			if (iNdEx + 4) > l {
+			var v uint64
+			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
-			v = uint32(encoding_binary.LittleEndian.Uint32(dAtA[iNdEx:]))
-			iNdEx += 4
-			m.Z = float32(math.Float32frombits(v))
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.Z = float64(math.Float64frombits(v))
 		default:
 			iNdEx = preIndex
 			skippy, err := skipMath(dAtA[iNdEx:])
@@ -705,38 +705,38 @@ func (m *Vector3) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 5 {
+			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field X", wireType)
 			}
-			var v uint32
-			if (iNdEx + 4) > l {
+			var v uint64
+			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
-			v = uint32(encoding_binary.LittleEndian.Uint32(dAtA[iNdEx:]))
-			iNdEx += 4
-			m.X = float32(math.Float32frombits(v))
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.X = float64(math.Float64frombits(v))
 		case 2:
-			if wireType != 5 {
+			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Y", wireType)
 			}
-			var v uint32
-			if (iNdEx + 4) > l {
+			var v uint64
+			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
-			v = uint32(encoding_binary.LittleEndian.Uint32(dAtA[iNdEx:]))
-			iNdEx += 4
-			m.Y = float32(math.Float32frombits(v))
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.Y = float64(math.Float64frombits(v))
 		case 3:
-			if wireType != 5 {
+			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Z", wireType)
 			}
-			var v uint32
-			if (iNdEx + 4) > l {
+			var v uint64
+			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
-			v = uint32(encoding_binary.LittleEndian.Uint32(dAtA[iNdEx:]))
-			iNdEx += 4
-			m.Z = float32(math.Float32frombits(v))
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.Z = float64(math.Float64frombits(v))
 		default:
 			iNdEx = preIndex
 			skippy, err := skipMath(dAtA[iNdEx:])
@@ -792,49 +792,49 @@ func (m *Rect) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 5 {
+			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field X", wireType)
 			}
-			var v uint32
-			if (iNdEx + 4) > l {
+			var v uint64
+			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
-			v = uint32(encoding_binary.LittleEndian.Uint32(dAtA[iNdEx:]))
-			iNdEx += 4
-			m.X = float32(math.Float32frombits(v))
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.X = float64(math.Float64frombits(v))
 		case 2:
-			if wireType != 5 {
+			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Z", wireType)
 			}
-			var v uint32
-			if (iNdEx + 4) > l {
+			var v uint64
+			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
-			v = uint32(encoding_binary.LittleEndian.Uint32(dAtA[iNdEx:]))
-			iNdEx += 4
-			m.Z = float32(math.Float32frombits(v))
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.Z = float64(math.Float64frombits(v))
 		case 3:
-			if wireType != 5 {
+			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Width", wireType)
 			}
-			var v uint32
-			if (iNdEx + 4) > l {
+			var v uint64
+			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
-			v = uint32(encoding_binary.LittleEndian.Uint32(dAtA[iNdEx:]))
-			iNdEx += 4
-			m.Width = float32(math.Float32frombits(v))
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.Width = float64(math.Float64frombits(v))
 		case 4:
-			if wireType != 5 {
+			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Height", wireType)
 			}
-			var v uint32
-			if (iNdEx + 4) > l {
+			var v uint64
+			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
-			v = uint32(encoding_binary.LittleEndian.Uint32(dAtA[iNdEx:]))
-			iNdEx += 4
-			m.Height = float32(math.Float32frombits(v))
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.Height = float64(math.Float64frombits(v))
 		default:
 			iNdEx = preIndex
 			skippy, err := skipMath(dAtA[iNdEx:])
@@ -890,49 +890,49 @@ func (m *Quaternion) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 5 {
+			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field X", wireType)
 			}
-			var v uint32
-			if (iNdEx + 4) > l {
+			var v uint64
+			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
-			v = uint32(encoding_binary.LittleEndian.Uint32(dAtA[iNdEx:]))
-			iNdEx += 4
-			m.X = float32(math.Float32frombits(v))
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.X = float64(math.Float64frombits(v))
 		case 2:
-			if wireType != 5 {
+			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Y", wireType)
 			}
-			var v uint32
-			if (iNdEx + 4) > l {
+			var v uint64
+			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
-			v = uint32(encoding_binary.LittleEndian.Uint32(dAtA[iNdEx:]))
-			iNdEx += 4
-			m.Y = float32(math.Float32frombits(v))
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.Y = float64(math.Float64frombits(v))
 		case 3:
-			if wireType != 5 {
+			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Z", wireType)
 			}
-			var v uint32
-			if (iNdEx + 4) > l {
+			var v uint64
+			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
-			v = uint32(encoding_binary.LittleEndian.Uint32(dAtA[iNdEx:]))
-			iNdEx += 4
-			m.Z = float32(math.Float32frombits(v))
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.Z = float64(math.Float64frombits(v))
 		case 4:
-			if wireType != 5 {
+			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field W", wireType)
 			}
-			var v uint32
-			if (iNdEx + 4) > l {
+			var v uint64
+			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
-			v = uint32(encoding_binary.LittleEndian.Uint32(dAtA[iNdEx:]))
-			iNdEx += 4
-			m.W = float32(math.Float32frombits(v))
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.W = float64(math.Float64frombits(v))
 		default:
 			iNdEx = preIndex
 			skippy, err := skipMath(dAtA[iNdEx:])

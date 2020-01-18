@@ -1,239 +1,437 @@
-// Quadtree provides a data structure allowing efficient spatial queries on 2D points.
 package quadtree
 
 import (
-	"INServer/src/engine/extensions/rect"
 	"INServer/src/proto/engine"
-	"errors"
+	"math"
 )
 
-// Quadtree is a dynamically resizable struct that offers
-// performant access to items that can be assigned a 2d position. Internally,
-// it represents the data with a tree by segmenting each level into four quadrants.
-// The Quadtree has two attributes that may be tweaked depending on your use case:
-//
-// Maximum depth: To get the spatial resolution you want, the number of levels
-// can be adjusted. For a depth D, the space will be subdivided 2^D times. The
-// default is 10.
-//
-// Max items per node: The maximum number of items to store in a single node before
-// it is split into smaller nodes. Note that if a node is full, and the maximum depth
-// has been reached, max items per node will be ignored.
-//
-// The coordinate system of a Quadtree has origo at the lower left corner, with X
-// and Z growing positively to the upper right corner. X is the horizontal axis,
-// Z is the vertical axis.
-//
-// Quadtree is not thread-safe.
-type Quadtree struct {
-	maxDepth        int
-	maxItemsPerNode int
-	root            *node
-	// The total number of items in this Quadtree.
-	size            int
-	debugAssertions bool
+var (
+	Capacity = 8
+	MaxDepth = 6
+)
+
+type AABB struct {
+	center *engine.Vector3
+	half   *engine.Vector3
 }
 
-// An open-ended rectangle, where X, Z are inclusive
-// but exclusive X+Width and Z+Height.
-
-const quadrantNone = -1
-const quadrantUpperLeft = 0
-const quadrantUpperRight = 1
-const quadrantLowerLeft = 2
-const quadrantLowerRight = 3
-
-// A single node in the tree.
-type node struct {
-	// The bounds that define this node
-	bounds *engine.Rect
-	// The depth this node is at. Root node is at depth 0.
-	depth int
-	// The entries that are inside this node
-	items []treeEntry
-	// The four child nodes of this node (one node per quadrant).
-	ul, ur, ll, lr *node
-}
-
-// An individual entry in the tree.
-type treeEntry struct {
-	position *engine.Vector2
+type Point struct {
+	position *engine.Vector3
 	uuid     string
 }
 
-// A function that takes treeEntries to iterate over entries.
-type consumer func(treeEntry) bool
+type QuadTree struct {
+	boundary *AABB
+	depth    int
+	points   []*Point
+	parent   *QuadTree
+	nodes    [4]*QuadTree
+}
 
-// Returns a Quadtree.
-func NewQuadtree(bounds *engine.Rect, maxDepth, maxItemsPerNode int) (*Quadtree, error) {
-	if maxDepth <= 0 {
-		return nil, errors.New("Creating tree failed: maxDepth must be larger than 1")
+type filter func(*Point) bool
+
+func deg2Rad(deg float64) float64 {
+	return deg * (math.Pi / 180)
+}
+
+func rad2Deg(rad float64) float64 {
+	return (180.0 * rad) / math.Pi
+}
+
+func boundaryPoint(x *Point, m float64) *Point {
+	x2 := deg2Rad(x.position.X)
+	z2 := deg2Rad(x.position.Z)
+
+	// Radius of Earth at given latitude
+	radius := earthRadius(x2)
+	// Radius of the parallel at given latitude
+	pradius := radius * math.Cos(x2)
+
+	xMax := x2 + m/radius
+	zMax := z2 + m/pradius
+
+	return &Point{&engine.Vector3{X: rad2Deg(xMax), Y: 0, Z: rad2Deg(zMax)}, ""}
+}
+
+// Earth radius at a given latitude, according to the WGS-84 ellipsoid [m]
+func earthRadius(x float64) float64 {
+	masm := 6378137.0 // Major semiaxis [m]
+	mism := 6356752.3 // Minor semiaxis [m]
+
+	an := masm * masm * math.Cos(x)
+	bn := mism * mism * math.Sin(x)
+	ad := masm * math.Cos(x)
+	bd := mism * math.Sin(x)
+	return math.Sqrt((an*an + bn*bn) / (ad*ad + bd*bd))
+}
+
+// New creates a new *QuadTree. It requires a boundary defining the center
+// and half points, depth at which the QuadTree resides and parent node.
+// Depth of 0 and parent as nil implies the root node.
+func New(boundary *AABB, depth int, parent *QuadTree) *QuadTree {
+	return &QuadTree{
+		boundary: boundary,
+		depth:    depth,
+		parent:   parent,
 	}
-	if maxItemsPerNode <= 0 {
-		return nil, errors.New("Creating tree failed: maxItemsPerNode must be larger than 0")
+}
+
+// NewAABB creates an axis aligned bounding box. It takes the center and half
+// point.
+func NewAABB(center, half *engine.Vector3) *AABB {
+	return &AABB{center, half}
+}
+
+// NewPoint generates a new *Point struct.
+func NewPoint(position *engine.Vector3, uuid string) *Point {
+	return &Point{position, uuid}
+}
+
+// ContainsPoint checks whether the point provided resides within the axis
+// aligned bounding box.
+func (a *AABB) ContainsPoint(p *Point) bool {
+	if p.position.X < a.center.X-a.half.X {
+		return false
 	}
-	return &Quadtree{
-		maxDepth:        maxDepth,
-		maxItemsPerNode: maxItemsPerNode,
-		root: &node{
-			bounds: bounds,
-			depth:  0,
-			items:  make([]treeEntry, 0, 4),
-		},
-	}, nil
-}
-
-// Returns the number of items added to this tree.
-func (qt *Quadtree) Size() int {
-	return qt.size
-}
-
-// Returns the objects within the given bounds.
-func (qt *Quadtree) Query(bounds *engine.Rect) []interface{} {
-	items := make([]interface{}, 0, 10)
-	queryInternal(qt.root, bounds, func(item treeEntry) bool {
-		items = append(items, item.uuid)
-		return true
-	})
-	return items
-}
-
-// Iterates over the items inside the given bounds. it will be invoked with each
-// found data and its corresponding position until all items inside bounds have
-// been found. The ordering is undefined.
-func (qt *Quadtree) QueryIterative(bounds *engine.Rect, it func(string, *engine.Vector2) bool) {
-	queryInternal(qt.root, bounds, func(item treeEntry) bool {
-		return it(item.uuid, item.position)
-	})
-}
-
-// This will recurse down the tree, removing the nodes that
-// have no overlap with the given bounds. When all overlapping
-// nodes are found, their items are returned.
-// Returns false when search should be terminated.
-func queryInternal(node *node, bounds *engine.Rect, consumer consumer) bool {
-	if overlaps(node.bounds, bounds) {
-		if node.items == nil {
-			// This node has no items, but it has children. Keep recursing.
-			keepGoing := queryInternal(node.ul, bounds, consumer)
-			if keepGoing {
-				keepGoing = queryInternal(node.ur, bounds, consumer)
-			}
-			if keepGoing {
-				keepGoing = queryInternal(node.ll, bounds, consumer)
-			}
-			if keepGoing {
-				queryInternal(node.lr, bounds, consumer)
-			}
-		} else {
-			// We reached an end node. Since this node may only be partially
-			// overlapping, ensure each item is inside bounds before consuming.
-			for _, e := range node.items {
-				if rect.Contains(bounds, e.position) {
-					// If consumer returns false, stop immediately and terminate.
-					if !consumer(e) {
-						return false
-					}
-				}
-			}
-		}
+	if p.position.Z < a.center.Z-a.half.Z {
+		return false
 	}
+	if p.position.X > a.center.X+a.half.X {
+		return false
+	}
+	if p.position.Z > a.center.Z+a.half.Z {
+		return false
+	}
+
 	return true
 }
 
-// Adds the data to the tree with the given position.
-func (qt *Quadtree) Add(uuid string, position *engine.Vector2) (err error) {
-	if !rect.Contains(qt.root.bounds, position) {
-		// If the root node can't contain this data, signal error.
-		return errors.New("Add failed: position outside bounds of tree.")
+// Intersect checks whether two axis aligned bounding boxes overlap.
+func (a *AABB) Intersect(b *AABB) bool {
+	if b.center.X+b.half.X < a.center.X-a.half.X {
+		return false
 	}
-	item := treeEntry{position, uuid}
-	addInternal(qt, qt.root, item)
-	qt.size += 1
-	return err
+	if b.center.Z+b.half.Z < a.center.Z-a.half.Z {
+		return false
+	}
+	if b.center.X-b.half.X > a.center.X+a.half.X {
+		return false
+	}
+	if b.center.Z-b.half.Z > a.center.Z+a.half.Z {
+		return false
+	}
+
+	return true
 }
 
-// Recurses down the tree to find the correct node for the item.
-func addInternal(qt *Quadtree, node *node, item treeEntry) {
-	quadrant := whichQuadrant(node.bounds, item.position)
-	if quadrant == quadrantNone {
-		// The position doesn't belong to this node at all - exit.
+// Coordinates return the x and y coordinates of a point.
+func (p *Point) Coordinates() (float64, float64) {
+	return p.position.X, p.position.Z
+}
+
+// Data returns the data stored within a point.
+func (p *Point) Data() string {
+	return p.uuid
+}
+
+// HalfPoint is a convenience function for generating the half point
+// required to created an axis aligned bounding box. It takes an
+// argument of metres as float64.
+func (p *Point) HalfPoint(m float64) *Point {
+	p2 := boundaryPoint(p, m)
+	return &Point{&engine.Vector3{X: p2.position.X - p.position.X, Y: 0, Z: p2.position.Z - p.position.Z}, ""}
+}
+
+func (qt *QuadTree) divide() {
+	if qt.nodes[0] != nil {
 		return
 	}
 
-	if node.items != nil && node.depth >= qt.maxDepth {
-		// We've reached the max depth of the tree. The item must be stored
-		// inside this node, regardless of maxItemsPerNode.
-		node.items = append(node.items, item)
-	} else if len(node.items) >= qt.maxItemsPerNode {
-		// This node is already at max capacity, so we need to split it into
-		// child nodes.
-		ul, ur, ll, lr := rect.Quadrants(node.bounds)
-		node.ul = newNode(node, ul)
-		node.ur = newNode(node, ur)
-		node.ll = newNode(node, ll)
-		node.lr = newNode(node, lr)
-		items := node.items
-		node.items = nil
-		for _, i := range items {
-			addInternal(qt, node, i)
+	var position *engine.Vector3
+	bb := &AABB{
+		position = &engine.Vector3{X: qt.boundary.center.X - qt.boundary.half.X/2, Y: 0, Z: qt.boundary.center.Z + qt.boundary.half.Z/2}
+		&Point{position: position, uuid: ""},
+		position = &engine.Vector3{X: qt.boundary.half.X / 2, Y: 0, Z: qt.boundary.center.Z + qt.boundary.half.Z/2}
+		&Point{qt.boundary.half.x / 2, qt.boundary.half.y / 2, nil},
+	}
+
+	qt.nodes[0] = New(bb, qt.depth, qt)
+
+	bb = &AABB{
+		&Point{qt.boundary.center.x + qt.boundary.half.x/2, qt.boundary.center.y + qt.boundary.half.y/2, nil},
+		&Point{qt.boundary.half.x / 2, qt.boundary.half.y / 2, nil},
+	}
+
+	qt.nodes[1] = New(bb, qt.depth, qt)
+
+	bb = &AABB{
+		&Point{qt.boundary.center.x - qt.boundary.half.x/2, qt.boundary.center.y - qt.boundary.half.y/2, nil},
+		&Point{qt.boundary.half.x / 2, qt.boundary.half.y / 2, nil},
+	}
+
+	qt.nodes[2] = New(bb, qt.depth, qt)
+
+	bb = &AABB{
+		&Point{qt.boundary.center.x + qt.boundary.half.x/2, qt.boundary.center.y - qt.boundary.half.y/2, nil},
+		&Point{qt.boundary.half.x / 2, qt.boundary.half.y / 2, nil},
+	}
+
+	qt.nodes[3] = New(bb, qt.depth, qt)
+
+	for _, p := range qt.points {
+		for _, node := range qt.nodes {
+			if node.Insert(p) {
+				break
+			}
 		}
-		addInternal(qt, node, item)
-	} else if node.items != nil {
-		// This node still has an items array which means it does not have
-		// any child nodes. Just append to this node.
-		node.items = append(node.items, item)
+	}
+
+	qt.points = nil
+}
+
+func (qt *QuadTree) knearest(a *AABB, i int, v map[*QuadTree]bool, fn filter) []*Point {
+	var results []*Point
+
+	if _, ok := v[qt]; ok {
+		return results
 	} else {
-		// Recurse down the tree to find the correct node.
-		switch quadrant {
-		case quadrantUpperLeft:
-			addInternal(qt, node.ul, item)
-		case quadrantUpperRight:
-			addInternal(qt, node.ur, item)
-		case quadrantLowerLeft:
-			addInternal(qt, node.ll, item)
-		case quadrantLowerRight:
-			addInternal(qt, node.lr, item)
+		v[qt] = true
+	}
+
+	if !qt.boundary.Intersect(a) {
+		return results
+	}
+
+	for _, p := range qt.points {
+		if a.ContainsPoint(p) {
+			results = append(results, p)
+		}
+
+		if len(results) >= i {
+			return results[:i]
 		}
 	}
+
+	if qt.nodes[0] != nil {
+		for _, node := range qt.nodes {
+			results = append(results, node.knearest(a, i, v, fn)...)
+
+			if len(results) >= i {
+				return results[:i]
+			}
+		}
+		if len(results) >= i {
+			results = results[:i]
+		}
+	}
+
+	if qt.parent == nil {
+		return results
+	}
+
+	results = append(results, qt.parent.knearest(a, i, v, fn)...)
+
+	if len(results) >= i {
+		results = results[:i]
+	}
+	return results
 }
 
-func newNode(parent *node, bounds *engine.Rect) *node {
-	return &node{
-		bounds: bounds,
-		depth:  parent.depth + 1,
-		items:  make([]treeEntry, 0, 4),
+// Insert will attempt to insert the point into the QuadTree. It will
+// recursively search until it finds the leaf node. If the leaf node
+// is at capacity then it will try split the node. If the tree is at
+// max depth then point will be stored in the leaf.
+func (qt *QuadTree) Insert(p *Point) bool {
+	if !qt.boundary.ContainsPoint(p) {
+		return false
 	}
-}
 
-// Returns which quadrant the Point p is inside Rect r
-func whichQuadrant(r *engine.Rect, p *engine.Vector2) int {
-	if !rect.Contains(r, p) {
-		return quadrantNone
-	}
-	midX := r.X + r.Width/2.0
-	midZ := r.Z + r.Height/2.0
-	if p.X < midX {
-		// Left half
-		if p.Z < midZ {
-			return quadrantLowerLeft
+	if qt.nodes[0] == nil {
+		if len(qt.points) < Capacity {
+			qt.points = append(qt.points, p)
+			return true
+		}
+
+		if qt.depth < MaxDepth {
+			qt.divide()
 		} else {
-			return quadrantUpperLeft
-		}
-	} else {
-		// Right half
-		if p.Z < midZ {
-			return quadrantLowerRight
-		} else {
-			return quadrantUpperRight
+			qt.points = append(qt.points, p)
+			return true
 		}
 	}
+
+	for _, node := range qt.nodes {
+		if node.Insert(p) {
+			return true
+		}
+	}
+
+	return false
 }
 
-// Returns whether two rectangles overlap.
-func overlaps(r1, r2 *engine.Rect) bool {
-	return r1.X < r2.X+r2.Width &&
-		r1.X+r1.Width > r2.X &&
-		r1.Z+r1.Height > r2.Z &&
-		r1.Z < r2.Z+r2.Height
+// KNearest returns the k nearest points within the QuadTree that fall within
+// the bounds of the axis aligned bounding box. A filter function can be used
+// which is evaluated against each point. The search begins at the leaf and
+// recurses towards the parent until k nearest have been found or root node is
+// hit.
+func (qt *QuadTree) kNearestRoot(a *AABB, i int, v map[*QuadTree]bool, fn filter) []*Point {
+	var results []*Point
+
+	if !qt.boundary.Intersect(a) {
+		return results
+	}
+
+	// hit the leaf
+	if qt.nodes[0] == nil {
+		results = append(results, qt.knearest(a, i, v, fn)...)
+
+		if len(results) >= i {
+			results = results[:i]
+		}
+
+		return results
+	}
+
+	for _, node := range qt.nodes {
+		results = append(results, node.kNearestRoot(a, i, v, fn)...)
+
+		if len(results) >= i {
+			return results[:i]
+		}
+	}
+
+	if len(results) >= i {
+		results = results[:i]
+	}
+
+	return results
+}
+
+func (qt *QuadTree) KNearest(a *AABB, i int, fn filter) []*Point {
+	v := make(map[*QuadTree]bool)
+	return qt.kNearestRoot(a, i, v, fn)
+}
+
+// Remove attemps to remove a point from the QuadTree. It will recurse until
+// the leaf node is found and then try to remove the point.
+func (qt *QuadTree) Remove(p *Point) bool {
+	if !qt.boundary.ContainsPoint(p) {
+		return false
+	}
+
+	if qt.nodes[0] == nil {
+		for i, ep := range qt.points {
+			if ep != p {
+				continue
+			}
+
+			// remove point
+			if last := len(qt.points) - 1; i == last {
+				qt.points = qt.points[:last]
+			} else {
+				qt.points[i] = qt.points[last]
+				qt.points = qt.points[:last]
+			}
+			return true
+		}
+
+		return false
+	}
+
+	for _, node := range qt.nodes {
+		if node.Remove(p) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// RInsert is used in conjuction with Update to try reveser insert a point.
+func (qt *QuadTree) RInsert(p *Point) bool {
+	// Try insert down the tree
+	if qt.Insert(p) {
+		return true
+	}
+
+	// hit root node
+	if qt.parent == nil {
+		return false
+	}
+
+	// try rinsert parent
+	return qt.parent.RInsert(p)
+}
+
+// Search will return all the points within the given axis aligned bounding
+// box. It recursively searches downward through the tree.
+func (qt *QuadTree) Search(a *AABB) []*Point {
+	var results []*Point
+
+	if !qt.boundary.Intersect(a) {
+		return results
+	}
+
+	for _, p := range qt.points {
+		if a.ContainsPoint(p) {
+			results = append(results, p)
+		}
+	}
+
+	if qt.nodes[0] == nil {
+		return results
+	}
+
+	for _, node := range qt.nodes {
+		results = append(results, node.Search(a)...)
+	}
+
+	return results
+}
+
+// Update will update the location of a point within the tree. It is
+// optimised to attempt reinsertion within the same node and recurse
+// back up the tree until it finds a suitable node.
+func (qt *QuadTree) Update(p *Point, np *Point) bool {
+	if !qt.boundary.ContainsPoint(p) {
+		return false
+	}
+
+	// At the leaf
+	if qt.nodes[0] == nil {
+		for i, ep := range qt.points {
+			if ep != p {
+				continue
+			}
+
+			// set new coords
+			p.x = np.x
+			p.y = np.y
+
+			// now do we move?
+			if qt.boundary.ContainsPoint(np) {
+				return true
+			}
+
+			// remove from current node
+			if last := len(qt.points) - 1; i == last {
+				qt.points = qt.points[:last]
+			} else {
+				qt.points[i] = qt.points[last]
+				qt.points = qt.points[:last]
+			}
+
+			// well shit now...reinsert
+			return qt.RInsert(p)
+		}
+		return false
+	}
+
+	for _, node := range qt.nodes {
+		if node.Update(p, np) {
+			return true
+		}
+	}
+
+	return false
 }
