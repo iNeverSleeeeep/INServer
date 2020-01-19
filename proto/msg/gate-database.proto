@@ -42,4 +42,5 @@ message LoadRoleReq {
 
 message LoadRoleResp {
     bool Success = 1;
+    int32 WorldID = 2;
 }

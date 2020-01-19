@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/msg";
+
+import "player.proto";
+
+message Thing {
+    bytes Buffer = 1;
+    string ToPlayerUUID = 2;
+    int32 ToWorldID = 3;
+    int32 ToMapUUID = 4;
+    repeated string ToPlayerUUIDList = 5; 
+}
+
+message UpdatePlayerAddressNTF {
+    string PlayerUUID = 1;
+    string RoleUUID = 2;
+    PlayerAddress Address = 3;
+}
+
+message RemovePlayerAddressNTF {
+    string PlayerUUID = 1;
+}
+
+message UpdateMapAddressNTF {
+    string MapUUID = 1;
+    int32 ServerID = 2;
+}
+
+message RemoveMapAddressNTF {
+    string MapUUID = 1;
+}
+
+message GetMapAddressReq {
+    string MapUUID = 1;
+}
+
+message GetMapAddressResp {
+    int32 ServerID = 1;
+}
+

@@ -65,9 +65,9 @@ func (n *INNet) Start() {
 	n.receiver.start()
 }
 
-func (n *INNet) Request(command msg.Command, message proto.Message, resp proto.Message) error {
+func (n *INNet) Request(command msg.Command, req proto.Message, resp proto.Message) error {
 	sequence++
-	err := n.sendMessage(command, sequence, message, global.InvalidServerID)
+	err := n.sendMessage(command, sequence, req, global.InvalidServerID)
 	if err != nil {
 		return err
 	}

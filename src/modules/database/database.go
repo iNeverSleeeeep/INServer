@@ -21,7 +21,6 @@ type (
 		DB                *dbobj.DBObject
 		roleSummary       map[string]*data.RoleSummaryData
 		roleSummaryByName map[string]*data.RoleSummaryData
-		roles             map[string]*data.Role
 		players           map[string]*data.Player
 	}
 )
@@ -30,7 +29,6 @@ func New() *Database {
 	d := new(Database)
 	d.roleSummary = make(map[string]*data.RoleSummaryData)
 	d.roleSummaryByName = make(map[string]*data.RoleSummaryData)
-	d.roles = make(map[string]*data.Role)
 	d.players = make(map[string]*data.Player)
 	d.DB = dbobj.New()
 	d.DB.Open(global.ServerConfig.DatabaseConfig.Database, global.DatabaseSchema)
@@ -168,20 +166,33 @@ func (d *Database) onLoadRoleReq(header *msg.MessageHeader, buffer []byte) {
 	message := &msg.LoadRoleReq{}
 	err := proto.Unmarshal(buffer, message)
 	if err != nil {
-		logger.Debug(err)
+		logger.Error(err)
 		return
 	}
 
 	if roleSummary, ok := d.roleSummary[message.RoleUUID]; ok {
+
+		mapAddressReq := &msg.GetMapAddressReq{MapUUID: roleSummary.MapUUID}
+		mapAddressResp := &msg.GetMapAddressResp{}
+		err := node.Instance.Net.Request(msg.Command_GET_MAP_ADDRESS_REQ, mapAddressReq, mapAddressResp)
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+		if mapAddressResp.ServerID == global.InvalidServerID {
+			logger.Error("玩家所在地图没有创建")
+			return
+		}
+
 		onlineData, err := dao.RoleOnlineDataQuery(d.DB, message.RoleUUID)
 		if err != nil {
-			logger.Debug(err)
+			logger.Error(err)
 			return
 		}
 		roleOnline := &data.RoleOnlineData{}
 		err = proto.Unmarshal(onlineData, roleOnline)
 		if err != nil {
-			logger.Debug(err)
+			logger.Error(err)
 			return
 		}
 
@@ -189,7 +200,10 @@ func (d *Database) onLoadRoleReq(header *msg.MessageHeader, buffer []byte) {
 			SummaryData: roleSummary,
 			OnlineData:  roleOnline,
 		}
-		d.roles[message.RoleUUID] = role
+
+		resp.Success = true
+
+		node.Instance.Net.Notify(msg.Command_ROLE_ENTER, role)
 	}
 }
 

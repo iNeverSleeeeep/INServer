@@ -165,7 +165,7 @@ func (g *Gate) onPlayerReconnect(player *session) error {
 
 func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, message *msg.ConnectGateReq) {
 	connectResp := &msg.ConnectGateResp{}
-	defer g.sendConnectResp(conn, connectResp)
+	defer g.sendResp(conn, connectResp)
 	player, ok := g.players[*uuid]
 	if ok == false {
 		logger.Debug("拒绝连接，没有数据:" + conn.RemoteAddr().String() + " uuid:" + *uuid)
@@ -178,6 +178,16 @@ func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, message *ms
 		player.generateNewCertKey()
 		oldState := player.info.State
 		player.info.State = data.SessionState_Online
+		player.info.UUID = *uuid
+		player.info.Address = &data.PlayerAddress{
+			Gate:   global.ServerID,
+			Entity: global.InvalidServerID,
+		}
+		ntf := &msg.UpdatePlayerAddressNTF{
+			PlayerUUID: *uuid,
+			Address:    player.info.Address,
+		}
+		node.Instance.Net.Notify(msg.Command_UPDATE_PLAYER_ADDRESS_NTF, ntf)
 		if oldState == data.SessionState_Offline || oldState == data.SessionState_Connected {
 			playerData, err := g.onPlayerConnect(player)
 			if err != nil {
@@ -198,7 +208,31 @@ func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, message *ms
 }
 
 func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
-	if message.Request != nil {
+	if message.RoleEnter != nil {
+		roleEnterResp := &msg.RoleEnterResp{}
+		defer g.sendResp(player.conn, roleEnterResp)
+		req := &msg.LoadRoleReq{
+			RoleUUID: message.RoleEnter.RoleUUID,
+		}
+		resp := &msg.LoadRoleResp{}
+		err := node.Instance.Net.Request(msg.Command_GD_LOAD_ROLE_REQ, req, resp)
+		if err != nil {
+			logger.Info(err)
+		} else {
+			roleEnterResp.Success = resp.Success
+			if resp.Success == false {
+				logger.Info("Role Enter Fail! UUID:" + player.info.UUID)
+			} else {
+				player.info.Address.Entity = resp.WorldID
+				ntf := &msg.UpdatePlayerAddressNTF{
+					PlayerUUID: player.info.UUID,
+					RoleUUID:   message.RoleEnter.RoleUUID,
+					Address:    player.info.Address,
+				}
+				node.Instance.Net.Notify(msg.Command_UPDATE_PLAYER_ADDRESS_NTF, ntf)
+			}
+		}
+	} else if message.Request != nil {
 		buffer, err := node.Instance.Net.RequestBytes(message.Request.Command, message.Request.Buffer)
 		if err != nil {
 			logger.Debug("消息错误")
@@ -230,7 +264,7 @@ func (g *Gate) pushNewSessionCert(player *session) {
 	innet.SendBytesHelper(player.conn, buff)
 }
 
-func (g *Gate) sendConnectResp(conn *net.TCPConn, resp *msg.ConnectGateResp) error {
+func (g *Gate) sendResp(conn *net.TCPConn, resp proto.Message) error {
 	buffer, err := proto.Marshal(resp)
 	if err != nil {
 		logger.Debug(err)

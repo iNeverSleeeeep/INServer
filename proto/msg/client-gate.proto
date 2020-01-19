@@ -25,9 +25,17 @@ message ConnectGateResp {
     Player Player = 2;
 }
 
+message RoleEnterReq {
+    string RoleUUID = 1;
+}
+
+message RoleEnterResp {
+    bool Success = 1;
+}
+
 message ClientToGate {
     ConnectGateReq Connect = 1;
-    string RoleEnter = 2;
+    RoleEnterReq RoleEnter = 2;
     CGTransmission Request = 3;
     CGTransmission Notify = 4;
 }

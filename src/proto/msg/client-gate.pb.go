@@ -243,9 +243,103 @@ func (m *ConnectGateResp) GetPlayer() *data.Player {
 	return nil
 }
 
+type RoleEnterReq struct {
+	RoleUUID             string   `protobuf:"bytes,1,opt,name=RoleUUID,proto3" json:"RoleUUID,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RoleEnterReq) Reset()         { *m = RoleEnterReq{} }
+func (m *RoleEnterReq) String() string { return proto.CompactTextString(m) }
+func (*RoleEnterReq) ProtoMessage()    {}
+func (*RoleEnterReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de75bf41a36e422d, []int{4}
+}
+func (m *RoleEnterReq) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *RoleEnterReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_RoleEnterReq.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *RoleEnterReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RoleEnterReq.Merge(m, src)
+}
+func (m *RoleEnterReq) XXX_Size() int {
+	return m.Size()
+}
+func (m *RoleEnterReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_RoleEnterReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RoleEnterReq proto.InternalMessageInfo
+
+func (m *RoleEnterReq) GetRoleUUID() string {
+	if m != nil {
+		return m.RoleUUID
+	}
+	return ""
+}
+
+type RoleEnterResp struct {
+	Success              bool     `protobuf:"varint,1,opt,name=Success,proto3" json:"Success,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RoleEnterResp) Reset()         { *m = RoleEnterResp{} }
+func (m *RoleEnterResp) String() string { return proto.CompactTextString(m) }
+func (*RoleEnterResp) ProtoMessage()    {}
+func (*RoleEnterResp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de75bf41a36e422d, []int{5}
+}
+func (m *RoleEnterResp) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *RoleEnterResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_RoleEnterResp.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *RoleEnterResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RoleEnterResp.Merge(m, src)
+}
+func (m *RoleEnterResp) XXX_Size() int {
+	return m.Size()
+}
+func (m *RoleEnterResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_RoleEnterResp.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RoleEnterResp proto.InternalMessageInfo
+
+func (m *RoleEnterResp) GetSuccess() bool {
+	if m != nil {
+		return m.Success
+	}
+	return false
+}
+
 type ClientToGate struct {
 	Connect              *ConnectGateReq `protobuf:"bytes,1,opt,name=Connect,proto3" json:"Connect,omitempty"`
-	RoleEnter            string          `protobuf:"bytes,2,opt,name=RoleEnter,proto3" json:"RoleEnter,omitempty"`
+	RoleEnter            *RoleEnterReq   `protobuf:"bytes,2,opt,name=RoleEnter,proto3" json:"RoleEnter,omitempty"`
 	Request              *CGTransmission `protobuf:"bytes,3,opt,name=Request,proto3" json:"Request,omitempty"`
 	Notify               *CGTransmission `protobuf:"bytes,4,opt,name=Notify,proto3" json:"Notify,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
@@ -257,7 +351,7 @@ func (m *ClientToGate) Reset()         { *m = ClientToGate{} }
 func (m *ClientToGate) String() string { return proto.CompactTextString(m) }
 func (*ClientToGate) ProtoMessage()    {}
 func (*ClientToGate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de75bf41a36e422d, []int{4}
+	return fileDescriptor_de75bf41a36e422d, []int{6}
 }
 func (m *ClientToGate) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -293,11 +387,11 @@ func (m *ClientToGate) GetConnect() *ConnectGateReq {
 	return nil
 }
 
-func (m *ClientToGate) GetRoleEnter() string {
+func (m *ClientToGate) GetRoleEnter() *RoleEnterReq {
 	if m != nil {
 		return m.RoleEnter
 	}
-	return ""
+	return nil
 }
 
 func (m *ClientToGate) GetRequest() *CGTransmission {
@@ -319,36 +413,40 @@ func init() {
 	proto.RegisterType((*CGTransmission)(nil), "CGTransmission")
 	proto.RegisterType((*ConnectGateReq)(nil), "ConnectGateReq")
 	proto.RegisterType((*ConnectGateResp)(nil), "ConnectGateResp")
+	proto.RegisterType((*RoleEnterReq)(nil), "RoleEnterReq")
+	proto.RegisterType((*RoleEnterResp)(nil), "RoleEnterResp")
 	proto.RegisterType((*ClientToGate)(nil), "ClientToGate")
 }
 
 func init() { proto.RegisterFile("client-gate.proto", fileDescriptor_de75bf41a36e422d) }
 
 var fileDescriptor_de75bf41a36e422d = []byte{
-	// 360 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x92, 0xc1, 0x4e, 0xea, 0x40,
-	0x14, 0x86, 0x6f, 0x2f, 0xa4, 0xc0, 0xa1, 0x17, 0xee, 0x9d, 0x05, 0x69, 0xc8, 0x4d, 0x35, 0xdd,
-	0x88, 0x0b, 0x4b, 0x02, 0x6f, 0x40, 0x35, 0x84, 0x48, 0x88, 0x99, 0xc2, 0xc6, 0xb8, 0xa9, 0xf5,
-	0x40, 0x9a, 0xd0, 0x19, 0x98, 0x19, 0x4c, 0x78, 0x13, 0xdf, 0xc1, 0x17, 0x71, 0xe9, 0x23, 0x18,
-	0x7c, 0x11, 0xd3, 0x61, 0xaa, 0x36, 0x71, 0x77, 0xfe, 0xff, 0xef, 0x7c, 0xfd, 0xe7, 0x64, 0xe0,
-	0x5f, 0xb2, 0x4e, 0x91, 0xa9, 0x8b, 0x55, 0xac, 0x30, 0xd8, 0x08, 0xae, 0x78, 0xf7, 0x4f, 0xc2,
-	0xb3, 0x2c, 0x66, 0x0f, 0x46, 0x3a, 0x9b, 0x75, 0xbc, 0x47, 0x71, 0x54, 0xfe, 0x10, 0x9a, 0x11,
-	0x4a, 0x99, 0x72, 0x16, 0xa2, 0x50, 0x84, 0x40, 0x75, 0xb1, 0x98, 0x5c, 0xba, 0xd6, 0xa9, 0xd5,
-	0x6b, 0x50, 0x3d, 0x93, 0xbf, 0x50, 0xb9, 0xc6, 0xbd, 0xfb, 0x5b, 0x5b, 0xf9, 0xe8, 0x4f, 0xa1,
-	0x15, 0x8e, 0xe7, 0x22, 0x66, 0x32, 0x4b, 0xf5, 0x59, 0xe2, 0x43, 0x2d, 0x3c, 0xfe, 0x45, 0x1f,
-	0x6d, 0x0d, 0xea, 0x81, 0xd1, 0xb4, 0x08, 0x48, 0x07, 0xec, 0xd1, 0x6e, 0xb9, 0x44, 0xa1, 0x51,
-	0x0e, 0x35, 0xca, 0xbf, 0x83, 0x56, 0xc8, 0x19, 0xc3, 0x44, 0x8d, 0x63, 0x85, 0x14, 0xb7, 0x24,
-	0x28, 0x95, 0xd2, 0xc4, 0xe6, 0xc0, 0x09, 0xbe, 0x79, 0xb4, 0xd4, 0xba, 0x0b, 0xf5, 0x08, 0xb7,
-	0x3b, 0x64, 0x09, 0x6a, 0x76, 0x95, 0x7e, 0x6a, 0x7f, 0x0a, 0xed, 0x12, 0x5d, 0x6e, 0x88, 0x0b,
-	0xb5, 0x68, 0x97, 0x24, 0x28, 0xa5, 0x46, 0xd7, 0x69, 0x21, 0xc9, 0x09, 0xd8, 0x37, 0x7a, 0x3b,
-	0x1a, 0xd3, 0x1c, 0xd4, 0x82, 0xa3, 0xa4, 0xc6, 0xf6, 0x9f, 0x2d, 0x70, 0x42, 0xbd, 0xe1, 0x39,
-	0xcf, 0x79, 0xe4, 0x3c, 0xbf, 0xb8, 0xc6, 0x9b, 0x9a, 0xed, 0xa0, 0x7c, 0x19, 0x5a, 0xe4, 0xe4,
-	0x3f, 0x34, 0x28, 0x5f, 0xe3, 0x15, 0x53, 0x86, 0xdf, 0xa0, 0x5f, 0x46, 0x0e, 0xa2, 0x79, 0x67,
-	0xa9, 0xdc, 0x4a, 0x01, 0x2a, 0xed, 0x98, 0x16, 0x39, 0x39, 0x03, 0x7b, 0xc6, 0x55, 0xba, 0xdc,
-	0xbb, 0xd5, 0x9f, 0xbf, 0x34, 0xf1, 0xa8, 0xf7, 0x72, 0xf0, 0xac, 0xd7, 0x83, 0x67, 0xbd, 0x1d,
-	0x3c, 0xeb, 0xe9, 0xdd, 0xfb, 0x75, 0xdb, 0x99, 0xcc, 0x22, 0x14, 0x8f, 0x28, 0xfa, 0x52, 0x24,
-	0x7d, 0xfd, 0x04, 0xfa, 0x99, 0x5c, 0xdd, 0xdb, 0x7a, 0x1c, 0x7e, 0x04, 0x00, 0x00, 0xff, 0xff,
-	0x9c, 0x66, 0xa0, 0xf4, 0x3f, 0x02, 0x00, 0x00,
+	// 388 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x92, 0xc1, 0xae, 0xd2, 0x40,
+	0x14, 0x86, 0xad, 0x90, 0x52, 0x0e, 0x05, 0x74, 0x16, 0xa4, 0x61, 0x51, 0xcd, 0x6c, 0x04, 0x8d,
+	0x25, 0x81, 0x37, 0xa0, 0x1a, 0x42, 0x24, 0xc4, 0x4c, 0x61, 0x63, 0xdc, 0xd4, 0x7a, 0x20, 0x4d,
+	0xe8, 0x0c, 0xcc, 0x0c, 0x26, 0xbc, 0x89, 0xcf, 0xe2, 0x13, 0xb8, 0xf4, 0x11, 0x0c, 0xbe, 0x88,
+	0xe9, 0xd0, 0x72, 0xdb, 0xe4, 0xe6, 0xee, 0xce, 0x77, 0xce, 0xcc, 0x7f, 0xfe, 0xfe, 0x53, 0x78,
+	0x99, 0x1c, 0x52, 0xe4, 0xfa, 0xfd, 0x3e, 0xd6, 0x18, 0x1c, 0xa5, 0xd0, 0x62, 0xd8, 0x4d, 0x44,
+	0x96, 0xc5, 0xfc, 0x7b, 0x81, 0xee, 0xf1, 0x10, 0x5f, 0x50, 0xde, 0x88, 0xce, 0xa0, 0x13, 0xa1,
+	0x52, 0xa9, 0xe0, 0x21, 0x4a, 0x4d, 0x08, 0x34, 0xb7, 0xdb, 0xe5, 0x07, 0xcf, 0x7a, 0x6d, 0x8d,
+	0xda, 0xcc, 0xd4, 0xe4, 0x05, 0x34, 0x3e, 0xe1, 0xc5, 0x7b, 0x6e, 0x5a, 0x79, 0x49, 0x57, 0xd0,
+	0x0b, 0x17, 0x1b, 0x19, 0x73, 0x95, 0xa5, 0xe6, 0x2e, 0xa1, 0xd0, 0x0a, 0x6f, 0x5b, 0xcc, 0xd5,
+	0xde, 0xd4, 0x09, 0x0a, 0x66, 0xe5, 0x80, 0x0c, 0xc0, 0x9e, 0x9f, 0x77, 0x3b, 0x94, 0x46, 0xca,
+	0x65, 0x05, 0xd1, 0xaf, 0xd0, 0x0b, 0x05, 0xe7, 0x98, 0xe8, 0x45, 0xac, 0x91, 0xe1, 0x89, 0x04,
+	0x35, 0x53, 0x46, 0xb1, 0x33, 0x75, 0x83, 0x4a, 0x8f, 0xd5, 0x5c, 0x0f, 0xc1, 0x89, 0xf0, 0x74,
+	0x46, 0x9e, 0xa0, 0xd1, 0x6e, 0xb2, 0x3b, 0xd3, 0x15, 0xf4, 0x6b, 0xea, 0xea, 0x48, 0x3c, 0x68,
+	0x45, 0xe7, 0x24, 0x41, 0xa5, 0x8c, 0xb4, 0xc3, 0x4a, 0x24, 0xaf, 0xc0, 0xfe, 0x6c, 0xd2, 0x31,
+	0x32, 0x9d, 0x69, 0x2b, 0xb8, 0x21, 0x2b, 0xda, 0xf4, 0x2d, 0xb8, 0x4c, 0x1c, 0xf0, 0x23, 0xd7,
+	0x28, 0x73, 0xa7, 0x43, 0x70, 0x72, 0xae, 0x64, 0x76, 0x67, 0x3a, 0x86, 0x6e, 0xe5, 0xec, 0x53,
+	0x7b, 0xe9, 0x2f, 0x0b, 0xdc, 0xd0, 0x3c, 0xdc, 0x46, 0xe4, 0x36, 0xc9, 0x38, 0xcf, 0xd3, 0xb8,
+	0x2e, 0xbe, 0xbe, 0x1f, 0xd4, 0x33, 0x62, 0xe5, 0x9c, 0xbc, 0x83, 0xf6, 0x7d, 0x4d, 0x61, 0xbb,
+	0x1b, 0x54, 0x4d, 0xb2, 0x87, 0x79, 0xae, 0xcb, 0xf2, 0x64, 0x94, 0xf6, 0x1a, 0xa5, 0x6e, 0xed,
+	0x25, 0x59, 0x39, 0x27, 0x6f, 0xc0, 0x5e, 0x0b, 0x9d, 0xee, 0x2e, 0x5e, 0xf3, 0xf1, 0x93, 0xc5,
+	0x78, 0x3e, 0xfa, 0x7d, 0xf5, 0xad, 0x3f, 0x57, 0xdf, 0xfa, 0x7b, 0xf5, 0xad, 0x9f, 0xff, 0xfc,
+	0x67, 0x5f, 0x06, 0xcb, 0x75, 0x84, 0xf2, 0x07, 0xca, 0x89, 0x92, 0xc9, 0xc4, 0xfc, 0x68, 0x93,
+	0x4c, 0xed, 0xbf, 0xd9, 0xa6, 0x9c, 0xfd, 0x0f, 0x00, 0x00, 0xff, 0xff, 0x0b, 0xa9, 0x4c, 0x92,
+	0xa5, 0x02, 0x00, 0x00,
 }
 
 func (m *SessionCert) Marshal() (dAtA []byte, err error) {
@@ -524,6 +622,77 @@ func (m *ConnectGateResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *RoleEnterReq) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *RoleEnterReq) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *RoleEnterReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i -= len(m.XXX_unrecognized)
+		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	if len(m.RoleUUID) > 0 {
+		i -= len(m.RoleUUID)
+		copy(dAtA[i:], m.RoleUUID)
+		i = encodeVarintClientGate(dAtA, i, uint64(len(m.RoleUUID)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *RoleEnterResp) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *RoleEnterResp) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *RoleEnterResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i -= len(m.XXX_unrecognized)
+		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	if m.Success {
+		i--
+		if m.Success {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *ClientToGate) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -572,10 +741,15 @@ func (m *ClientToGate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.RoleEnter) > 0 {
-		i -= len(m.RoleEnter)
-		copy(dAtA[i:], m.RoleEnter)
-		i = encodeVarintClientGate(dAtA, i, uint64(len(m.RoleEnter)))
+	if m.RoleEnter != nil {
+		{
+			size, err := m.RoleEnter.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintClientGate(dAtA, i, uint64(size))
+		}
 		i--
 		dAtA[i] = 0x12
 	}
@@ -682,6 +856,37 @@ func (m *ConnectGateResp) Size() (n int) {
 	return n
 }
 
+func (m *RoleEnterReq) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.RoleUUID)
+	if l > 0 {
+		n += 1 + l + sovClientGate(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
+func (m *RoleEnterResp) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Success {
+		n += 2
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
 func (m *ClientToGate) Size() (n int) {
 	if m == nil {
 		return 0
@@ -692,8 +897,8 @@ func (m *ClientToGate) Size() (n int) {
 		l = m.Connect.Size()
 		n += 1 + l + sovClientGate(uint64(l))
 	}
-	l = len(m.RoleEnter)
-	if l > 0 {
+	if m.RoleEnter != nil {
+		l = m.RoleEnter.Size()
 		n += 1 + l + sovClientGate(uint64(l))
 	}
 	if m.Request != nil {
@@ -1160,6 +1365,166 @@ func (m *ConnectGateResp) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *RoleEnterReq) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowClientGate
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RoleEnterReq: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RoleEnterReq: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RoleUUID", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowClientGate
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthClientGate
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthClientGate
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RoleUUID = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipClientGate(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthClientGate
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthClientGate
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *RoleEnterResp) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowClientGate
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RoleEnterResp: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RoleEnterResp: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Success", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowClientGate
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Success = bool(v != 0)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipClientGate(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthClientGate
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthClientGate
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *ClientToGate) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -1229,7 +1594,7 @@ func (m *ClientToGate) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field RoleEnter", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowClientGate
@@ -1239,23 +1604,27 @@ func (m *ClientToGate) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthClientGate
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthClientGate
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.RoleEnter = string(dAtA[iNdEx:postIndex])
+			if m.RoleEnter == nil {
+				m.RoleEnter = &RoleEnterReq{}
+			}
+			if err := m.RoleEnter.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
