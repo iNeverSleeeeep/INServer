@@ -1,39 +1,44 @@
 package gamemap
 
 import (
-	"INServer/src/common/logger"
-	"INServer/src/engine/quadtree"
+	"INServer/src/engine/grid"
 	"INServer/src/gameplay/ecs"
 	"INServer/src/proto/config"
+	"INServer/src/proto/data"
+	"INServer/src/proto/engine"
 )
 
 type (
 	Scene struct {
 		masterMap *Map
-		tree      *quadtree.Quadtree
+		search    *grid.Grid
 	}
 )
 
 func NewScene(masterMap *Map, sceneConfig *config.Scene) *Scene {
-	tree, err := quadtree.NewQuadtree(sceneConfig.Rect, 10, 1000)
-	if err != nil {
-		logger.Error(err)
-		return nil
-	}
 	s := new(Scene)
 	s.masterMap = masterMap
-	s.tree = tree
+	s.search = grid.New(10, 1000, 1000)
 	return s
 }
 
 func (s *Scene) EntityEnter(uuid string, entity *ecs.Entity) {
-
+	transform := entity.GetComponent(data.ComponentType_Transofrm).Transform
+	if transform != nil {
+		s.search.Add(uuid, transform.Position)
+	}
 }
 
 func (s *Scene) EntityLeave(uuid string, entity *ecs.Entity) {
-
+	transform := entity.GetComponent(data.ComponentType_Transofrm).Transform
+	if transform != nil {
+		s.search.Remove(uuid, transform.Position)
+	}
 }
 
-func (s *Scene) SyncEntityPosition(uuid string, entity *ecs.Entity) {
-
+func (s *Scene) SyncEntityPosition(uuid string, entity *ecs.Entity, from *engine.Vector3) {
+	transform := entity.GetComponent(data.ComponentType_Transofrm).Transform
+	if transform != nil {
+		s.search.Move(uuid, from, transform.Position)
+	}
 }

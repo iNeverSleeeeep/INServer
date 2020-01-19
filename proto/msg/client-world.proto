@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/msg";
+
+import "math.proto";
+import "entity.proto";
+
+message MoveINF {
+    Vector3 To = 1;
+}
+
+message MoveNTF {
+    string EntityUUID = 1;
+    Vector3 To = 2;
+}
+
+message NearEntity {
+    string EntityUUID = 1;
+    Vector3 Position = 2;
+}
+
+message NearEntitiesNTF {
+    repeated NearEntity Entities = 1;
+}
+
+message EntityDataReq {
+    repeated string EntityUUIDs = 1;
+}
+
+message EntityDataRes {
+    repeated EntityData Entities = 1;
+}

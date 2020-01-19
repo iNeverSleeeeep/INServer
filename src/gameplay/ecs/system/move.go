@@ -19,10 +19,11 @@ func (m *move) Tick(dt float32, entities []*ecs.Entity) {
 		if physics != nil {
 			transform := entity.GetComponent(data.ComponentType_Transofrm).Transform
 			if transform != nil {
+				position := *transform.Position
 				dirty := step(dt, transform.Position, physics.RawSpeed, physics.PassiveSpeed)
 				if dirty {
 					gamemap := world.Instance.GetMap(entity.RealTimeData().GetCurrentMapUUID())
-					
+					gamemap.SyncEntityPosition(entity.UUID(), &position)
 				}
 			}
 		}

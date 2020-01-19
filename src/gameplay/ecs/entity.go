@@ -32,3 +32,7 @@ func (e *Entity) GetComponent(componentType data.ComponentType) *data.Component 
 func (e *Entity) RealTimeData() *data.EntityRealtimeData {
 	return e.entityData.RealTimeData
 }
+
+func (e *Entity) UUID() string {
+	return e.entityData.EntityUUID
+}

@@ -27,6 +27,7 @@ message ConnectGateResp {
 
 message ClientToGate {
     ConnectGateReq Connect = 1;
-    CGTransmission Request = 2;
-    CGTransmission Notify = 3;
+    string RoleEnter = 2;
+    CGTransmission Request = 3;
+    CGTransmission Notify = 4;
 }

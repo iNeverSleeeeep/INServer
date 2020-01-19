@@ -20,4 +20,8 @@ enum Command {
     GD_LOAD_ROLE_REQ = 14; // gate -> database
     RELOAD_ETC_REQ = 15; // web -> center
     UPDATE_ETC_NTF = 16; // center -> any
+    MOVE_NTF = 17; // client -> world
+    NEAR_ENTITIES_NTF = 18; // world -> client
+    ENTITY_DATA_REQ = 19; // client -> world
+    ROLE_ENTER = 20; // client -> gate
 }

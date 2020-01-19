@@ -5,6 +5,7 @@ import (
 	"INServer/src/gameplay/ecs/system"
 	"time"
 	"INServer/src/proto/config"
+	"INServer/src/proto/engine"
 )
 
 type (
@@ -60,8 +61,8 @@ func (m *Map) Tick() {
 
 }
 
-func (m *Map) SyncEntityPosition(uuid string) {
+func (m *Map) SyncEntityPosition(uuid string, from *engine.Vector3) {
 	if entity, ok := m.entitiesMap[uuid]; ok {
-		m.firstScene.SyncEntityPosition(uuid, entity)
+		m.firstScene.SyncEntityPosition(uuid, entity, from)
 	}
 }
