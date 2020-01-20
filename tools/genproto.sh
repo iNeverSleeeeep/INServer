@@ -29,7 +29,7 @@ echo "--------- msg ---------"
 for file in `ls msg`
 do
 echo $file
-protoc --gofast_out=../../ --proto_path=./msg --proto_path=./data --proto_path=./etc --proto_path=./engine $file
+protoc --gofast_out=../../ --proto_path=./msg --proto_path=./data  --proto_path=./etc --proto_path=./engine $file
 done
 
 # etc

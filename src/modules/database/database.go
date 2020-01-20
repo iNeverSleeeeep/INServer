@@ -22,6 +22,7 @@ type (
 		roleSummary       map[string]*data.RoleSummaryData
 		roleSummaryByName map[string]*data.RoleSummaryData
 		players           map[string]*data.Player
+		staticmaps        map[int32]map[int32]*data.MapData
 	}
 )
 
@@ -30,6 +31,7 @@ func New() *Database {
 	d.roleSummary = make(map[string]*data.RoleSummaryData)
 	d.roleSummaryByName = make(map[string]*data.RoleSummaryData)
 	d.players = make(map[string]*data.Player)
+	d.staticmaps = make(map[int32]map[int32]*data.MapData)
 	d.DB = dbobj.New()
 	d.DB.Open(global.ServerConfig.DatabaseConfig.Database, global.DatabaseSchema)
 	d.loadAllRoleSummaryData()
@@ -42,6 +44,7 @@ func (d *Database) Start() {
 	node.Instance.Net.Listen(msg.Command_GD_RELEASE_PLAYER_NTF, d.onReleasePlayerNtf)
 	node.Instance.Net.Listen(msg.Command_GD_CREATE_ROLE_REQ, d.onCreateRoleReq)
 	node.Instance.Net.Listen(msg.Command_GD_LOAD_ROLE_REQ, d.onLoadRoleReq)
+	node.Instance.Net.Listen(msg.Command_LOAD_STATIC_MAP_REQ, d.onLoadRoleReq)
 }
 
 func (d *Database) onCreatePlayerReq(header *msg.MessageHeader, buffer []byte) {
@@ -207,6 +210,17 @@ func (d *Database) onLoadRoleReq(header *msg.MessageHeader, buffer []byte) {
 	}
 }
 
+func (d *Database) onLoadStaticMapReq(header *msg.MessageHeader, buffer []byte) {
+	resp := &msg.LoadStaticMapResp{}
+	defer node.Instance.Net.Responce(header, resp)
+	message := &msg.LoadStaticMapReq{}
+	err := proto.Unmarshal(buffer, message)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+}
+
 func (d *Database) loadAllRoleSummaryData() {
 	roles := dao.AllRoleSummaryDataQuery(d.DB)
 	for _, role := range roles {
@@ -220,4 +234,18 @@ func (d *Database) loadAllRoleSummaryData() {
 	}
 
 	logger.Debug("加载所有角色的摘要数据成功")
+}
+
+func (d *Database) loadAllStaticMapsData() {
+	staticmaps := dao.AllStaticMapQuery(d.DB)
+	for _, staticmap := range staticmaps {
+		mapdata := &data.MapData{}
+		proto.Unmarshal(staticmap.SerializedData, mapdata)
+		if _, ok := d.staticmaps[staticmap.ZoneID]; ok == false {
+			d.staticmaps[staticmap.ZoneID] = make(map[int32]*data.MapData)
+		}
+		d.staticmaps[staticmap.ZoneID][staticmap.MapID] = mapdata
+	}
+
+	logger.Debug("加载所有静态地图数据成功")
 }
