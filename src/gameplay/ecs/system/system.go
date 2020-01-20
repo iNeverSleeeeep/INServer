@@ -9,11 +9,11 @@ var (
 
 type (
 	ISystem interface {
-		Tick(dt float32, entities []*ecs.Entity)
+		Tick(dt float64, entities map[string]*ecs.Entity)
 	}
 )
 
-func Tick(dt float32, entities []*ecs.Entity) {
+func Tick(dt float64, entities map[string]*ecs.Entity) {
 	MoveSystem.Tick(dt, entities)
 	PhysicsSystem.Tick(dt, entities)
 }

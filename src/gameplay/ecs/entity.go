@@ -33,6 +33,10 @@ func (e *Entity) RealTimeData() *data.EntityRealtimeData {
 	return e.entityData.RealTimeData
 }
 
+func (e *Entity) EntityData() *data.EntityData {
+	return e.entityData
+}
+
 func (e *Entity) UUID() string {
 	return e.entityData.EntityUUID
 }

@@ -17,7 +17,7 @@ message TransformComponent {
 }
 
 message PhysicsComponent {
-    float Mass = 1;
+    double Mass = 1;
     Vector3 RawSpeed = 2; // 玩家操作的移动速度
     Vector3 PassiveSpeed = 3; // 其他外力影响的速度
 }

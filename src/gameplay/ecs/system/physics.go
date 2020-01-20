@@ -10,7 +10,7 @@ type (
 	}
 )
 
-func (m *physics) Tick(dt float32, entities []*ecs.Entity) {
+func (m *physics) Tick(dt float64, entities map[string]*ecs.Entity) {
 	for _, entity := range entities {
 		physics := entity.GetComponent(data.ComponentType_Physics).Physics
 		if physics != nil {
@@ -19,14 +19,14 @@ func (m *physics) Tick(dt float32, entities []*ecs.Entity) {
 	}
 }
 
-func max(a, b float32) float32 {
+func max(a, b float64) float64 {
 	if a > b {
 		return a
 	}
 	return b
 }
 
-func slowdown(dt float32, physics *data.PhysicsComponent) {
+func slowdown(dt float64, physics *data.PhysicsComponent) {
 	a := 1 / physics.Mass
 	physics.PassiveSpeed.X -= max(a*dt, physics.PassiveSpeed.X)
 	physics.PassiveSpeed.Y -= max(a*dt, physics.PassiveSpeed.Y)

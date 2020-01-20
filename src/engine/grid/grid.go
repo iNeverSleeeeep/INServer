@@ -9,13 +9,13 @@ type (
 	}
 	Grid struct {
 		grids    [][]*Item
-		gridSize float32
+		gridSize float64
 		width    int32
 		height   int32
 	}
 )
 
-func New(gridSize float32, width int32, height int32) *Grid {
+func New(gridSize float64, width int32, height int32) *Grid {
 	g := new(Grid)
 	g.grids = make([][]*Item, width*height)
 	g.gridSize = gridSize
