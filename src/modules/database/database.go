@@ -35,6 +35,7 @@ func New() *Database {
 	d.DB = dbobj.New()
 	d.DB.Open(global.ServerConfig.DatabaseConfig.Database, global.DatabaseSchema)
 	d.loadAllRoleSummaryData()
+	d.loadAllStaticMapsData()
 	return d
 }
 
