@@ -78,7 +78,7 @@ func (a *address) getByCommand(command msg.Command) *server {
 	switch command {
 	case msg.Command_SERVER_STATE, msg.Command_KEEP_ALIVE, msg.Command_RELOAD_ETC_REQ:
 		return a.center
-	case msg.Command_LD_CREATE_PLAYER_REQ, msg.Command_GD_LOAD_PLAYER_REQ, msg.Command_GD_RELEASE_PLAYER_NTF, msg.Command_GD_CREATE_ROLE_REQ, msg.Command_GD_LOAD_ROLE_REQ:
+	case msg.Command_LD_CREATE_PLAYER_REQ, msg.Command_GD_LOAD_PLAYER_REQ, msg.Command_GD_RELEASE_PLAYER_NTF, msg.Command_GD_CREATE_ROLE_REQ, msg.Command_GD_LOAD_ROLE_REQ, msg.Command_LOAD_STATIC_MAP_REQ:
 		if svr, ok := a.servers[a.innet.database]; ok {
 			return svr
 		}

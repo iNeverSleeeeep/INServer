@@ -45,8 +45,10 @@ func (w *World) Start() {
 				mapData = resp.Map
 			}
 
-			staticMap := gamemap.NewMap(nil, mapData)
-			w.gameMaps[mapData.MapUUID] = staticMap
+			if mapData != nil {
+				staticMap := gamemap.NewMap(nil, mapData)
+				w.gameMaps[mapData.MapUUID] = staticMap
+			}
 		}
 	}
 }

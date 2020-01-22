@@ -79,11 +79,11 @@ func (c *Center) onServerStateChange(header *msg.MessageHeader, buffer []byte) {
 		resp.Servers = etcmgr.Instance.Servers()
 		resp.Zones = c.realZones
 		c.Net.ResetServer(message.Info)
+		c.resetServer(c.Servers[serverID])
 		// TODO 每个游戏区都在哪个服务器上
 		resp.ZoneLocations = nil
 		break
 	case msg.ServerState_Running:
-		c.resetServer(c.Servers[serverID])
 		if etcmgr.Instance.GetServerType(serverID) == global.WorldServer {
 			c.refreshRealZones()
 			c.pushZonesState()
