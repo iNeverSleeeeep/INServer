@@ -2,26 +2,34 @@ cd ../proto
 
 # data
 echo "--------- data ---------"
-cd  ./data
-dir=`ls`
-for file in $dir 
+for file in `ls data` 
 do
 echo $file
-protoc --csharp_out=../../clientproto  --proto_path=. $file
+protoc --csharp_out=../clientproto  --proto_path=./data --proto_path=./engine $file
 done
-cd ..
 
 # msg
 echo "--------- msg ---------"
-cd  ./msg
-dir=`ls`
-for file in $dir 
+for file in `ls msg` 
 do
 echo $file
-cd ..
-protoc --csharp_out=../clientproto --proto_path=./msg --proto_path=./data --proto_path=./etc $file
-cd ./msg
+protoc --csharp_out=../clientproto --proto_path=./msg --proto_path=./data --proto_path=./etc --proto_path=./engine $file
 done
-cd ..
+
+# msg
+echo "--------- engine ---------"
+for file in `ls engine` 
+do
+echo $file
+protoc --csharp_out=../clientproto --proto_path=./engine $file
+done
+
+# msg
+echo "--------- etc ---------"
+for file in `ls etc` 
+do
+echo $file
+protoc --csharp_out=../clientproto --proto_path=./etc $file
+done
 
 sleep 1s
