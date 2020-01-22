@@ -45,7 +45,7 @@ func (d *Database) Start() {
 	node.Instance.Net.Listen(msg.Command_GD_RELEASE_PLAYER_NTF, d.onReleasePlayerNtf)
 	node.Instance.Net.Listen(msg.Command_GD_CREATE_ROLE_REQ, d.onCreateRoleReq)
 	node.Instance.Net.Listen(msg.Command_GD_LOAD_ROLE_REQ, d.onLoadRoleReq)
-	node.Instance.Net.Listen(msg.Command_LOAD_STATIC_MAP_REQ, d.onLoadRoleReq)
+	node.Instance.Net.Listen(msg.Command_LOAD_STATIC_MAP_REQ, d.onLoadStaticMapReq)
 }
 
 func (d *Database) onCreatePlayerReq(header *msg.MessageHeader, buffer []byte) {
@@ -234,7 +234,7 @@ func (d *Database) loadAllRoleSummaryData() {
 		d.roleSummaryByName[role.Name] = role
 	}
 
-	logger.Debug("加载所有角色的摘要数据成功")
+	logger.Info("加载所有角色的摘要数据成功")
 }
 
 func (d *Database) loadAllStaticMapsData() {
@@ -248,5 +248,5 @@ func (d *Database) loadAllStaticMapsData() {
 		d.staticmaps[staticmap.ZoneID][staticmap.MapID] = mapdata
 	}
 
-	logger.Debug("加载所有静态地图数据成功")
+	logger.Info("加载所有静态地图数据成功")
 }

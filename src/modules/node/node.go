@@ -55,7 +55,7 @@ func (n *Node) Prepare() {
 		os.Exit(0)
 	}
 
-	logger.Debug(fmt.Sprintf("Server Start Type:%s ID:%d", resp.ServerType, global.ServerID))
+	logger.Info(fmt.Sprintf("Server Start Type:%s ID:%d", resp.ServerType, global.ServerID))
 }
 
 func (n *Node) Start() {

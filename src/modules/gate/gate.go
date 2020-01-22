@@ -41,7 +41,7 @@ func (g *Gate) Start() {
 	}
 	g.listener = listener
 
-	logger.Debug("门服务器 启动 监听端口:" + strconv.Itoa(int(global.ServerConfig.GateConfig.Port)))
+	logger.Info("门服务器 启动 监听端口:" + strconv.Itoa(int(global.ServerConfig.GateConfig.Port)))
 	go func() {
 		for {
 			conn, err := g.listener.AcceptTCP()

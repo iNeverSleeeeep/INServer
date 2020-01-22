@@ -44,7 +44,7 @@ func (l *Login) Start() {
 	}
 	l.listener = listener
 
-	logger.Debug("登录服务器 启动 监听端口:" + strconv.Itoa(int(global.ServerConfig.LoginConfig.Port)))
+	logger.Info("登录服务器 启动 监听端口:" + strconv.Itoa(int(global.ServerConfig.LoginConfig.Port)))
 	go func() {
 		for {
 			conn, err := l.listener.AcceptTCP()

@@ -14,6 +14,7 @@ import (
 	"github.com/golang/protobuf/proto"
 )
 
+// Instance 中心服务器的单例
 var Instance *Center
 
 const (
@@ -21,10 +22,12 @@ const (
 )
 
 type (
+	// ServerInfo 服务器信息
 	ServerInfo struct {
 		Info      msg.ServerInfo
 		KeepAlive int64
 	}
+	// Center 中心服务器
 	Center struct {
 		Net       *innet.INNet
 		Servers   map[int32]*ServerInfo
@@ -32,6 +35,7 @@ type (
 	}
 )
 
+// New 创建中心服务器
 func New() *Center {
 	c := new(Center)
 	c.Net = innet.New()
@@ -42,10 +46,11 @@ func New() *Center {
 	return c
 }
 
+// Start 启动中心服务器
 func (c *Center) Start() {
 	c.registerListeners()
 	c.Net.Start()
-	logger.Debug(fmt.Sprintf("Server Start Type:%s ID:%d", global.ServerType, global.ServerID))
+	logger.Info(fmt.Sprintf("Server Start Type:%s ID:%d", global.ServerType, global.ServerID))
 }
 
 func (c *Center) registerListeners() {
@@ -56,7 +61,6 @@ func (c *Center) registerListeners() {
 
 func (c *Center) onServerStateChange(header *msg.MessageHeader, buffer []byte) {
 	resp := &msg.ServerStateResp{}
-	defer c.Net.Responce(header, resp)
 	message := &msg.ServerStateReq{}
 	err := proto.Unmarshal(buffer, message)
 	if err != nil {
@@ -79,6 +83,7 @@ func (c *Center) onServerStateChange(header *msg.MessageHeader, buffer []byte) {
 		resp.Servers = etcmgr.Instance.Servers()
 		resp.Zones = c.realZones
 		c.Net.ResetServer(message.Info)
+		c.Net.Responce(header, resp)
 		c.resetServer(c.Servers[serverID])
 		// TODO 每个游戏区都在哪个服务器上
 		resp.ZoneLocations = nil
@@ -88,10 +93,14 @@ func (c *Center) onServerStateChange(header *msg.MessageHeader, buffer []byte) {
 			c.refreshRealZones()
 			c.pushZonesState()
 		}
+		c.Net.Responce(header, resp)
+		break
+	default:
+		c.Net.Responce(header, resp)
 		break
 	}
 
-	logger.Debug(fmt.Sprintf("ServerState ID:%d Type:%s State:%s", serverID, etcmgr.Instance.GetServerType(serverID), state.String()))
+	logger.Info(fmt.Sprintf("ServerState ID:%d Type:%s State:%s", serverID, etcmgr.Instance.GetServerType(serverID), state.String()))
 	c.printServerState()
 }
 
@@ -117,7 +126,7 @@ func (c *Center) onServerKeepAlive(header *msg.MessageHeader, buffer []byte) {
 		if realive {
 			// 进入这里 证明服务器的状态由离线变为在线 这样的情况 我们重置一下所有的连接状态
 			c.resetServer(info)
-			logger.Debug(fmt.Sprintf("ServerState ID:%d Type:%s State:%s", serverID, etcmgr.Instance.GetServerType(serverID), msg.ServerState_Running.String()))
+			logger.Info(fmt.Sprintf("ServerState ID:%d Type:%s State:%s", serverID, etcmgr.Instance.GetServerType(serverID), msg.ServerState_Running.String()))
 			c.printServerState()
 		}
 	}
@@ -140,7 +149,7 @@ func (c *Center) tickServerState() {
 				if info.Info.State == msg.ServerState_Running && info.KeepAlive+timeout < now {
 					info.Info.State = msg.ServerState_Offline
 					serverlist = append(serverlist, &info.Info)
-					logger.Debug(fmt.Sprintf("ServerState ID:%d Type:%s State:%s", info.Info.ServerID, etcmgr.Instance.GetServerType(info.Info.ServerID), msg.ServerState_Offline.String()))
+					logger.Info(fmt.Sprintf("ServerState ID:%d Type:%s State:%s", info.Info.ServerID, etcmgr.Instance.GetServerType(info.Info.ServerID), msg.ServerState_Offline.String()))
 					c.printServerState()
 					c.refreshRealZones()
 					c.pushZonesState()
@@ -243,5 +252,5 @@ func (c *Center) printServerState() {
 			states = states + fmt.Sprintf("%d%s ", svr.ServerID, "X")
 		}
 	}
-	logger.Debug(states)
+	logger.Info(states)
 }
