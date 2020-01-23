@@ -45,7 +45,7 @@ func PlayerQuery(DB *dbobj.DBObject, uuid string) (*db.DBPlayer, error) {
 }
 
 func PlayerInsert(DB *dbobj.DBObject, player *db.DBPlayer) error {
-	_, err := DB.DB().Exec("insert INTO accounts(UUID,SerializedData) values(?,?)", player.UUID, player.SerializedData)
+	_, err := DB.DB().Exec("insert INTO players(UUID,SerializedData) values(?,?)", player.UUID, player.SerializedData)
 	if err != nil {
 		logger.Debug(err)
 		return err
@@ -54,7 +54,7 @@ func PlayerInsert(DB *dbobj.DBObject, player *db.DBPlayer) error {
 }
 
 func PlayerUpdate(DB *dbobj.DBObject, player *db.DBPlayer) error {
-	_, err := DB.DB().Exec("UPDATE accounts set SerializedData=? where UUID=?", player.SerializedData, player.UUID)
+	_, err := DB.DB().Exec("UPDATE players set SerializedData=? where UUID=?", player.SerializedData, player.UUID)
 	if err != nil {
 		logger.Debug(err)
 		return err
