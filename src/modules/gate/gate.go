@@ -216,25 +216,29 @@ func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, message *ms
 func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
 	if message.Command == msg.Command_ROLE_ENTER {
 		roleEnterResp := &msg.RoleEnterResp{}
-		defer g.sendResp(player.conn, roleEnterResp)
+		resp := &msg.GateToClient{}
+		resp.Command = msg.Command_RESP
+		resp.Sequence = message.Sequence
+		defer g.sendResp(player.conn, resp)
 		roleEnterReq := &msg.RoleEnterReq{}
 		if err := proto.Unmarshal(message.Request, roleEnterReq); err != nil {
 			logger.Info(err)
 			return
 		}
-		req := &msg.LoadRoleReq{
+		loadRoleReq := &msg.LoadRoleReq{
 			RoleUUID: roleEnterReq.RoleUUID,
 		}
-		resp := &msg.LoadRoleResp{}
-		if err := node.Instance.Net.Request(msg.Command_GD_LOAD_ROLE_REQ, req, resp); err != nil {
+		loadRoleResp := &msg.LoadRoleResp{}
+		if err := node.Instance.Net.Request(msg.Command_GD_LOAD_ROLE_REQ, loadRoleReq, loadRoleResp); err != nil {
 			logger.Info(err)
 			return
 		}
-		roleEnterResp.Success = resp.Success
-		if resp.Success == false {
+		roleEnterResp.Success = loadRoleResp.Success
+		resp.Buffer, _ = proto.Marshal(roleEnterResp)
+		if loadRoleResp.Success == false {
 			logger.Info("Role Enter Fail! UUID:" + player.info.UUID)
 		} else {
-			player.info.Address.Entity = resp.WorldID
+			player.info.Address.Entity = loadRoleResp.WorldID
 			ntf := &msg.UpdatePlayerAddressNTF{
 				PlayerUUID: player.info.UUID,
 				RoleUUID:   roleEnterReq.RoleUUID,
@@ -243,14 +247,23 @@ func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
 			node.Instance.Net.Notify(msg.Command_UPDATE_PLAYER_ADDRESS_NTF, ntf)
 		}
 	} else if message.Request != nil {
-		buffer, err := node.Instance.Net.RequestBytes(message.Command, message.Request)
+		buffer, err := node.Instance.Net.RequestClientBytes(message.Command, player.info.UUID, message.Request)
 		if err != nil {
 			logger.Debug("消息错误")
 		} else {
-			innet.SendBytesHelper(player.conn, buffer)
+			resp := &msg.GateToClient{}
+			resp.Command = msg.Command_RESP
+			resp.Sequence = message.Sequence
+			resp.Buffer = buffer
+			respBuffer, err := proto.Marshal(resp)
+			if err != nil {
+				logger.Debug(err)
+			} else {
+				innet.SendBytesHelper(player.conn, respBuffer)
+			}
 		}
 	} else if message.Notify != nil {
-		err := node.Instance.Net.NotifyBytes(message.Command, message.Notify)
+		err := node.Instance.Net.NotifyClientBytes(message.Command, player.info.UUID, message.Notify)
 		if err != nil {
 			logger.Debug(err)
 		}

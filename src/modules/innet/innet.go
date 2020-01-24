@@ -83,6 +83,21 @@ func (n *INNet) Request(command msg.Command, req proto.Message, resp proto.Messa
 	}
 }
 
+// RequestClientBytes 发送源头为客户端的消息
+func (n *INNet) RequestClientBytes(command msg.Command, uuid string, bytes []byte) ([]byte, error) {
+	sequence++
+	err := n.sendClientBytes(command, sequence, uuid, bytes, global.InvalidServerID)
+	if err != nil {
+		return nil, err
+	}
+	buffer := make(chan []byte)
+	n.responces[sequence] = &responce{c: buffer, timeout: time.Now().Unix() + 10}
+	buf := <-buffer
+	delete(n.responces, sequence)
+	return buf, nil
+}
+
+// RequestBytes 发送
 func (n *INNet) RequestBytes(command msg.Command, bytes []byte) ([]byte, error) {
 	sequence++
 	err := n.sendBytes(command, sequence, bytes, global.InvalidServerID)
@@ -107,6 +122,12 @@ func (n *INNet) ResponceBytes(header *msg.MessageHeader, bytes []byte) error {
 func (n *INNet) Notify(command msg.Command, message proto.Message) error {
 	sequence++
 	return n.sendMessage(command, sequence, message, global.InvalidServerID)
+}
+
+// NotifyClientBytes 发送源头为客户端的消息
+func (n *INNet) NotifyClientBytes(command msg.Command, uuid string, bytes []byte) error {
+	sequence++
+	return n.sendClientBytes(command, sequence, uuid, bytes, global.InvalidServerID)
 }
 
 func (n *INNet) NotifyBytes(command msg.Command, bytes []byte) error {
@@ -186,27 +207,37 @@ func (n *INNet) sendMessage(command msg.Command, sequence uint64, message proto.
 }
 
 func (n *INNet) sendBytes(command msg.Command, sequence uint64, bytes []byte, serverID int32) error {
-	var err error
 	header := &msg.MessageHeader{
 		Command:  command,
 		Sequence: sequence,
 		From:     global.ServerID,
 	}
-	buf, err := proto.Marshal(&msg.Message{
-		Header: header,
-		Buffer: bytes,
-	})
+	return n.send(header, bytes, serverID)
+}
+
+func (n *INNet) sendClientBytes(command msg.Command, sequence uint64, uuid string, bytes []byte, serverID int32) error {
+	header := &msg.MessageHeader{
+		Command:    command,
+		Sequence:   sequence,
+		From:       global.ServerID,
+		PlayerUUID: uuid,
+	}
+	return n.send(header, bytes, serverID)
+}
+
+func (n *INNet) send(header *msg.MessageHeader, bytes []byte, serverID int32) error {
+	buf, err := proto.Marshal(&msg.Message{Header: header, Buffer: bytes})
 	if err == nil {
 		var svr *server
 		if serverID != global.InvalidServerID {
 			svr = n.address.getByServerID(serverID)
 		} else {
-			svr = n.address.getByCommand(command)
+			svr = n.address.getByCommand(header.Command)
 			if svr == nil {
-				return errors.New("Server Not Found By Command:" + command.String())
+				return errors.New("Server Not Found By Command:" + header.Command.String())
 			}
 		}
-		if command == msg.Command_SERVER_STATE {
+		if header.Command == msg.Command_SERVER_STATE {
 			err = n.sender.sendstate(svr, buf)
 		} else {
 			err = n.sender.send(svr, buf)
