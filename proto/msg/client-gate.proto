@@ -12,7 +12,6 @@ message SessionCert {
 
 message ConnectGateReq {
     SessionCert SessionCert = 1;
-    uint64 Sequence = 2;
 }
 
 message ConnectGateResp {
