@@ -9,6 +9,7 @@
             "ServerType": "Gate",
             "ServerConfig": {
                 "GateConfig": {
+                    "Address": "149.129.101.133",
                     "Port": 10999,
                     "OutOfDateTimeout": 10
                 }

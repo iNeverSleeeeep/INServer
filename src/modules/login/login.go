@@ -162,7 +162,7 @@ func (l *Login) handleMessage(conn *net.TCPConn, message *msg.ClientToLogin) {
 				}
 				resp.SessionCert = cert
 
-				ip, port := node.Instance.Net.GetServerAddress(gateID)
+				ip, port := node.Instance.Net.GetGatePublicAddress(gateID)
 				resp.GateIP, resp.GatePort = ip, int32(port)
 				message := &msg.LoginToGate{
 					Cert: cert,

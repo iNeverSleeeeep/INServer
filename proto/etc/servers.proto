@@ -9,6 +9,7 @@ import "database.proto";
 message GateConfig {
     int32 Port = 1; // 监听客户端连接的端口
     int64 OutOfDateTimeout = 2; // 断开连接后Session删除的Timeout
+    string Address = 3; // IP地址 因为阿里云没有办法取得公网IP所以只能配置
 }
 
 message LoginConfig {

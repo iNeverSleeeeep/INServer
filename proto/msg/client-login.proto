@@ -29,6 +29,6 @@ message ClientToLogin {
 message LoginToClient {
     bool Success = 1;
     SessionCert SessionCert = 2;
-    bytes GateIP = 3;
+    string GateIP = 3;
     int32 GatePort = 4;
 }
