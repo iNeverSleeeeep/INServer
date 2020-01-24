@@ -2,6 +2,7 @@ package login
 
 import (
 	"INServer/src/common/dbobj"
+	"fmt"
 	"INServer/src/common/global"
 	"INServer/src/common/logger"
 	"INServer/src/common/protect"
@@ -136,6 +137,9 @@ func (l *Login) handleMessage(conn *net.TCPConn, message *msg.ClientToLogin) {
 			logger.Debug(err)
 		} else if account != nil {
 			success = account.PasswordHash == message.Login.PasswordHash
+			if success == false {
+				logger.Info(fmt.Sprintf("密码错误 %s %s", account.PasswordHash, message.Login.PasswordHash))
+			}
 		}
 	} else if message.ChangePassword != nil {
 		account, err := dao.AccountQuery(l.DB, message.Login.Name)
@@ -169,6 +173,7 @@ func (l *Login) handleMessage(conn *net.TCPConn, message *msg.ClientToLogin) {
 				}
 				node.Instance.Net.NotifyServer(msg.Command_SESSION_CERT_NTF, message, gateID)
 			} else {
+				logger.Error("没有找到门服务器")
 				success = false
 			}
 		}

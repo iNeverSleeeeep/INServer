@@ -35,7 +35,7 @@ require (
 	github.com/imdario/mergo v0.3.8 // indirect
 	github.com/miekg/dns v1.1.27 // indirect
 	github.com/mitchellh/hashstructure v1.0.0 // indirect
-	github.com/mitchellh/protoc-gen-go-json v0.0.0-20190813154521-ece073100ced // indirect
+	github.com/mitchellh/protoc-gen-go-json v0.0.0-20200113165135-fd297ce346f1 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20190826022208-cac0b30c2563 // indirect

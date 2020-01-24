@@ -88,7 +88,7 @@ func (g *Gate) handleConnect(conn *net.TCPConn) {
 			logger.Debug("消息解析失败:" + conn.RemoteAddr().String())
 			continue
 		}
-		if message.Command != msg.Command_CONNECT_GATE_REQ {
+		if message.Command == msg.Command_CONNECT_GATE_REQ {
 			connectReq := &msg.ConnectGateReq{}
 			err := proto.Unmarshal(message.Request, connectReq)
 			if err != nil {
@@ -98,7 +98,7 @@ func (g *Gate) handleConnect(conn *net.TCPConn) {
 			if uuid == nil {
 				uuid = &connectReq.SessionCert.UUID
 			}
-			g.handleConnectMessage(uuid, conn, connectReq)
+			go g.handleConnectMessage(uuid, conn, message.Sequence, connectReq)
 		}
 		if uuid != nil {
 			if player, ok := g.players[*uuid]; ok {
@@ -169,9 +169,13 @@ func (g *Gate) onPlayerReconnect(player *session) error {
 	return nil
 }
 
-func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, message *msg.ConnectGateReq) {
+func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, sequence uint64, message *msg.ConnectGateReq) {
 	connectResp := &msg.ConnectGateResp{}
-	defer g.sendResp(conn, connectResp)
+	resp := &msg.GateToClient{}
+	resp.Command = msg.Command_RESP
+	resp.Sequence = sequence
+	logger.Info(sequence)
+	defer g.sendResp(conn, resp)
 	player, ok := g.players[*uuid]
 	if ok == false {
 		logger.Debug("拒绝连接，没有数据:" + conn.RemoteAddr().String() + " uuid:" + *uuid)
@@ -194,7 +198,7 @@ func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, message *ms
 			Address:    player.info.Address,
 		}
 		node.Instance.Net.Notify(msg.Command_UPDATE_PLAYER_ADDRESS_NTF, ntf)
-		if oldState == data.SessionState_Offline || oldState == data.SessionState_Connected {
+		if oldState == data.SessionState_Offline || oldState == data.SessionState_Connected || oldState == data.SessionState_Online {
 			playerData, err := g.onPlayerConnect(player)
 			if err != nil {
 				logger.Debug(err)
@@ -211,6 +215,7 @@ func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, message *ms
 			connectResp.Success = true
 		}
 	}
+	resp.Buffer, _ = proto.Marshal(connectResp)
 }
 
 func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
@@ -288,20 +293,7 @@ func (g *Gate) pushNewSessionCert(player *session) {
 }
 
 func (g *Gate) sendResp(conn *net.TCPConn, resp proto.Message) error {
-	buffer, err := proto.Marshal(resp)
-	if err != nil {
-		logger.Debug(err)
-		return err
-	}
-	message := &msg.Message{
-		Header: &msg.MessageHeader{
-			Command:  msg.Command_RESP,
-			Sequence: 0,
-			From:     global.ServerID,
-		},
-		Buffer: buffer,
-	}
-	buff, _ := proto.Marshal(message)
+	buff, _ := proto.Marshal(resp)
 	innet.SendBytesHelper(conn, buff)
 	return nil
 }

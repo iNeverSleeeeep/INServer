@@ -173,6 +173,8 @@ github.com/mitchellh/hashstructure v1.0.0 h1:ZkRJX1CyOoTkar7p/mLS5TZU4nJ1Rn/F8u9
 github.com/mitchellh/hashstructure v1.0.0/go.mod h1:QjSHrPWS+BGUVBYkbTZWEnOh3G1DutKwClXU/ABz6AQ=
 github.com/mitchellh/protoc-gen-go-json v0.0.0-20190813154521-ece073100ced h1:9JtQcez8qM/hJaOCESn5Y+pFAQw0D2HxsI5ndMT40T4=
 github.com/mitchellh/protoc-gen-go-json v0.0.0-20190813154521-ece073100ced/go.mod h1:VhkV06JZBMrulb3fNiUvM5Lmz3yc7ei3omzocl9UtCw=
+github.com/mitchellh/protoc-gen-go-json v0.0.0-20200113165135-fd297ce346f1 h1:QSvnkyNptGhyjtu2K9Xr8399WBPk4sECq3o05XH1XCs=
+github.com/mitchellh/protoc-gen-go-json v0.0.0-20200113165135-fd297ce346f1/go.mod h1:VhkV06JZBMrulb3fNiUvM5Lmz3yc7ei3omzocl9UtCw=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd h1:TRLaZ9cD/w8PVh93nsPXa1VrQ6jlwL5oN8l14QlcNfg=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
