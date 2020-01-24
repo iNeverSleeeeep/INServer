@@ -88,11 +88,17 @@ func (g *Gate) handleConnect(conn *net.TCPConn) {
 			logger.Debug("消息解析失败:" + conn.RemoteAddr().String())
 			continue
 		}
-		if message.Connect != nil {
-			if uuid == nil {
-				uuid = &message.Connect.SessionCert.UUID
+		if message.Command != msg.Command_CONNECT_GATE_REQ {
+			connectReq := &msg.ConnectGateReq{}
+			err := proto.Unmarshal(message.Request, connectReq)
+			if err != nil {
+				logger.Info("消息解析失败")
+				continue
 			}
-			g.handleConnectMessage(uuid, conn, message.Connect)
+			if uuid == nil {
+				uuid = &connectReq.SessionCert.UUID
+			}
+			g.handleConnectMessage(uuid, conn, connectReq)
 		}
 		if uuid != nil {
 			if player, ok := g.players[*uuid]; ok {
@@ -208,39 +214,43 @@ func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, message *ms
 }
 
 func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
-	if message.RoleEnter != nil {
+	if message.Command == msg.Command_ROLE_ENTER {
 		roleEnterResp := &msg.RoleEnterResp{}
 		defer g.sendResp(player.conn, roleEnterResp)
+		roleEnterReq := &msg.RoleEnterReq{}
+		if err := proto.Unmarshal(message.Request, roleEnterReq); err != nil {
+			logger.Info(err)
+			return
+		}
 		req := &msg.LoadRoleReq{
-			RoleUUID: message.RoleEnter.RoleUUID,
+			RoleUUID: roleEnterReq.RoleUUID,
 		}
 		resp := &msg.LoadRoleResp{}
-		err := node.Instance.Net.Request(msg.Command_GD_LOAD_ROLE_REQ, req, resp)
-		if err != nil {
+		if err := node.Instance.Net.Request(msg.Command_GD_LOAD_ROLE_REQ, req, resp); err != nil {
 			logger.Info(err)
+			return
+		}
+		roleEnterResp.Success = resp.Success
+		if resp.Success == false {
+			logger.Info("Role Enter Fail! UUID:" + player.info.UUID)
 		} else {
-			roleEnterResp.Success = resp.Success
-			if resp.Success == false {
-				logger.Info("Role Enter Fail! UUID:" + player.info.UUID)
-			} else {
-				player.info.Address.Entity = resp.WorldID
-				ntf := &msg.UpdatePlayerAddressNTF{
-					PlayerUUID: player.info.UUID,
-					RoleUUID:   message.RoleEnter.RoleUUID,
-					Address:    player.info.Address,
-				}
-				node.Instance.Net.Notify(msg.Command_UPDATE_PLAYER_ADDRESS_NTF, ntf)
+			player.info.Address.Entity = resp.WorldID
+			ntf := &msg.UpdatePlayerAddressNTF{
+				PlayerUUID: player.info.UUID,
+				RoleUUID:   roleEnterReq.RoleUUID,
+				Address:    player.info.Address,
 			}
+			node.Instance.Net.Notify(msg.Command_UPDATE_PLAYER_ADDRESS_NTF, ntf)
 		}
 	} else if message.Request != nil {
-		buffer, err := node.Instance.Net.RequestBytes(message.Request.Command, message.Request.Buffer)
+		buffer, err := node.Instance.Net.RequestBytes(message.Command, message.Request)
 		if err != nil {
 			logger.Debug("消息错误")
 		} else {
 			innet.SendBytesHelper(player.conn, buffer)
 		}
 	} else if message.Notify != nil {
-		err := node.Instance.Net.NotifyBytes(message.Notify.Command, message.Notify.Buffer)
+		err := node.Instance.Net.NotifyBytes(message.Command, message.Notify)
 		if err != nil {
 			logger.Debug(err)
 		}
