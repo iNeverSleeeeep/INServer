@@ -150,7 +150,7 @@ func (g *Gate) tickOutOfContact() {
 
 func (g *Gate) onPlayerConnect(player *session) (*data.Player, error) {
 	// 推送消息到其他服务器
-	logger.Debug("客户端登录成功:" + player.info.UUID)
+	logger.Info("客户端登录成功:" + player.info.UUID)
 
 	loadPlayerReq := &msg.LoadPlayerReq{
 		PlayerUUID: player.info.UUID,
