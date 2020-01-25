@@ -174,7 +174,6 @@ func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, sequence ui
 	resp := &msg.GateToClient{}
 	resp.Command = msg.Command_RESP
 	resp.Sequence = sequence
-	logger.Info(sequence)
 	defer g.sendResp(conn, resp)
 	player, ok := g.players[*uuid]
 	if ok == false {
