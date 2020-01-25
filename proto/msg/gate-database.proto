@@ -3,6 +3,7 @@ syntax = "proto3";
 option go_package = "INServer/src/proto/msg";
 
 import "player.proto";
+import "role.proto";
 
 message CreatePlayerReq {
     string PlayerUUID = 1;
@@ -33,7 +34,7 @@ message CreateRoleReq {
 
 message CreateRoleResp {
     bool Success = 1;
-    string RoleUUID = 2;
+    RoleSummaryData Role = 2;
 }
 
 message LoadRoleReq {

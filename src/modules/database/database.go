@@ -158,7 +158,7 @@ func (d *Database) onCreateRoleReq(header *msg.MessageHeader, buffer []byte) {
 		d.roleSummaryByName[message.RoleName] = roleSummaryData
 		d.roleSummary[roleUUID] = roleSummaryData
 		resp.Success = true
-		resp.RoleUUID = roleUUID
+		resp.Role = roleSummaryData
 	} else {
 		logger.Debug("Must Create Player Before Create Role!")
 	}
