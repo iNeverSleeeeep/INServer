@@ -94,6 +94,10 @@ func (c *Center) onServerStateChange(header *msg.MessageHeader, buffer []byte) {
 			c.pushZonesState()
 		}
 		c.Net.Responce(header, resp)
+
+		serverlist := make([]*msg.ServerInfo, 1)
+		serverlist[0] = &c.Servers[serverID].Info
+		c.pushServerList(serverlist)
 		break
 	default:
 		c.Net.Responce(header, resp)
