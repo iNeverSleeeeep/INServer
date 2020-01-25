@@ -82,6 +82,7 @@ func (a *address) getByCommand(command msg.Command) *server {
 		if svr, ok := a.servers[a.innet.database]; ok {
 			return svr
 		}
+		logger.Error("没有找到Database服务器")
 	}
 	return nil
 }
