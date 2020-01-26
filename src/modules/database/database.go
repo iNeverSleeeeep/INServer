@@ -149,6 +149,11 @@ func (d *Database) onCreateRoleReq(header *msg.MessageHeader, buffer []byte) {
 			logger.Error(err)
 			return
 		}
+		if len(getStaticMapUUIDResp.StaticMapUUID) == 0 {
+			logger.Error("没有找到这张地图")
+			return
+		}
+		roleSummaryData.MapUUID = getStaticMapUUIDResp.StaticMapUUID
 		summaryData, err := proto.Marshal(roleSummaryData)
 		if err != nil {
 			return
