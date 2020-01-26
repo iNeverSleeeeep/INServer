@@ -82,9 +82,16 @@ func (c *Center) onServerStateChange(header *msg.MessageHeader, buffer []byte) {
 		c.Net.AddServers([]*msg.ServerInfo{message.Info})
 		resp.Servers = etcmgr.Instance.Servers()
 		resp.Zones = c.realZones
+		resp.ServerInfoList = make([]*msg.ServerInfo, 0)
+		for _, info := range c.Servers {
+			resp.ServerInfoList = append(resp.ServerInfoList, &info.Info)
+		}
 		c.Net.ResetServer(message.Info)
 		c.Net.Responce(header, resp)
-		c.resetServer(c.Servers[serverID])
+
+		serverlist := make([]*msg.ServerInfo, 1)
+		serverlist[0] = &c.Servers[serverID].Info
+		c.pushServerList(serverlist)
 		// TODO 每个游戏区都在哪个服务器上
 		resp.ZoneLocations = nil
 		break

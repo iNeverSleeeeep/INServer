@@ -30,9 +30,10 @@ message ServerStateResp {
     string ServerType = 1; 
     string Message = 2;
     ServerConfig ServerConfig = 3;
-    repeated Server Servers = 4;
-    repeated Zone Zones = 5;
-    repeated ZoneLocation ZoneLocations = 6;
+    repeated ServerInfo ServerInfoList = 4;
+    repeated Server Servers = 5;
+    repeated Zone Zones = 6;
+    repeated ZoneLocation ZoneLocations = 7;
 }
 
 message ServerInfo {

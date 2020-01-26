@@ -49,6 +49,9 @@ func (n *Node) Prepare() {
 	global.ServerConfig = resp.ServerConfig
 	global.Servers = resp.Servers
 	global.Zones = resp.Zones
+	if resp.ServerInfoList != nil {
+		n.Net.AddServers(resp.ServerInfoList)
+	}
 
 	if global.ServerType == global.InvalidServer {
 		logger.Debug(resp.Message)
