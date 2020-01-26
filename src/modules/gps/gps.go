@@ -9,6 +9,8 @@ import (
 	"github.com/gogo/protobuf/proto"
 )
 
+var Instance *GPS
+
 type (
 	player struct {
 		address  *data.PlayerAddress
@@ -28,6 +30,10 @@ func New() *GPS {
 	g.players = make(map[string]*player)
 	g.roles = make(map[string]string)
 	return g
+}
+
+func (g *GPS) Start() {
+	g.InitMessageHandler()
 }
 
 func (g *GPS) InitMessageHandler() {

@@ -8,6 +8,7 @@ import (
 	"INServer/src/modules/database"
 	"INServer/src/modules/etcmgr"
 	"INServer/src/modules/gate"
+	"INServer/src/modules/gps"
 	"INServer/src/modules/login"
 	"INServer/src/modules/node"
 	"INServer/src/modules/web"
@@ -25,7 +26,7 @@ var centerIP = flag.String("cip", "127.0.0.1", "中心服务器IP")
 var profile = flag.Bool("profile", true, "开启性能监控")
 
 func main() {
-	sigs := make(chan os.Signal,1)
+	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
 	runtime.GOMAXPROCS(1)
@@ -100,6 +101,9 @@ func prepareServer() {
 	case global.WorldServer:
 		world.Instance = world.New()
 		world.Instance.Start()
+	case global.GPSServer:
+		gps.Instance = gps.New()
+		gps.Instance.Start()
 	default:
 		logger.Fatal("不支持的服务器类型:" + global.ServerType)
 	}
