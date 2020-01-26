@@ -1,6 +1,7 @@
 package innet
 
 import (
+	"fmt"
 	"INServer/src/common/global"
 	"INServer/src/common/logger"
 	"INServer/src/proto/msg"
@@ -48,11 +49,8 @@ func (a *address) addServerList(servers []*msg.ServerInfo) {
 		if serverExist, ok := a.servers[serverToAdd.ServerID]; ok {
 			serverExist.info = serverToAdd
 		} else {
-			addr, err := net.ResolveUDPAddr("udp4", "127.0.0.1:"+strconv.Itoa(int(serverToAdd.ServerID)+recvport))
-			if err != nil {
-				logger.Debug(err)
-				continue
-			}
+			ip := &net.IPAddr{IP:serverToAdd.Address}
+			addr := &net.UDPAddr{IP:ip.IP, Port: int(serverToAdd.ServerID)+recvport, Zone: ip.Zone}
 			a.servers[serverToAdd.ServerID] = &server{
 				addr:      addr,
 				info:      serverToAdd,
@@ -82,7 +80,7 @@ func (a *address) getByCommand(command msg.Command) *server {
 		if svr, ok := a.servers[a.innet.database]; ok {
 			return svr
 		}
-		logger.Error("没有找到Database服务器")
+		logger.Error(fmt.Sprintf("没有找到Database服务器 id:%d", a.innet.database))
 	}
 	return nil
 }

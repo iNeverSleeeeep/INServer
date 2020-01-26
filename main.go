@@ -15,8 +15,9 @@ import (
 	"flag"
 	"log"
 	"os"
+	"os/signal"
 	"runtime"
-	"time"
+	"syscall"
 )
 
 var serverID = flag.Int("id", -1, "本服务器ID(范围0~65535)")
@@ -24,6 +25,9 @@ var centerIP = flag.String("cip", "127.0.0.1", "中心服务器IP")
 var profile = flag.Bool("profile", true, "开启性能监控")
 
 func main() {
+	sigs := make(chan os.Signal,1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+
 	runtime.GOMAXPROCS(1)
 	flag.Parse()
 	global.ServerID = int32(*serverID)
@@ -48,8 +52,14 @@ func main() {
 	}
 
 	for {
-		time.Sleep(time.Millisecond * 1000)
+		sig := <-sigs
+		logger.Info(sig)
+		if sig.String() == "interrupt" {
+			break
+		}
 	}
+
+	logger.Info("Shut Down!")
 }
 
 func startCenter() {

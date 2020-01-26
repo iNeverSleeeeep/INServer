@@ -136,6 +136,7 @@ func (d *Database) onCreateRoleReq(header *msg.MessageHeader, buffer []byte) {
 			Zone:     message.Zone,
 			RoleUUID: roleUUID,
 		}
+		d.roleSummaryByName[message.RoleName] = roleSummaryData
 		summaryData, err := proto.Marshal(roleSummaryData)
 		if err != nil {
 			return
@@ -156,7 +157,20 @@ func (d *Database) onCreateRoleReq(header *msg.MessageHeader, buffer []byte) {
 			return
 		}
 		player.RoleList = append(player.RoleList, roleSummaryData)
-		d.roleSummaryByName[message.RoleName] = roleSummaryData
+		serializedData, err := proto.Marshal(player)
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+		dbplayer := &db.DBPlayer{
+			UUID: message.PlayerUUID,
+			SerializedData: serializedData,
+		}
+		err = dao.PlayerUpdate(d.DB, dbplayer)
+		if err != nil {
+			logger.Error(err)
+			return
+		}
 		d.roleSummary[roleUUID] = roleSummaryData
 		resp.Success = true
 		resp.Role = roleSummaryData
