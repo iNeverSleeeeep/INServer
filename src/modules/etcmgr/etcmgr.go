@@ -207,6 +207,8 @@ func (e *ETC) GetServerConfig(serverID int32) *etc.ServerConfig {
 			return server.ServerConfig
 		case global.WorldServer:
 			return server.ServerConfig
+		case global.GPSServer:
+			return server.ServerConfig
 		default:
 			logger.Debug("没有实现这种服务器类型:" + server.ServerType)
 			return nil
