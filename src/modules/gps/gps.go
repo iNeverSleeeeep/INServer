@@ -17,31 +17,38 @@ type (
 		roleUUID string
 	}
 
+	// GPS 定位服务器 可以查询每个地图和每个角色的位置
 	GPS struct {
-		maps    map[string]int32
-		players map[string]*player
-		roles   map[string]string
+		maps       map[string]int32
+		players    map[string]*player
+		roles      map[string]string
+		staticmaps map[int32]map[int32]string
 	}
 )
 
+// New 创建定位服务器
 func New() *GPS {
 	g := new(GPS)
 	g.maps = make(map[string]int32)
 	g.players = make(map[string]*player)
 	g.roles = make(map[string]string)
+	g.staticmaps = make(map[int32]map[int32]string)
 	return g
 }
 
+// Start 启动定位服务器
 func (g *GPS) Start() {
-	g.InitMessageHandler()
+	g.initMessageHandler()
 }
 
-func (g *GPS) InitMessageHandler() {
+func (g *GPS) initMessageHandler() {
 	node.Instance.Net.Listen(msg.Command_UPDATE_PLAYER_ADDRESS_NTF, g.onUpdatePlayerAddressNTF)
 	node.Instance.Net.Listen(msg.Command_REMOVE_PLAYER_ADDRESS_NTF, g.onRemovePlayerAddressNTF)
 	node.Instance.Net.Listen(msg.Command_UPDATE_MAP_ADDRESS_NTF, g.onUpdateMapAddressNTF)
 	node.Instance.Net.Listen(msg.Command_REMOVE_MAP_ADDRESS_NTF, g.onRemoveMapAddressNTF)
 	node.Instance.Net.Listen(msg.Command_GET_MAP_ADDRESS_REQ, g.onGetMapLocationReq)
+	node.Instance.Net.Listen(msg.Command_UPDATE_STATIC_MAP_UUID_NTF, g.onUpdateStaticMapUUIDNTF)
+
 }
 
 func (g *GPS) onUpdatePlayerAddressNTF(header *msg.MessageHeader, buffer []byte) {
@@ -88,8 +95,41 @@ func (g *GPS) onRemovePlayerAddressNTF(header *msg.MessageHeader, buffer []byte)
 
 func (g *GPS) onUpdateMapAddressNTF(header *msg.MessageHeader, buffer []byte) {
 	ntf := &msg.UpdateMapAddressNTF{}
-	proto.Unmarshal(buffer, ntf)
-	g.maps[ntf.MapUUID] = ntf.ServerID
+	err := proto.Unmarshal(buffer, ntf)
+	if err != nil {
+		logger.Error(err)
+	} else {
+		g.maps[ntf.MapUUID] = ntf.ServerID
+	}
+}
+
+func (g *GPS) onUpdateStaticMapUUIDNTF(header *msg.MessageHeader, buffer []byte) {
+	ntf := &msg.UpdateStaticMapUUIDNTF{}
+	err := proto.Unmarshal(buffer, ntf)
+	if err != nil {
+		logger.Error(err)
+	} else {
+		if _, ok := g.staticmaps[ntf.ZoneID]; ok == false {
+			g.staticmaps[ntf.ZoneID] = make(map[int32]string)
+		}
+		g.staticmaps[ntf.ZoneID][ntf.StaticMapID] = ntf.StaticMapUUID
+	}
+}
+
+func (g *GPS) onGetStaticMapUUIDReq(header *msg.MessageHeader, buffer []byte) {
+	resp := &msg.GetStaticMapUUIDResp{}
+	defer node.Instance.Net.Responce(header, resp)
+	req := &msg.GetStaticMapUUIDReq{}
+	err := proto.Unmarshal(buffer, req)
+	if err != nil {
+		logger.Error(err)
+	} else {
+		if maps, ok := g.staticmaps[req.ZoneID]; ok {
+			if uuid, ok := maps[req.StaticMapID]; ok {
+				resp.StaticMapUUID = uuid
+			}
+		}
+	}
 }
 
 func (g *GPS) onRemoveMapAddressNTF(header *msg.MessageHeader, buffer []byte) {

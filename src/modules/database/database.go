@@ -130,6 +130,7 @@ func (d *Database) onCreateRoleReq(header *msg.MessageHeader, buffer []byte) {
 		if _, ok := d.roleSummaryByName[message.RoleName]; ok {
 			return
 		}
+
 		roleUUID := uuid.New()
 		roleSummaryData := &data.RoleSummaryData{
 			Name:     message.RoleName,
@@ -137,6 +138,22 @@ func (d *Database) onCreateRoleReq(header *msg.MessageHeader, buffer []byte) {
 			RoleUUID: roleUUID,
 		}
 		d.roleSummaryByName[message.RoleName] = roleSummaryData
+
+		getStaticMapUUIDReq := &msg.GetStaticMapUUIDReq{
+			ZoneID:      message.Zone,
+			StaticMapID: 1,
+		}
+		getStaticMapUUIDResp := &msg.GetStaticMapUUIDResp{}
+		err := node.Instance.Net.Request(msg.Command_GET_STATIC_MAP_UUID_REQ, getStaticMapUUIDReq, getStaticMapUUIDResp)
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+		if len(getStaticMapUUIDResp.StaticMapUUID) == 0 {
+			logger.Error("没有找到这张地图")
+			return
+		}
+		roleSummaryData.MapUUID = getStaticMapUUIDResp.StaticMapUUID
 		summaryData, err := proto.Marshal(roleSummaryData)
 		if err != nil {
 			return
@@ -163,7 +180,7 @@ func (d *Database) onCreateRoleReq(header *msg.MessageHeader, buffer []byte) {
 			return
 		}
 		dbplayer := &db.DBPlayer{
-			UUID: message.PlayerUUID,
+			UUID:           message.PlayerUUID,
 			SerializedData: serializedData,
 		}
 		err = dao.PlayerUpdate(d.DB, dbplayer)

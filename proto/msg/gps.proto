@@ -39,3 +39,18 @@ message GetMapAddressResp {
     int32 ServerID = 1;
 }
 
+message UpdateStaticMapUUIDNTF {
+    int32 ZoneID = 1;
+    int32 StaticMapID = 2;
+    string StaticMapUUID = 3;
+}
+
+message GetStaticMapUUIDReq {
+    int32 ZoneID = 1;
+    int32 StaticMapID = 2;
+}
+
+message GetStaticMapUUIDResp {
+    string StaticMapUUID = 1;
+}
+
