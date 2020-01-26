@@ -41,6 +41,7 @@ func (g *GPS) InitMessageHandler() {
 	node.Instance.Net.Listen(msg.Command_REMOVE_PLAYER_ADDRESS_NTF, g.onRemovePlayerAddressNTF)
 	node.Instance.Net.Listen(msg.Command_UPDATE_MAP_ADDRESS_NTF, g.onUpdateMapAddressNTF)
 	node.Instance.Net.Listen(msg.Command_REMOVE_MAP_ADDRESS_NTF, g.onRemoveMapAddressNTF)
+	node.Instance.Net.Listen(msg.Command_GET_MAP_ADDRESS_REQ, g.onGetMapLocationReq)
 }
 
 func (g *GPS) onUpdatePlayerAddressNTF(header *msg.MessageHeader, buffer []byte) {
