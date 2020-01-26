@@ -98,9 +98,8 @@ func (g *Gate) handleConnect(conn *net.TCPConn) {
 			if uuid == nil {
 				uuid = &connectReq.SessionCert.UUID
 			}
-			go g.handleConnectMessage(uuid, conn, message.Sequence, connectReq)
-		}
-		if uuid != nil {
+			g.handleConnectMessage(uuid, conn, message.Sequence, connectReq)
+		} else if uuid != nil {
 			if player, ok := g.players[*uuid]; ok {
 				if player.info.State == data.SessionState_Online {
 					go g.handleMessage(player, message)
@@ -253,7 +252,7 @@ func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
 	} else if message.Request != nil {
 		buffer, err := node.Instance.Net.RequestClientBytes(message.Command, player.info.UUID, message.Request)
 		if err != nil {
-			logger.Debug("消息错误")
+			logger.Debug(err)
 		} else {
 			resp := &msg.GateToClient{}
 			resp.Command = msg.Command_RESP
