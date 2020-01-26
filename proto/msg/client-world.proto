@@ -6,7 +6,8 @@ import "math.proto";
 import "entity.proto";
 
 message MoveINF {
-    Vector3 To = 1;
+    Vector3 Position = 1;
+    Vector3 To = 2;
 }
 
 message MoveNTF {

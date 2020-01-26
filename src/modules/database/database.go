@@ -132,8 +132,9 @@ func (d *Database) onCreateRoleReq(header *msg.MessageHeader, buffer []byte) {
 		}
 		roleUUID := uuid.New()
 		roleSummaryData := &data.RoleSummaryData{
-			Name: message.RoleName,
-			Zone: message.Zone,
+			Name:     message.RoleName,
+			Zone:     message.Zone,
+			RoleUUID: roleUUID,
 		}
 		summaryData, err := proto.Marshal(roleSummaryData)
 		if err != nil {
