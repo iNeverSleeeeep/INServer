@@ -76,6 +76,12 @@
                     ]
                 }
             }
+        },
+        {
+            "ServerID": 8,
+            "ServerType": "GPS",
+            "ServerConfig": {
+            }
         }
     ]
 }

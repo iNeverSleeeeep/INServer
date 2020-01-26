@@ -35,6 +35,7 @@ type (
 
 		gates    []int32
 		database int32
+		gps      int32
 	}
 )
 
@@ -51,6 +52,7 @@ func New() *INNet {
 	udpconn = conn
 	innet.conn = conn
 	innet.database = global.InvalidServerID
+	innet.gps = global.InvalidServerID
 	innet.responces = make(map[uint64]*responce)
 	innet.listeners = make(map[msg.Command]chan *msg.Message)
 	innet.address = newAddress(innet)
@@ -267,6 +269,7 @@ func (n *INNet) handleMessage(message *msg.Message) {
 func (n *INNet) refreshRunningServers() {
 	n.gates = make([]int32, 0)
 	n.database = global.InvalidServerID
+	n.gps = global.InvalidServerID
 	for _, info := range n.address.servers {
 		if info.info.State == msg.ServerState_Running {
 			serverType := global.Servers[int(info.info.ServerID)].ServerType
@@ -274,6 +277,8 @@ func (n *INNet) refreshRunningServers() {
 				n.gates = append(n.gates, info.info.ServerID)
 			} else if serverType == global.DatabaseServer {
 				n.database = info.info.ServerID
+			} else if serverType == global.GPSServer {
+				n.gps = info.info.ServerID
 			}
 		}
 	}

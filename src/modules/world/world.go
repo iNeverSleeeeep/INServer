@@ -48,6 +48,11 @@ func (w *World) Start() {
 			if mapData != nil {
 				staticMap := gamemap.NewMap(nil, mapData)
 				w.gameMaps[mapData.MapUUID] = staticMap
+				updateMapAddress := &msg.UpdateMapAddressNTF{
+					MapUUID:  mapData.MapUUID,
+					ServerID: global.ServerID,
+				}
+				node.Instance.Net.Notify(msg.Command_UPDATE_MAP_ADDRESS_NTF, updateMapAddress)
 			}
 		}
 	}

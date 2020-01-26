@@ -6,3 +6,6 @@ sleep 2s
 ./2-login.bat &
 ./4-web.bat &
 ./5-world.bat &
+./6-world.bat &
+./7-world.bat &
+./8-gps.bat &
