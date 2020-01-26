@@ -7,7 +7,6 @@ import (
 	"INServer/src/common/protect"
 	"INServer/src/proto/msg"
 	"errors"
-	"fmt"
 	"net"
 	"time"
 
@@ -270,10 +269,6 @@ func (n *INNet) refreshRunningServers() {
 	n.database = global.InvalidServerID
 	for _, info := range n.address.servers {
 		if info.info.State == msg.ServerState_Running {
-			// FIXME 这里有个异常 runtime error: index out of range
-			if len(global.Servers) < int(info.info.ServerID) {
-				logger.Error(fmt.Sprintf("len:%dm serverID:%d", len(global.Servers), info.info.ServerID))
-			}
 			serverType := global.Servers[int(info.info.ServerID)].ServerType
 			if serverType == global.GateServer {
 				n.gates = append(n.gates, info.info.ServerID)
