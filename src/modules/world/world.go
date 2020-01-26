@@ -53,6 +53,12 @@ func (w *World) Start() {
 					ServerID: global.ServerID,
 				}
 				node.Instance.Net.Notify(msg.Command_UPDATE_MAP_ADDRESS_NTF, updateMapAddress)
+				udpateStatcMapUUID := &msg.UpdateStaticMapUUIDNTF{
+					ZoneID:        zoneConfig.ZoneID,
+					StaticMapID:   gameMapID,
+					StaticMapUUID: mapData.MapUUID,
+				}
+				node.Instance.Net.Notify(msg.Command_UPDATE_STATIC_MAP_UUID_NTF, udpateStatcMapUUID)
 			}
 		}
 	}
