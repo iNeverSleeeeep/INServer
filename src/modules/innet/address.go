@@ -81,7 +81,7 @@ func (a *address) getByCommand(command msg.Command) *server {
 			return svr
 		}
 		logger.Error(fmt.Sprintf("没有找到Database服务器 id:%d", a.innet.database))
-	case msg.Command_GET_MAP_ADDRESS_REQ:
+	case msg.Command_GET_MAP_ADDRESS_REQ, msg.Command_GET_STATIC_MAP_UUID_REQ, msg.Command_UPDATE_STATIC_MAP_UUID_NTF:
 		if svr, ok := a.servers[a.innet.gps]; ok {
 			return svr
 		}

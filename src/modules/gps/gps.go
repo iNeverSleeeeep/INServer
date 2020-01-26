@@ -48,6 +48,7 @@ func (g *GPS) initMessageHandler() {
 	node.Instance.Net.Listen(msg.Command_REMOVE_MAP_ADDRESS_NTF, g.onRemoveMapAddressNTF)
 	node.Instance.Net.Listen(msg.Command_GET_MAP_ADDRESS_REQ, g.onGetMapLocationReq)
 	node.Instance.Net.Listen(msg.Command_UPDATE_STATIC_MAP_UUID_NTF, g.onUpdateStaticMapUUIDNTF)
+	node.Instance.Net.Listen(msg.Command_GET_STATIC_MAP_UUID_REQ, g.onGetStaticMapUUIDReq)
 
 }
 
