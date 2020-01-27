@@ -34,5 +34,7 @@ var (
 	Servers      []*etc.Server
 	Zones        []*etc.Zone
 
+	Stop chan bool
+
 	CenterIP string = "127.0.0.1"
 )

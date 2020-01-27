@@ -64,6 +64,10 @@ func (w *World) Start() {
 	}
 }
 
+func (w *World) Stop() {
+	
+}
+
 func (w *World) GetMap(uuid string) *gamemap.Map {
 	if result, ok := w.gameMaps[uuid]; ok {
 		return result

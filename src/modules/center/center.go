@@ -156,6 +156,7 @@ func (c *Center) tickServerState() {
 			time.Sleep(time.Millisecond * 10)
 			now := time.Now().UnixNano()
 			serverlist := make([]*msg.ServerInfo, 0)
+			alloffline := true
 			for _, info := range c.Servers {
 				if info.Info.State == msg.ServerState_Running && info.KeepAlive+timeout < now {
 					info.Info.State = msg.ServerState_Offline
@@ -165,9 +166,15 @@ func (c *Center) tickServerState() {
 					c.refreshRealZones()
 					c.pushZonesState()
 				}
+				if info.Info.State != msg.ServerState_Offline {
+					alloffline = false
+				}
 			}
 			if len(serverlist) > 0 {
 				c.pushServerList(serverlist)
+				if alloffline {
+					global.Stop <- true
+				}
 			}
 		}
 	}()

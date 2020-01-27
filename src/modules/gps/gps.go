@@ -7,6 +7,7 @@ import (
 	"INServer/src/proto/data"
 	"INServer/src/proto/msg"
 	"github.com/gogo/protobuf/proto"
+	"fmt"
 )
 
 var Instance *GPS
@@ -49,7 +50,6 @@ func (g *GPS) initMessageHandler() {
 	node.Instance.Net.Listen(msg.Command_GET_MAP_ADDRESS_REQ, g.onGetMapLocationReq)
 	node.Instance.Net.Listen(msg.Command_UPDATE_STATIC_MAP_UUID_NTF, g.onUpdateStaticMapUUIDNTF)
 	node.Instance.Net.Listen(msg.Command_GET_STATIC_MAP_UUID_REQ, g.onGetStaticMapUUIDReq)
-
 }
 
 func (g *GPS) onUpdatePlayerAddressNTF(header *msg.MessageHeader, buffer []byte) {
@@ -101,6 +101,7 @@ func (g *GPS) onUpdateMapAddressNTF(header *msg.MessageHeader, buffer []byte) {
 		logger.Error(err)
 	} else {
 		g.maps[ntf.MapUUID] = ntf.ServerID
+		logger.Info(fmt.Sprintf("MapAddress UUID:%s ServerID:%d", ntf.MapUUID, ntf.ServerID))
 	}
 }
 
@@ -114,6 +115,7 @@ func (g *GPS) onUpdateStaticMapUUIDNTF(header *msg.MessageHeader, buffer []byte)
 			g.staticmaps[ntf.ZoneID] = make(map[int32]string)
 		}
 		g.staticmaps[ntf.ZoneID][ntf.StaticMapID] = ntf.StaticMapUUID
+		logger.Info(fmt.Sprintf("StaticMap ZoneID:%d StaticMapID:%d UUID:%s", ntf.ZoneID, ntf.StaticMapID, ntf.StaticMapUUID))
 	}
 }
 

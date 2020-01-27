@@ -14,6 +14,7 @@ import (
 	"INServer/src/modules/web"
 	"INServer/src/modules/world"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -26,8 +27,9 @@ var centerIP = flag.String("cip", "127.0.0.1", "中心服务器IP")
 var profile = flag.Bool("profile", true, "开启性能监控")
 
 func main() {
+	global.Stop = make(chan bool)
 	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(sigs, syscall.SIGINT)
 
 	runtime.GOMAXPROCS(1)
 	flag.Parse()
@@ -53,14 +55,23 @@ func main() {
 	}
 
 	for {
-		sig := <-sigs
-		logger.Info(sig)
-		if sig.String() == "interrupt" {
+		stopped := false
+		select {
+		case <- global.Stop:
+			break
+		case sig := <-sigs:
+			if sig.String() == "interrupt" {
+				stopped = true
+				stopNode()
+			}
+			break
+		}
+		if stopped {
 			break
 		}
 	}
 
-	logger.Info("Shut Down!")
+	logger.Info(fmt.Sprintf("%d-%s Shut Down!", global.ServerID, global.ServerType))
 }
 
 func startCenter() {
@@ -79,11 +90,11 @@ func startCenter() {
 func startNode() {
 	node.Instance = node.New()
 	node.Instance.Prepare()
-	prepareServer()
+	startServer()
 	node.Instance.Start()
 }
 
-func prepareServer() {
+func startServer() {
 	switch global.ServerType {
 	case global.GateServer:
 		gate.Instance = gate.New()
@@ -106,5 +117,23 @@ func prepareServer() {
 		gps.Instance.Start()
 	default:
 		logger.Fatal("不支持的服务器类型:" + global.ServerType)
+	}
+}
+
+func stopNode() {
+	stopServer()
+}
+
+func stopServer() {
+	switch global.ServerType {
+	case global.WorldServer:
+		world.Instance.Stop()
+		break
+	case global.DatabaseServer:
+		<- global.Stop
+		break
+	case global.CenterServer:
+		<- global.Stop
+		break
 	}
 }
