@@ -147,7 +147,11 @@ func (g *GPS) onGetMapLocationReq(header *msg.MessageHeader, buffer []byte) {
 	}
 	defer node.Instance.Net.Responce(header, resp)
 	req := &msg.GetMapAddressReq{}
-	proto.Unmarshal(buffer, req)
+	err := proto.Unmarshal(buffer, req)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
 	if serverID, ok := g.maps[req.MapUUID]; ok {
 		resp.ServerID = serverID
 	}

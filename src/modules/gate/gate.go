@@ -65,7 +65,7 @@ func (g *Gate) handleConnect(conn *net.TCPConn) {
 		for current < 2 {
 			n, err := conn.Read(buf[current:])
 			if err != nil {
-				logger.Debug(err)
+				logger.Info(err)
 				return
 			}
 			current = current + n
@@ -76,7 +76,7 @@ func (g *Gate) handleConnect(conn *net.TCPConn) {
 		for (current - 2) < int(size) {
 			n, err := conn.Read(buf[current:])
 			if err != nil {
-				logger.Debug(err)
+				logger.Info(err)
 				return
 			}
 			current = current + n

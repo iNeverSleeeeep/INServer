@@ -2,7 +2,6 @@ package innet
 
 import (
 	"INServer/src/common/global"
-	"fmt"
 	"INServer/src/common/logger"
 	"INServer/src/common/profiler"
 	"INServer/src/common/protect"
@@ -242,6 +241,7 @@ func (n *INNet) send(header *msg.MessageHeader, bytes []byte, serverID int32) er
 		} else {
 			svr = n.address.getByCommand(header.Command)
 			if svr == nil {
+				logger.Error("Server Not Found By Command:" + header.Command.String())
 				return errors.New("Server Not Found By Command:" + header.Command.String())
 			}
 		}

@@ -10,6 +10,7 @@ import (
 	"INServer/src/proto/data"
 	"INServer/src/proto/db"
 	"INServer/src/proto/msg"
+	"fmt"
 
 	"github.com/gogo/protobuf/proto"
 )
@@ -270,6 +271,7 @@ func (d *Database) onSaveStaticMapReq(header *msg.MessageHeader, buffer []byte) 
 		return
 	}
 	staticMaps := make([]*db.DBStaticMap, 0)
+	logger.Debug(fmt.Sprintf("onSaveStaticMapReq len:%d", len(req.StaticMaps)))
 	for _, staticMap := range req.StaticMaps {
 		serializedData, err := proto.Marshal(staticMap)
 		if err != nil {
