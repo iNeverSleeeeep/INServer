@@ -15,6 +15,7 @@ func AllRoleSummaryDataQuery(DB *dbobj.DBObject) []*db.DBRole {
 	for rows.Next() {
 		role := &db.DBRole{}
 		rows.Scan(&role.UUID, &role.SummaryData)
+		roles = append(roles, role)
 	}
 	return roles
 }

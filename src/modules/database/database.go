@@ -216,7 +216,7 @@ func (d *Database) onLoadRoleReq(header *msg.MessageHeader, buffer []byte) {
 			return
 		}
 		if mapAddressResp.ServerID == global.InvalidServerID {
-			logger.Error("玩家所在地图没有创建")
+			logger.Error("玩家所在地图没有创建 MapUUID:"+roleSummary.MapUUID)
 			return
 		}
 

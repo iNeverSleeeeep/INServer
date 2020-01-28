@@ -2,6 +2,7 @@ package innet
 
 import (
 	"INServer/src/common/global"
+	"fmt"
 	"INServer/src/common/logger"
 	"INServer/src/common/profiler"
 	"INServer/src/common/protect"
@@ -270,6 +271,8 @@ func (n *INNet) refreshRunningServers() {
 	n.gates = make([]int32, 0)
 	n.database = global.InvalidServerID
 	n.gps = global.InvalidServerID
+	allstop := true
+
 	for _, info := range n.address.servers {
 		if info.info.State == msg.ServerState_Running {
 			serverType := global.Servers[int(info.info.ServerID)].ServerType
@@ -280,7 +283,14 @@ func (n *INNet) refreshRunningServers() {
 			} else if serverType == global.GPSServer {
 				n.gps = info.info.ServerID
 			}
+			if info.info.ServerID != global.ServerID {
+				allstop = false
+			}
 		}
+	}
+	if allstop {
+		// 不一定走关服流程 还依赖于当前服务器是否收到了signal 2
+		global.Stop <- true
 	}
 }
 

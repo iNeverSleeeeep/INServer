@@ -1,6 +1,7 @@
 ./0-center.bat &
 sleep 2s
 ./3-database.bat &
+./8-gps.bat &
 sleep 2s
 ./1-gate.bat &
 ./2-login.bat &
@@ -8,4 +9,3 @@ sleep 2s
 ./5-world.bat &
 ./6-world.bat &
 ./7-world.bat &
-./8-gps.bat &
