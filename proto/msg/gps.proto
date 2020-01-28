@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option go_package = "INServer/src/proto/msg";
 
-import "player.proto";
+import "data.player.proto";
 
 message Thing {
     bytes Buffer = 1;

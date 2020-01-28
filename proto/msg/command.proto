@@ -33,4 +33,7 @@ enum Command {
     LOAD_DYNAMIC_MAP_REQ = 27; // world -> database
     UPDATE_STATIC_MAP_UUID_NTF = 28; // world -> gps
     GET_STATIC_MAP_UUID_REQ = 29; // any -> gps
+    SAVE_STATIC_MAP_REQ = 30; // any -> database
+    SAVE_DYNAMIC_MAP_REQ = 31; // any -> database
+    SAVE_ROLE = 32; // any -> database
 }

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option go_package = "INServer/src/proto/data";
 
-import "role.proto";
+import "data.role.proto";
 
 message PlayerAddress {
     int32 Gate = 1;

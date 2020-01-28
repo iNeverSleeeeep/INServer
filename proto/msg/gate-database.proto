@@ -2,8 +2,8 @@ syntax = "proto3";
 
 option go_package = "INServer/src/proto/msg";
 
-import "player.proto";
-import "role.proto";
+import "data.player.proto";
+import "data.role.proto";
 
 message CreatePlayerReq {
     string PlayerUUID = 1;

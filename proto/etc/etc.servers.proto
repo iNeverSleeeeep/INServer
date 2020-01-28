@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option go_package = "INServer/src/proto/etc";
 
-import "database.proto";
+import "etc.database.proto";
 
 // 服务器的各种配置
 

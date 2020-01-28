@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-import "servers.proto";
-import "zones.proto";
+import "etc.servers.proto";
+import "etc.zones.proto";
 
 option go_package = "INServer/src/proto/msg";
 

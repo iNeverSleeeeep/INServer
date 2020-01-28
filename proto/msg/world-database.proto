@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option go_package = "INServer/src/proto/msg";
 
-import "map.proto";
+import "data.map.proto";
 
 message LoadStaticMapReq {
     int32 ZoneID = 1;

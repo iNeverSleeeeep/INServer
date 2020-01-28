@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option go_package = "INServer/src/proto/data";
 
-import "component.proto";
+import "data.component.proto";
 
 enum EntityType {
     OAAEntity = 0; // one above all

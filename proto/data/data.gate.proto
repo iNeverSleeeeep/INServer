@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option go_package = "INServer/src/proto/data";
 
-import "player.proto";
+import "data.player.proto";
 
 enum SessionState {
     Offline = 0; // 无连接 默认状态 可以认为无连接的用户应该被Gate删除

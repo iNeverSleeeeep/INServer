@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/msg";
+
+import "data.map.proto";
+import "data.role.proto";
+
+message SaveStaticMapReq {
+    repeated MapData StaticMaps = 1;
+}
+
+message SaveStaticMapResp {
+    bool Success = 1;
+}
+
+message SaveRoleReq {
+    repeated Role Roles = 1;
+}
+
+message SaveRoleResp {
+    bool Success = 1;
+}
+
+message SaveDynamicMapReq {
+    repeated MapData DynamicMaps = 1;
+}
+
+message SaveDynamicMapResp {
+    bool Success = 1;
+}
+

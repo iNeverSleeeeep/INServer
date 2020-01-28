@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option go_package = "INServer/src/proto/data";
 
-import "entity.proto";
+import "data.entity.proto";
 
 // 离线数据
 message RoleSummaryData {
