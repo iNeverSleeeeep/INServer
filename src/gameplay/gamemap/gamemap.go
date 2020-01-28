@@ -35,6 +35,10 @@ func NewMap(mapConfig *config.Map, mapData *data.MapData) *Map {
 	return m
 }
 
+func (m *Map) MapData() *data.MapData {
+	return m.mapData
+}
+
 func (m *Map) Start() {
 	m.running = true
 	if m.mapData.LastTickTime == 0 {

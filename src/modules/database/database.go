@@ -22,7 +22,7 @@ type (
 		roleSummary       map[string]*data.RoleSummaryData
 		roleSummaryByName map[string]*data.RoleSummaryData
 		players           map[string]*data.Player
-		staticmaps        map[int32]map[int32]*data.MapData
+		staticMaps        map[int32]map[int32]*data.MapData
 	}
 )
 
@@ -31,7 +31,7 @@ func New() *Database {
 	d.roleSummary = make(map[string]*data.RoleSummaryData)
 	d.roleSummaryByName = make(map[string]*data.RoleSummaryData)
 	d.players = make(map[string]*data.Player)
-	d.staticmaps = make(map[int32]map[int32]*data.MapData)
+	d.staticMaps = make(map[int32]map[int32]*data.MapData)
 	d.DB = dbobj.New()
 	d.DB.Open(global.ServerConfig.DatabaseConfig.Database, global.DatabaseSchema)
 	d.loadAllRoleSummaryData()
@@ -46,6 +46,7 @@ func (d *Database) Start() {
 	node.Instance.Net.Listen(msg.Command_GD_CREATE_ROLE_REQ, d.onCreateRoleReq)
 	node.Instance.Net.Listen(msg.Command_GD_LOAD_ROLE_REQ, d.onLoadRoleReq)
 	node.Instance.Net.Listen(msg.Command_LOAD_STATIC_MAP_REQ, d.onLoadStaticMapReq)
+	node.Instance.Net.Listen(msg.Command_SAVE_STATIC_MAP_REQ, d.onSaveStaticMapReq)
 }
 
 func (d *Database) onCreatePlayerReq(header *msg.MessageHeader, buffer []byte) {
@@ -252,6 +253,39 @@ func (d *Database) onLoadStaticMapReq(header *msg.MessageHeader, buffer []byte) 
 		logger.Error(err)
 		return
 	}
+	if maps, ok := d.staticMaps[message.ZoneID]; ok {
+		if staticMap, ok2 := maps[message.StaticMapID]; ok2 {
+			resp.Map = staticMap
+		}
+	}
+}
+
+func (d *Database) onSaveStaticMapReq(header *msg.MessageHeader, buffer []byte) {
+	resp := &msg.SaveStaticMapResp{}
+	defer node.Instance.Net.Responce(header, resp)
+	req := &msg.SaveStaticMapReq{}
+	err := proto.Unmarshal(buffer, req)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+	staticMaps := make([]*db.DBStaticMap, 0)
+	for _, staticMap := range req.StaticMaps {
+		serializedData, err := proto.Marshal(staticMap)
+		if err != nil {
+			logger.Error(err)
+		} else {
+			dbStaticMap := &db.DBStaticMap{}
+			dbStaticMap.UUID = staticMap.MapUUID
+			dbStaticMap.SerializedData = serializedData
+			staticMaps = append(staticMaps, dbStaticMap)
+		}
+	}
+
+	err = dao.BulkStaticMapUpdate(d.DB, staticMaps)
+	if err == nil {
+		resp.Success = true
+	}
 }
 
 func (d *Database) loadAllRoleSummaryData() {
@@ -270,14 +304,14 @@ func (d *Database) loadAllRoleSummaryData() {
 }
 
 func (d *Database) loadAllStaticMapsData() {
-	staticmaps := dao.AllStaticMapQuery(d.DB)
-	for _, staticmap := range staticmaps {
+	staticMaps := dao.AllStaticMapQuery(d.DB)
+	for _, staticMap := range staticMaps {
 		mapdata := &data.MapData{}
-		proto.Unmarshal(staticmap.SerializedData, mapdata)
-		if _, ok := d.staticmaps[staticmap.ZoneID]; ok == false {
-			d.staticmaps[staticmap.ZoneID] = make(map[int32]*data.MapData)
+		proto.Unmarshal(staticMap.SerializedData, mapdata)
+		if _, ok := d.staticMaps[staticMap.ZoneID]; ok == false {
+			d.staticMaps[staticMap.ZoneID] = make(map[int32]*data.MapData)
 		}
-		d.staticmaps[staticmap.ZoneID][staticmap.MapID] = mapdata
+		d.staticMaps[staticMap.ZoneID][staticMap.MapID] = mapdata
 	}
 
 	logger.Info("加载所有静态地图数据成功")

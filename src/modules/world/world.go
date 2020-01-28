@@ -65,7 +65,18 @@ func (w *World) Start() {
 }
 
 func (w *World) Stop() {
-	
+	staticMaps := make([]*data.MapData, 0)
+	req := &msg.SaveStaticMapReq{
+		StaticMaps: staticMaps,
+	}
+	for _, gamemap := range w.gameMaps {
+		staticMaps = append(staticMaps, gamemap.MapData())
+	}
+	resp := &msg.SaveStaticMapResp{}
+	err := node.Instance.Net.Request(msg.Command_SAVE_STATIC_MAP_REQ, req, resp)
+	if err != nil {
+		logger.Error(err)
+	}
 }
 
 func (w *World) GetMap(uuid string) *gamemap.Map {

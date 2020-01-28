@@ -22,7 +22,7 @@ func AllStaticMapQuery(DB *dbobj.DBObject) []*db.DBStaticMap {
 func StaticMapInsert(DB *dbobj.DBObject, staticMap *db.DBStaticMap) error {
 	_, err := DB.DB().Exec("insert INTO staticmaps(ZoneID,MapID,UUID,SerializedData) values(?,?,?,?)", staticMap.ZoneID, staticMap.MapID, staticMap.UUID, staticMap.SerializedData)
 	if err != nil {
-		logger.Debug(err)
+		logger.Error(err)
 		return err
 	}
 	return nil
@@ -31,9 +31,27 @@ func StaticMapInsert(DB *dbobj.DBObject, staticMap *db.DBStaticMap) error {
 func StaticMapUpdate(DB *dbobj.DBObject, staticMap *db.DBStaticMap) error {
 	_, err := DB.DB().Exec("UPDATE staticmaps set SerializedData=? where UUID=?", staticMap.SerializedData, staticMap.UUID)
 	if err != nil {
-		logger.Debug(err)
+		logger.Error(err)
 		return err
 	}
+	return nil
+}
+
+func BulkStaticMapUpdate(DB *dbobj.DBObject, staticMaps []*db.DBStaticMap) error {
+	tx, err := DB.DB().Begin()
+	if err != nil {
+		logger.Error(err)
+		return err
+	}
+	stmt, err := tx.Prepare(`UPDATE staticmaps set SerializedData=? where UUID=?`)
+	for _, staticMap := range staticMaps {
+		_, err := stmt.Exec(staticMap.SerializedData, staticMap.UUID)
+		if err != nil {
+			logger.Error(err)
+			return err
+		}
+	}
+	tx.Commit()
 	return nil
 }
 
