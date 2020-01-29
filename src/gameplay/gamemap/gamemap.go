@@ -29,6 +29,7 @@ func NewMap(mapConfig *config.Map, mapData *data.MapData) *Map {
 	m.scenes = make([]*Scene, 0)
 	m.firstScene = NewScene(m, nil)
 	m.mapData = mapData
+	m.entitiesMap = make(map[string]*ecs.Entity)
 	if m.mapData == nil {
 		m.mapData = &data.MapData{}
 	}

@@ -8,8 +8,9 @@ type (
 	}
 )
 
-func NewEntity(entityData *data.EntityData, entityType *data.EntityType) *Entity {
+func NewEntity(entityData *data.EntityData, entityType data.EntityType) *Entity {
 	e := new(Entity)
+	e.entityData = entityData
 	return e
 }
 

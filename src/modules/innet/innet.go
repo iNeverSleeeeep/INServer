@@ -9,6 +9,7 @@ import (
 	"errors"
 	"net"
 	"time"
+	"fmt"
 
 	"github.com/golang/protobuf/proto"
 )
@@ -238,6 +239,11 @@ func (n *INNet) send(header *msg.MessageHeader, bytes []byte, serverID int32) er
 		var svr *server
 		if serverID != global.InvalidServerID {
 			svr = n.address.getByServerID(serverID)
+			if svr == nil {
+				errstr := fmt.Sprintf("Server Not Found By ServerID:%d", serverID)
+				logger.Error(errstr)
+				return errors.New(errstr)
+			}
 		} else {
 			svr = n.address.getByCommand(header.Command)
 			if svr == nil {

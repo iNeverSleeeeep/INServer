@@ -8,9 +8,9 @@ import (
 	"INServer/src/dao"
 	"INServer/src/modules/node"
 	"INServer/src/proto/data"
+	"INServer/src/proto/engine"
 	"INServer/src/proto/db"
 	"INServer/src/proto/msg"
-	"fmt"
 
 	"github.com/gogo/protobuf/proto"
 )
@@ -135,9 +135,10 @@ func (d *Database) onCreateRoleReq(header *msg.MessageHeader, buffer []byte) {
 
 		roleUUID := uuid.New()
 		roleSummaryData := &data.RoleSummaryData{
-			Name:     message.RoleName,
-			Zone:     message.Zone,
-			RoleUUID: roleUUID,
+			Name:       message.RoleName,
+			Zone:       message.Zone,
+			RoleUUID:   roleUUID,
+			PlayerUUID: message.PlayerUUID,
 		}
 		d.roleSummaryByName[message.RoleName] = roleSummaryData
 
@@ -160,7 +161,37 @@ func (d *Database) onCreateRoleReq(header *msg.MessageHeader, buffer []byte) {
 		if err != nil {
 			return
 		}
-		roleOnlineData := &data.RoleOnlineData{}
+		realTimeData := &data.EntityRealtimeData{
+			LastStaticMapUUID: getStaticMapUUIDResp.StaticMapUUID,
+			CurrentMapUUID: getStaticMapUUIDResp.StaticMapUUID,
+		}
+		components := make([]*data.Component, 3)
+		components[data.ComponentType_Invalid] = &data.Component{
+			Type: data.ComponentType_Invalid,
+		}
+		components[data.ComponentType_Transofrm] = &data.Component{
+			Type: data.ComponentType_Transofrm,
+			Transform: &data.TransformComponent{
+				Position: &engine.Vector3{},
+				Rotation: &engine.Quaternion{},
+			},
+		}
+		components[data.ComponentType_Physics] = &data.Component{
+			Type: data.ComponentType_Physics,
+			Physics: &data.PhysicsComponent{
+				Mass : 100,
+				RawSpeed : &engine.Vector3{},
+				PassiveSpeed: &engine.Vector3{},
+			},
+		}
+		entityData := &data.EntityData{
+			EntityUUID: roleUUID,
+			RealTimeData: realTimeData,
+			Components: components,
+		}
+		roleOnlineData := &data.RoleOnlineData{
+			EntityData: entityData,
+		}
 		onlineData, err := proto.Marshal(roleOnlineData)
 		if err != nil {
 			return
@@ -241,7 +272,7 @@ func (d *Database) onLoadRoleReq(header *msg.MessageHeader, buffer []byte) {
 
 		resp.Success = true
 
-		node.Instance.Net.Notify(msg.Command_ROLE_ENTER, role)
+		node.Instance.Net.NotifyServer(msg.Command_ROLE_ENTER, role, mapAddressResp.ServerID)
 	}
 }
 
@@ -259,6 +290,28 @@ func (d *Database) onLoadStaticMapReq(header *msg.MessageHeader, buffer []byte) 
 			resp.Map = staticMap
 		}
 	}
+	if resp.Map == nil {
+		resp.Map = &data.MapData{
+			MapUUID: uuid.New(),
+			Entities: make([]*data.EntityData, 0),
+		}
+		serializedData, err := proto.Marshal(resp.Map)
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+		dbStaticMap := &db.DBStaticMap{
+			ZoneID: message.ZoneID,
+			MapID: message.StaticMapID,
+			UUID: resp.Map.MapUUID,
+			SerializedData: serializedData,
+		}
+		err = dao.StaticMapInsert(d.DB, dbStaticMap)
+		if err != nil {
+			logger.Error(err)
+			resp.Map = nil
+		}
+	}
 }
 
 func (d *Database) onSaveStaticMapReq(header *msg.MessageHeader, buffer []byte) {
@@ -271,7 +324,6 @@ func (d *Database) onSaveStaticMapReq(header *msg.MessageHeader, buffer []byte) 
 		return
 	}
 	staticMaps := make([]*db.DBStaticMap, 0)
-	logger.Debug(fmt.Sprintf("onSaveStaticMapReq len:%d", len(req.StaticMaps)))
 	for _, staticMap := range req.StaticMaps {
 		serializedData, err := proto.Marshal(staticMap)
 		if err != nil {

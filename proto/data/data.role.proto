@@ -8,9 +8,10 @@ import "data.entity.proto";
 message RoleSummaryData {
     string Name = 1; // 角色名
     int32 Zone = 2; // 游戏区
-    string RoleUUID = 3; // UUID
-    string MapUUID = 4; // 所在地图
-    string MailUUID = 5; // 邮件地址
+    string RoleUUID = 3; // RoleUUID
+    string PlayerUUID = 4; // PlayerUUID
+    string MapUUID = 5; // 所在地图
+    string MailUUID = 6; // 邮件地址
 }
 
 // 在线数据

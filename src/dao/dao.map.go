@@ -45,14 +45,18 @@ func BulkStaticMapUpdate(DB *dbobj.DBObject, staticMaps []*db.DBStaticMap) error
 	}
 	stmt, err := tx.Prepare(`UPDATE staticmaps set SerializedData=? where UUID=?`)
 	for _, staticMap := range staticMaps {
-		_, err := stmt.Exec(staticMap.SerializedData, staticMap.UUID)
+		res, err := stmt.Exec(staticMap.SerializedData, staticMap.UUID)
 		if err != nil {
 			logger.Error(err)
 			return err
 		}
+		logger.Info(res)
 	}
-	tx.Commit()
-	return nil
+	err = tx.Commit()
+	if err != nil {
+		logger.Error(err)
+	}
+	return err
 }
 
 func DynamicMapQuery(DB *dbobj.DBObject, uuid string) (*db.DBDynamicMap, error) {
