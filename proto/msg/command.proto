@@ -36,4 +36,5 @@ enum Command {
     SAVE_STATIC_MAP_REQ = 30; // any -> database
     SAVE_DYNAMIC_MAP_REQ = 31; // any -> database
     SAVE_ROLE = 32; // any -> database
+    GET_MAP_ID = 33; // gate -> world
 }

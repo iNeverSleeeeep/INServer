@@ -8,8 +8,8 @@ import (
 	"INServer/src/dao"
 	"INServer/src/modules/node"
 	"INServer/src/proto/data"
-	"INServer/src/proto/engine"
 	"INServer/src/proto/db"
+	"INServer/src/proto/engine"
 	"INServer/src/proto/msg"
 
 	"github.com/gogo/protobuf/proto"
@@ -163,7 +163,7 @@ func (d *Database) onCreateRoleReq(header *msg.MessageHeader, buffer []byte) {
 		}
 		realTimeData := &data.EntityRealtimeData{
 			LastStaticMapUUID: getStaticMapUUIDResp.StaticMapUUID,
-			CurrentMapUUID: getStaticMapUUIDResp.StaticMapUUID,
+			CurrentMapUUID:    getStaticMapUUIDResp.StaticMapUUID,
 		}
 		components := make([]*data.Component, 3)
 		components[data.ComponentType_Invalid] = &data.Component{
@@ -179,15 +179,15 @@ func (d *Database) onCreateRoleReq(header *msg.MessageHeader, buffer []byte) {
 		components[data.ComponentType_Physics] = &data.Component{
 			Type: data.ComponentType_Physics,
 			Physics: &data.PhysicsComponent{
-				Mass : 100,
-				RawSpeed : &engine.Vector3{},
+				Mass:         100,
+				RawSpeed:     &engine.Vector3{},
 				PassiveSpeed: &engine.Vector3{},
 			},
 		}
 		entityData := &data.EntityData{
-			EntityUUID: roleUUID,
+			EntityUUID:   roleUUID,
 			RealTimeData: realTimeData,
-			Components: components,
+			Components:   components,
 		}
 		roleOnlineData := &data.RoleOnlineData{
 			EntityData: entityData,
@@ -249,7 +249,7 @@ func (d *Database) onLoadRoleReq(header *msg.MessageHeader, buffer []byte) {
 			return
 		}
 		if mapAddressResp.ServerID == global.InvalidServerID {
-			logger.Error("玩家所在地图没有创建 MapUUID:"+roleSummary.MapUUID)
+			logger.Error("玩家所在地图没有创建 MapUUID:" + roleSummary.MapUUID)
 			return
 		}
 
@@ -271,6 +271,8 @@ func (d *Database) onLoadRoleReq(header *msg.MessageHeader, buffer []byte) {
 		}
 
 		resp.Success = true
+		resp.MapUUID = roleSummary.MapUUID
+		resp.WorldID = mapAddressResp.ServerID
 
 		node.Instance.Net.NotifyServer(msg.Command_ROLE_ENTER, role, mapAddressResp.ServerID)
 	} else {
@@ -294,7 +296,8 @@ func (d *Database) onLoadStaticMapReq(header *msg.MessageHeader, buffer []byte) 
 	}
 	if resp.Map == nil {
 		resp.Map = &data.MapData{
-			MapUUID: uuid.New(),
+			MapID:    message.StaticMapID,
+			MapUUID:  uuid.New(),
 			Entities: make([]*data.EntityData, 0),
 		}
 		serializedData, err := proto.Marshal(resp.Map)
@@ -303,9 +306,9 @@ func (d *Database) onLoadStaticMapReq(header *msg.MessageHeader, buffer []byte) 
 			return
 		}
 		dbStaticMap := &db.DBStaticMap{
-			ZoneID: message.ZoneID,
-			MapID: message.StaticMapID,
-			UUID: resp.Map.MapUUID,
+			ZoneID:         message.ZoneID,
+			MapID:          message.StaticMapID,
+			UUID:           resp.Map.MapUUID,
 			SerializedData: serializedData,
 		}
 		err = dao.StaticMapInsert(d.DB, dbStaticMap)

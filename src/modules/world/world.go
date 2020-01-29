@@ -2,16 +2,16 @@ package world
 
 import (
 	"INServer/src/common/global"
-	"fmt"
 	"INServer/src/common/logger"
 	"INServer/src/common/uuid"
-	"INServer/src/gameplay/gamemap"
 	"INServer/src/gameplay/ecs"
+	"INServer/src/gameplay/gamemap"
 	"INServer/src/modules/node"
 	"INServer/src/proto/data"
 	"INServer/src/proto/msg"
-	"time"
+	"fmt"
 	"github.com/gogo/protobuf/proto"
+	"time"
 )
 
 var Instance *World
@@ -19,7 +19,7 @@ var Instance *World
 type (
 	World struct {
 		gameMaps map[string]*gamemap.Map
-		roles map[string]*data.Role
+		roles    map[string]*data.Role
 	}
 )
 
@@ -45,6 +45,7 @@ func (w *World) Start() {
 				logger.Error(err)
 			} else if resp.Map == nil {
 				mapData = &data.MapData{}
+				mapData.MapID = gameMapID
 				mapData.MapUUID = uuid.New()
 				mapData.LastTickTime = time.Now().UnixNano()
 			} else {
@@ -87,8 +88,10 @@ func (w *World) Stop() {
 
 func (w *World) initMessageHandler() {
 	node.Instance.Net.Listen(msg.Command_ROLE_ENTER, w.onRoleEnterNTF)
+	node.Instance.Net.Listen(msg.Command_GET_MAP_ID, w.onGetMapIDReq)
 }
 
+// GetMap 根据UUID返回Map实例
 func (w *World) GetMap(uuid string) *gamemap.Map {
 	if result, ok := w.gameMaps[uuid]; ok {
 		return result
@@ -109,7 +112,7 @@ func (w *World) onRoleEnterNTF(header *msg.MessageHeader, buffer []byte) {
 		gameMap.EntityEnter(role.SummaryData.RoleUUID, entity)
 		ntf := &msg.UpdatePlayerAddressNTF{
 			PlayerUUID: role.SummaryData.PlayerUUID,
-			Address:    &data.PlayerAddress{
+			Address: &data.PlayerAddress{
 				Gate:   global.InvalidServerID,
 				Entity: global.ServerID,
 			},
@@ -117,5 +120,22 @@ func (w *World) onRoleEnterNTF(header *msg.MessageHeader, buffer []byte) {
 		node.Instance.Net.Notify(msg.Command_UPDATE_PLAYER_ADDRESS_NTF, ntf)
 	} else {
 		logger.Error(fmt.Sprintf("角色进入失败，地图不存在 role:%s map:%s", role.SummaryData.RoleUUID, role.SummaryData.MapUUID))
+	}
+}
+
+func (w *World) onGetMapIDReq(header *msg.MessageHeader, buffer []byte) {
+	req := &msg.GetMapIDReq{}
+	resp := &msg.GetMapIDResp{}
+	defer node.Instance.Net.Responce(header, resp)
+	err := proto.Unmarshal(buffer, req)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+
+	if gameMap, ok := w.gameMaps[req.MapUUID]; ok {
+		resp.MapID = gameMap.MapData().MapID
+	} else {
+		logger.Error("这个地图不在当前服务器")
 	}
 }

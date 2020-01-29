@@ -5,7 +5,8 @@ option go_package = "INServer/src/proto/data";
 import "data.entity.proto";
 
 message MapData {
-    string MapUUID = 1;
-    int64 LastTickTime = 2;
-    repeated EntityData Entities = 3;
+    int32 MapID = 1;
+    string MapUUID = 2;
+    int64 LastTickTime = 3;
+    repeated EntityData Entities = 4;
 }
