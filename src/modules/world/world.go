@@ -108,8 +108,11 @@ func (w *World) onRoleEnterNTF(header *msg.MessageHeader, buffer []byte) {
 		entity := ecs.NewEntity(role.OnlineData.EntityData, data.EntityType_RoleEntity)
 		gameMap.EntityEnter(role.SummaryData.RoleUUID, entity)
 		ntf := &msg.UpdatePlayerAddressNTF{
-			PlayerUUID: *uuid,
-			Address:    player.info.Address,
+			PlayerUUID: role.SummaryData.PlayerUUID,
+			Address:    &data.PlayerAddress{
+				Gate:   global.InvalidServerID,
+				Entity: global.ServerID,
+			},
 		}
 		node.Instance.Net.Notify(msg.Command_UPDATE_PLAYER_ADDRESS_NTF, ntf)
 	} else {

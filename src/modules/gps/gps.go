@@ -70,7 +70,9 @@ func (g *GPS) onUpdatePlayerAddressNTF(header *msg.MessageHeader, buffer []byte)
 			}
 
 		}
-		g.players[ntf.PlayerUUID].address.Gate = ntf.Address.Gate
+		if ntf.Address.Gate != global.InvalidServerID {
+			g.players[ntf.PlayerUUID].address.Gate = ntf.Address.Gate
+		}
 		if ntf.Address.Entity != global.InvalidServerID {
 			g.players[ntf.PlayerUUID].address.Entity = ntf.Address.Entity
 		}

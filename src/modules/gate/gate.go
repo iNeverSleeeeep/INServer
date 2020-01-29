@@ -54,6 +54,25 @@ func (g *Gate) Start() {
 	}()
 }
 
+func (g *Gate) initMessageHandler() {
+	node.Instance.Net.Listen(msg.Command_UPDATE_PLAYER_ADDRESS_NTF, g.onUpdatePlayerAddressNTF)
+}
+
+func (g *Gate) onUpdatePlayerAddressNTF(header *msg.MessageHeader, buffer []byte) {
+	ntf := &msg.UpdatePlayerAddressNTF{}
+	err := proto.Unmarshal(buffer, ntf)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+
+	if session, ok := g.players[ntf.PlayerUUID]; ok {
+		if ntf.Address.Entity != global.InvalidServerID {
+			session.info.Address.Entity = ntf.Address.Entity
+		}
+	}
+}
+
 func (g *Gate) handleConnect(conn *net.TCPConn) {
 	var uuid *string = nil
 	defer g.closeConnection(uuid, conn)
@@ -250,7 +269,7 @@ func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
 			node.Instance.Net.Notify(msg.Command_UPDATE_PLAYER_ADDRESS_NTF, ntf)
 		}
 	} else if message.Request != nil {
-		buffer, err := node.Instance.Net.RequestClientBytes(message.Command, player.info.UUID, message.Request)
+		buffer, err := node.Instance.Net.RequestClientBytesToServer(message.Command, player.info.UUID, message.Request, player.info.Address.Entity)
 		if err != nil {
 			logger.Debug(err)
 		} else {
@@ -266,7 +285,7 @@ func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
 			}
 		}
 	} else if message.Notify != nil {
-		err := node.Instance.Net.NotifyClientBytes(message.Command, player.info.UUID, message.Notify)
+		err := node.Instance.Net.NotifyClientBytesToServer(message.Command, player.info.UUID, message.Notify, player.info.Address.Entity)
 		if err != nil {
 			logger.Debug(err)
 		}

@@ -99,6 +99,20 @@ func (n *INNet) RequestClientBytes(command msg.Command, uuid string, bytes []byt
 	return buf, nil
 }
 
+// RequestClientBytesToServer 发送源头为客户端的消息
+func (n *INNet) RequestClientBytesToServer(command msg.Command, uuid string, bytes []byte, serverID int32) ([]byte, error) {
+	sequence++
+	err := n.sendClientBytes(command, sequence, uuid, bytes, serverID)
+	if err != nil {
+		return nil, err
+	}
+	buffer := make(chan []byte)
+	n.responces[sequence] = &responce{c: buffer, timeout: time.Now().Unix() + 10}
+	buf := <-buffer
+	delete(n.responces, sequence)
+	return buf, nil
+}
+
 // RequestBytes 发送
 func (n *INNet) RequestBytes(command msg.Command, bytes []byte) ([]byte, error) {
 	sequence++
@@ -130,6 +144,12 @@ func (n *INNet) Notify(command msg.Command, message proto.Message) error {
 func (n *INNet) NotifyClientBytes(command msg.Command, uuid string, bytes []byte) error {
 	sequence++
 	return n.sendClientBytes(command, sequence, uuid, bytes, global.InvalidServerID)
+}
+
+// NotifyClientBytesToServer 发送源头为客户端的消息
+func (n *INNet) NotifyClientBytesToServer(command msg.Command, uuid string, bytes []byte, serverID int32) error {
+	sequence++
+	return n.sendClientBytes(command, sequence, uuid, bytes, serverID)
 }
 
 func (n *INNet) NotifyBytes(command msg.Command, bytes []byte) error {
