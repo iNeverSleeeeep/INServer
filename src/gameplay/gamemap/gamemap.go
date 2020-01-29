@@ -31,7 +31,11 @@ func NewMap(mapConfig *config.Map, mapData *data.MapData) *Map {
 	m.mapData = mapData
 	m.entitiesMap = make(map[string]*ecs.Entity)
 	if m.mapData == nil {
-		m.mapData = &data.MapData{}
+		m.mapData = &data.MapData{
+			MapID:    mapConfig.MapID,
+			MapUUID:  mapData.MapUUID,
+			Entities: make([]*data.EntityData, 0),
+		}
 	}
 	return m
 }

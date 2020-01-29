@@ -256,6 +256,18 @@ func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
 			return
 		}
 		roleEnterResp.Success = loadRoleResp.Success
+		if loadRoleResp.Success {
+			getMapIDReq := &msg.GetMapIDReq{
+				MapUUID: loadRoleResp.MapUUID,
+			}
+			getMapIDResp := &msg.GetMapIDResp{}
+			err := node.Instance.Net.Request(msg.Command_GET_MAP_ID, getMapIDReq, getMapIDResp)
+			if err != nil {
+				logger.Info(err)
+				return
+			}
+			roleEnterResp.MapID = getMapIDResp.MapID
+		}
 		resp.Buffer, _ = proto.Marshal(roleEnterResp)
 		if loadRoleResp.Success == false {
 			logger.Info("Role Enter Fail! UUID:" + player.info.UUID)

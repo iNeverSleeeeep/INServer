@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/msg";
+
+message GetMapIDReq {
+    string MapUUID = 1;
+}
+
+message GetMapIDResp {
+    int32 MapID = 1;
+}

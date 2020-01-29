@@ -6,8 +6,8 @@ import (
 	"INServer/src/modules/node"
 	"INServer/src/proto/data"
 	"INServer/src/proto/msg"
-	"github.com/gogo/protobuf/proto"
 	"fmt"
+	"github.com/gogo/protobuf/proto"
 )
 
 var Instance *GPS
