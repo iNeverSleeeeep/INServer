@@ -69,6 +69,10 @@ func (n *INNet) Start() {
 }
 
 func (n *INNet) Request(command msg.Command, req proto.Message, resp proto.Message) error {
+	return n.RequestServer(command, req, resp, global.InvalidServerID)
+}
+
+func (n *INNet) RequestServer(command msg.Command, req proto.Message, resp proto.Message, serverID int32) error {
 	sequence++
 	err := n.sendMessage(command, sequence, req, global.InvalidServerID)
 	if err != nil {
@@ -87,16 +91,7 @@ func (n *INNet) Request(command msg.Command, req proto.Message, resp proto.Messa
 
 // RequestClientBytes 发送源头为客户端的消息
 func (n *INNet) RequestClientBytes(command msg.Command, uuid string, bytes []byte) ([]byte, error) {
-	sequence++
-	err := n.sendClientBytes(command, sequence, uuid, bytes, global.InvalidServerID)
-	if err != nil {
-		return nil, err
-	}
-	buffer := make(chan []byte)
-	n.responces[sequence] = &responce{c: buffer, timeout: time.Now().Unix() + 10}
-	buf := <-buffer
-	delete(n.responces, sequence)
-	return buf, nil
+	return n.RequestClientBytesToServer(command, uuid, bytes, global.InvalidServerID)
 }
 
 // RequestClientBytesToServer 发送源头为客户端的消息

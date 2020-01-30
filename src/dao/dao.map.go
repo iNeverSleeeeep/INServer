@@ -15,6 +15,7 @@ func AllStaticMapQuery(DB *dbobj.DBObject) []*db.DBStaticMap {
 	for rows.Next() {
 		staticMap := &db.DBStaticMap{}
 		rows.Scan(&staticMap.ZoneID, &staticMap.MapID, &staticMap.UUID, &staticMap.SerializedData)
+		staticMaps = append(staticMaps, staticMap)
 	}
 	return staticMaps
 }

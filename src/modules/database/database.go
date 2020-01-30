@@ -11,6 +11,7 @@ import (
 	"INServer/src/proto/db"
 	"INServer/src/proto/engine"
 	"INServer/src/proto/msg"
+	"fmt"
 
 	"github.com/gogo/protobuf/proto"
 )
@@ -317,6 +318,15 @@ func (d *Database) onLoadStaticMapReq(header *msg.MessageHeader, buffer []byte) 
 			resp.Map = nil
 		}
 	}
+	if resp.Map != nil {
+		if _, ok := d.staticMaps[message.ZoneID]; ok == false {
+			d.staticMaps[message.ZoneID] = map[int32]*data.MapData{}
+			maps := d.staticMaps[message.ZoneID]
+			if _, ok2 := maps[message.StaticMapID]; ok2 == false {
+				maps[message.StaticMapID] = resp.Map
+			}
+		}
+	}
 }
 
 func (d *Database) onSaveStaticMapReq(header *msg.MessageHeader, buffer []byte) {
@@ -364,6 +374,7 @@ func (d *Database) loadAllRoleSummaryData() {
 
 func (d *Database) loadAllStaticMapsData() {
 	staticMaps := dao.AllStaticMapQuery(d.DB)
+	logger.Info(fmt.Sprintf("loadAllStaticMapsData len:%d", len(staticMaps)))
 	for _, staticMap := range staticMaps {
 		mapdata := &data.MapData{}
 		proto.Unmarshal(staticMap.SerializedData, mapdata)

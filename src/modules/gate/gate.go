@@ -261,7 +261,7 @@ func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
 				MapUUID: loadRoleResp.MapUUID,
 			}
 			getMapIDResp := &msg.GetMapIDResp{}
-			err := node.Instance.Net.Request(msg.Command_GET_MAP_ID, getMapIDReq, getMapIDResp)
+			err := node.Instance.Net.RequestServer(msg.Command_GET_MAP_ID, getMapIDReq, getMapIDResp, loadRoleResp.WorldID)
 			if err != nil {
 				logger.Info(err)
 				return
