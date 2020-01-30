@@ -13,6 +13,8 @@ import (
 	"INServer/src/modules/node"
 	"INServer/src/modules/web"
 	"INServer/src/modules/world"
+	_ "expvar"
+	"net/http"
 	"flag"
 	"fmt"
 	"log"
@@ -41,6 +43,8 @@ func main() {
 	} else if global.ServerID > global.SERVER_ID_MAX || global.ServerID < 0 {
 		log.Fatalln("服务器ID范围0~999")
 	}
+
+	go http.ListenAndServe(fmt.Sprintf("127.0.0.1:%d", 8000+global.ServerID), nil)
 
 	logger.Setup()
 
