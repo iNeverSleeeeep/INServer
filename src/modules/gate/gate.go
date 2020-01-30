@@ -256,6 +256,7 @@ func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
 			return
 		}
 		roleEnterResp.Success = loadRoleResp.Success
+		roleEnterResp.Role = loadRoleResp.Role
 		if loadRoleResp.Success {
 			getMapIDReq := &msg.GetMapIDReq{
 				MapUUID: loadRoleResp.MapUUID,

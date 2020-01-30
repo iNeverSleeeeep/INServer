@@ -274,10 +274,11 @@ func (d *Database) onLoadRoleReq(header *msg.MessageHeader, buffer []byte) {
 		resp.Success = true
 		resp.MapUUID = roleSummary.MapUUID
 		resp.WorldID = mapAddressResp.ServerID
+		resp.Role = role
 
 		node.Instance.Net.NotifyServer(msg.Command_ROLE_ENTER, role, mapAddressResp.ServerID)
 	} else {
-		logger.Error("角色不存在 UUID:"+message.RoleUUID)
+		logger.Error("角色不存在 UUID:" + message.RoleUUID)
 	}
 }
 
