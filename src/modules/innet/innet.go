@@ -74,7 +74,7 @@ func (n *INNet) Request(command msg.Command, req proto.Message, resp proto.Messa
 
 func (n *INNet) RequestServer(command msg.Command, req proto.Message, resp proto.Message, serverID int32) error {
 	sequence++
-	err := n.sendMessage(command, sequence, req, global.InvalidServerID)
+	err := n.sendMessage(command, sequence, req, serverID)
 	if err != nil {
 		return err
 	}
