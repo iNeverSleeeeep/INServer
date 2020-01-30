@@ -6,10 +6,10 @@ import (
 	"INServer/src/common/logger"
 	"INServer/src/common/uuid"
 	"INServer/src/dao"
+	"INServer/src/gameplay/ecs"
 	"INServer/src/modules/node"
 	"INServer/src/proto/data"
 	"INServer/src/proto/db"
-	"INServer/src/proto/engine"
 	"INServer/src/proto/msg"
 	"fmt"
 
@@ -166,25 +166,8 @@ func (d *Database) onCreateRoleReq(header *msg.MessageHeader, buffer []byte) {
 			LastStaticMapUUID: getStaticMapUUIDResp.StaticMapUUID,
 			CurrentMapUUID:    getStaticMapUUIDResp.StaticMapUUID,
 		}
-		components := make([]*data.Component, 3)
-		components[data.ComponentType_Invalid] = &data.Component{
-			Type: data.ComponentType_Invalid,
-		}
-		components[data.ComponentType_Transofrm] = &data.Component{
-			Type: data.ComponentType_Transofrm,
-			Transform: &data.TransformComponent{
-				Position: &engine.Vector3{},
-				Rotation: &engine.Quaternion{},
-			},
-		}
-		components[data.ComponentType_Physics] = &data.Component{
-			Type: data.ComponentType_Physics,
-			Physics: &data.PhysicsComponent{
-				Mass:         100,
-				RawSpeed:     &engine.Vector3{},
-				PassiveSpeed: &engine.Vector3{},
-			},
-		}
+		components := ecs.InitComponents(data.EntityType_RoleEntity)
+
 		entityData := &data.EntityData{
 			EntityUUID:   roleUUID,
 			RealTimeData: realTimeData,

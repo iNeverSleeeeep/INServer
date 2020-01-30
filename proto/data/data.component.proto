@@ -9,6 +9,7 @@ enum ComponentType {
     Invalid = 0;
     Transofrm = 1;
     Physics = 2;
+    Attribute = 3;
 }
 
 message TransformComponent {
@@ -22,8 +23,14 @@ message PhysicsComponent {
     Vector3 PassiveSpeed = 3; // 其他外力影响的速度
 }
 
+message AttributeComponent {
+    float Speed = 1;
+    float HP = 2;
+}
+
 message Component {
     ComponentType Type = 1;
     TransformComponent Transform = 2;
     PhysicsComponent Physics = 3;
+    AttributeComponent Attribute = 4;
 }
