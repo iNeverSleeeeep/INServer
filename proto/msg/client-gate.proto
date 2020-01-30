@@ -26,6 +26,7 @@ message RoleEnterReq {
 message RoleEnterResp {
     bool Success = 1;
     int32 MapID = 2;
+    Role Role = 3;
 }
 
 message ClientToGate {
