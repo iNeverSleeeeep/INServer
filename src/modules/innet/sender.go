@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/gorilla/websocket"
 )
 
 type (
@@ -24,22 +25,34 @@ func newSender(innet *INNet) *sender {
 	return s
 }
 
-func SendUDPBytesHelper(addr *net.UDPAddr, bytes []byte) {
+func SendUDPBytesHelper(addr *net.UDPAddr, bytes []byte) error {
 	sizebuf := make([]byte, 2)
 	binary.BigEndian.PutUint16(sizebuf, uint16(len(bytes)))
 	_, err := udpconn.WriteToUDP(append(sizebuf, bytes...), addr)
 	if err != nil {
 		logger.Debug(err)
 	}
+	return err
 }
 
-func SendBytesHelper(conn net.Conn, bytes []byte) {
+func SendBytesHelper(conn net.Conn, bytes []byte) error {
 	sizebuf := make([]byte, 2)
 	binary.BigEndian.PutUint16(sizebuf, uint16(len(bytes)))
 	_, err := conn.Write(append(sizebuf, bytes...))
 	if err != nil {
 		logger.Debug(err)
 	}
+	return err
+}
+
+func SendWebBytesHelper(conn *websocket.Conn, bytes []byte) error {
+	sizebuf := make([]byte, 2)
+	binary.BigEndian.PutUint16(sizebuf, uint16(len(bytes)))
+	err := conn.WriteMessage(websocket.BinaryMessage, append(sizebuf, bytes...))
+	if err != nil {
+		logger.Debug(err)
+	}
+	return err
 }
 
 func checkServerValid(svr *server) bool {

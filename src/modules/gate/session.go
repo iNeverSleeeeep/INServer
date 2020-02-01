@@ -6,15 +6,18 @@ import (
 	"INServer/src/proto/data"
 	"net"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 const INT_MAX int = int(^uint(0) >> 1)
 
 type (
 	session struct {
-		conn *net.TCPConn
-		info *data.PlayerSessionInfo
-		cert *data.SessionCertData
+		conn    *net.TCPConn
+		webconn *websocket.Conn
+		info    *data.PlayerSessionInfo
+		cert    *data.SessionCertData
 	}
 )
 

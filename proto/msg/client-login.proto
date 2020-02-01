@@ -31,4 +31,5 @@ message LoginToClient {
     SessionCert SessionCert = 2;
     string GateIP = 3;
     int32 GatePort = 4;
+    int32 GateWebPort = 5;
 }

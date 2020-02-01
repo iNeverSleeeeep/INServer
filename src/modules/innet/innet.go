@@ -7,9 +7,9 @@ import (
 	"INServer/src/common/protect"
 	"INServer/src/proto/msg"
 	"errors"
+	"fmt"
 	"net"
 	"time"
-	"fmt"
 
 	"github.com/golang/protobuf/proto"
 )
@@ -187,8 +187,11 @@ func (n *INNet) GetGateAddress(serverID int32) ([]byte, int) {
 }
 
 // GetGatePublicAddress 网关公网地址
-func (n *INNet) GetGatePublicAddress(serverID int32) (string, int) {
-	return global.Servers[serverID].ServerConfig.GateConfig.Address, int(global.Servers[serverID].ServerConfig.GateConfig.Port)
+func (n *INNet) GetGatePublicAddress(serverID int32) (string, int, int) {
+	ip := global.Servers[serverID].ServerConfig.GateConfig.Address
+	port := int(global.Servers[serverID].ServerConfig.GateConfig.Port)
+	webport := int(global.Servers[serverID].ServerConfig.GateConfig.WebPort)
+	return ip, port, webport
 }
 
 func (n *INNet) AddServers(servers []*msg.ServerInfo) {

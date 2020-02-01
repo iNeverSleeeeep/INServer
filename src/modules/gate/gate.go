@@ -9,14 +9,19 @@ import (
 	"INServer/src/proto/data"
 	"INServer/src/proto/msg"
 	"encoding/binary"
+	"errors"
+	"fmt"
 	"net"
+	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/gorilla/websocket"
 )
 
 var Instance *Gate
+var upgrader = websocket.Upgrader{}
 
 type (
 	Gate struct {
@@ -35,6 +40,7 @@ func New() *Gate {
 }
 
 func (g *Gate) Start() {
+	// TCP
 	listener, err := net.ListenTCP("tcp", &net.TCPAddr{Port: int(global.ServerConfig.GateConfig.Port)})
 	if err != nil {
 		logger.Fatal(err)
@@ -52,6 +58,13 @@ func (g *Gate) Start() {
 			}
 		}
 	}()
+
+	// WebSocket
+	if global.ServerConfig.GateConfig.WebPort > 0 {
+		http.HandleFunc("/", g.handleWebConnect)
+		go http.ListenAndServe(fmt.Sprintf("localhost:%d", global.ServerConfig.GateConfig.WebPort), nil)
+	}
+
 }
 
 func (g *Gate) initMessageHandler() {
@@ -73,9 +86,79 @@ func (g *Gate) onUpdatePlayerAddressNTF(header *msg.MessageHeader, buffer []byte
 	}
 }
 
+func (g *Gate) handleWebConnect(w http.ResponseWriter, r *http.Request) {
+	c, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		logger.Info("upgrade:", err)
+		return
+	}
+	var uuid *string = nil
+	defer g.closeConnection(uuid, nil, c)
+	defer c.Close()
+	defer protect.CatchPanic()
+	var buf = make([]byte, 65536)
+	current := 0
+	for {
+		for current < 2 {
+			_, message, err := c.ReadMessage()
+			if err != nil {
+				logger.Info("read:", err)
+				break
+			}
+			copy(buf[current:], message[:])
+			current = current + len(message)
+		}
+		// 等待读取数据
+		size := binary.BigEndian.Uint16(buf[:2])
+		for (current - 2) < int(size) {
+			_, message, err := c.ReadMessage()
+			if err != nil {
+				logger.Info("read:", err)
+				break
+			}
+			copy(buf[current:], message[:])
+			current = current + len(message)
+		}
+
+		message := &msg.ClientToGate{}
+		err := proto.Unmarshal(buf[2:size+2], message)
+		if err != nil {
+			logger.Debug("消息解析失败:", c.RemoteAddr())
+			continue
+		}
+		if message.Command == msg.Command_CONNECT_GATE_REQ {
+			connectReq := &msg.ConnectGateReq{}
+			err := proto.Unmarshal(message.Request, connectReq)
+			if err != nil {
+				logger.Info("消息解析失败")
+				continue
+			}
+			if uuid == nil {
+				uuid = &connectReq.SessionCert.UUID
+			}
+			g.handleConnectMessage(uuid, nil, c, message.Sequence, connectReq)
+		} else if uuid != nil {
+			if player, ok := g.players[*uuid]; ok {
+				if player.info.State == data.SessionState_Online {
+					g.handleMessage(player, message)
+				} else {
+					logger.Debug("客户端状态错误:" + c.RemoteAddr().String() + " 当前状态:" + player.info.State.String())
+					return
+				}
+			}
+		} else {
+			logger.Debug("客户端需要先发送Connect协议:" + c.RemoteAddr().String())
+			return
+		}
+
+		copy(buf[0:], buf[size+2:current])
+		current = current - int(size) - 2
+	}
+}
+
 func (g *Gate) handleConnect(conn *net.TCPConn) {
 	var uuid *string = nil
-	defer g.closeConnection(uuid, conn)
+	defer g.closeConnection(uuid, conn, nil)
 	defer protect.CatchPanic()
 	var buf = make([]byte, 65536)
 	current := 0
@@ -117,11 +200,11 @@ func (g *Gate) handleConnect(conn *net.TCPConn) {
 			if uuid == nil {
 				uuid = &connectReq.SessionCert.UUID
 			}
-			g.handleConnectMessage(uuid, conn, message.Sequence, connectReq)
+			g.handleConnectMessage(uuid, conn, nil, message.Sequence, connectReq)
 		} else if uuid != nil {
 			if player, ok := g.players[*uuid]; ok {
 				if player.info.State == data.SessionState_Online {
-					go g.handleMessage(player, message)
+					g.handleMessage(player, message)
 				} else {
 					logger.Debug("客户端状态错误:" + conn.RemoteAddr().String() + " 当前状态:" + player.info.State.String())
 					return
@@ -137,11 +220,17 @@ func (g *Gate) handleConnect(conn *net.TCPConn) {
 	}
 }
 
-func (g *Gate) closeConnection(uuid *string, conn *net.TCPConn) {
-	conn.Close()
+func (g *Gate) closeConnection(uuid *string, conn *net.TCPConn, webconn *websocket.Conn) {
+	if conn != nil {
+		conn.Close()
+	}
+	if webconn != nil {
+		webconn.Close()
+	}
 	if uuid != nil {
 		if player, ok := g.players[*uuid]; ok {
 			player.conn = nil
+			player.webconn = nil
 			player.info.State = data.SessionState_OutOfContact
 			player.cert.OutOfDateTime = generateCertOutOfDateTime()
 		}
@@ -187,21 +276,38 @@ func (g *Gate) onPlayerReconnect(player *session) error {
 	return nil
 }
 
-func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, sequence uint64, message *msg.ConnectGateReq) {
+func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, webconn *websocket.Conn, sequence uint64, message *msg.ConnectGateReq) {
 	connectResp := &msg.ConnectGateResp{}
 	resp := &msg.GateToClient{}
 	resp.Command = msg.Command_RESP
 	resp.Sequence = sequence
-	defer g.sendResp(conn, resp)
+	if conn != nil {
+		defer g.sendResp(conn, resp)
+	} else {
+		defer g.sendWebResp(webconn, resp)
+	}
 	player, ok := g.players[*uuid]
 	if ok == false {
-		logger.Debug("拒绝连接，没有数据:" + conn.RemoteAddr().String() + " uuid:" + *uuid)
+		addr := ""
+		if conn != nil {
+			addr = conn.RemoteAddr().String()
+		} else if webconn != nil {
+			addr = webconn.RemoteAddr().String()
+		}
+		logger.Debug("拒绝连接，没有数据:" + addr + " uuid:" + *uuid)
 		return
 	} else if message.SessionCert.Key != player.cert.Key {
-		logger.Debug("客户端秘钥错误:" + conn.RemoteAddr().String() + " uuid:" + *uuid)
+		addr := ""
+		if conn != nil {
+			addr = conn.RemoteAddr().String()
+		} else if webconn != nil {
+			addr = webconn.RemoteAddr().String()
+		}
+		logger.Debug("客户端秘钥错误:" + addr + " uuid:" + *uuid)
 		return
 	} else {
 		player.conn = conn
+		player.webconn = webconn
 		player.generateNewCertKey()
 		oldState := player.info.State
 		player.info.State = data.SessionState_Online
@@ -241,7 +347,7 @@ func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
 		resp := &msg.GateToClient{}
 		resp.Command = msg.Command_RESP
 		resp.Sequence = message.Sequence
-		defer g.sendResp(player.conn, resp)
+		defer g.sendSessionResp(player, resp)
 		roleEnterReq := &msg.RoleEnterReq{}
 		if err := proto.Unmarshal(message.Request, roleEnterReq); err != nil {
 			logger.Info(err)
@@ -294,7 +400,11 @@ func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
 			if err != nil {
 				logger.Debug(err)
 			} else {
-				innet.SendBytesHelper(player.conn, respBuffer)
+				if player.conn != nil {
+					innet.SendBytesHelper(player.conn, respBuffer)
+				} else if player.webconn != nil {
+					innet.SendWebBytesHelper(player.webconn, respBuffer)
+				}
 			}
 		}
 	} else if message.Notify != nil {
@@ -318,12 +428,24 @@ func (g *Gate) pushNewSessionCert(player *session) {
 		},
 		Buffer: buff,
 	}
-	buff, _ = proto.Marshal(message)
-	innet.SendBytesHelper(player.conn, buff)
+	g.sendSessionResp(player, message)
+}
+
+func (g *Gate) sendSessionResp(s *session, resp proto.Message) error {
+	if s.conn != nil {
+		return g.sendResp(s.conn, resp)
+	} else if s.webconn != nil {
+		return g.sendWebResp(s.webconn, resp)
+	}
+	return errors.New("NO CONN")
 }
 
 func (g *Gate) sendResp(conn *net.TCPConn, resp proto.Message) error {
 	buff, _ := proto.Marshal(resp)
-	innet.SendBytesHelper(conn, buff)
-	return nil
+	return innet.SendBytesHelper(conn, buff)
+}
+
+func (g *Gate) sendWebResp(conn *websocket.Conn, resp proto.Message) error {
+	buff, _ := proto.Marshal(resp)
+	return innet.SendWebBytesHelper(conn, buff)
 }

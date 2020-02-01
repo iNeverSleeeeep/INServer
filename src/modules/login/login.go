@@ -2,7 +2,6 @@ package login
 
 import (
 	"INServer/src/common/dbobj"
-	"fmt"
 	"INServer/src/common/global"
 	"INServer/src/common/logger"
 	"INServer/src/common/protect"
@@ -14,15 +13,19 @@ import (
 	"INServer/src/proto/db"
 	"INServer/src/proto/msg"
 	"encoding/binary"
+	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/gogo/protobuf/proto"
+	"github.com/gorilla/websocket"
 )
 
 var Instance *Login
+var upgrader = websocket.Upgrader{}
 
 type (
 	Login struct {
@@ -39,6 +42,7 @@ func New() *Login {
 }
 
 func (l *Login) Start() {
+	// TCP
 	listener, err := net.ListenTCP("tcp", &net.TCPAddr{Port: int(global.ServerConfig.LoginConfig.Port)})
 	if err != nil {
 		log.Fatalln(err)
@@ -56,6 +60,56 @@ func (l *Login) Start() {
 			}
 		}
 	}()
+
+	// WebSocket
+	if global.ServerConfig.LoginConfig.WebPort > 0 {
+		http.HandleFunc("/", l.handleWebConnect)
+		go http.ListenAndServe(fmt.Sprintf("localhost:%d", global.ServerConfig.LoginConfig.WebPort), nil)
+	}
+}
+
+func (l *Login) handleWebConnect(w http.ResponseWriter, r *http.Request) {
+	c, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		logger.Info("upgrade:", err)
+		return
+	}
+	defer c.Close()
+	defer protect.CatchPanic()
+	var buf = make([]byte, 65536)
+	current := 0
+	for {
+		for current < 2 {
+			_, message, err := c.ReadMessage()
+			if err != nil {
+				logger.Info("read:", err)
+				break
+			}
+			copy(buf[current:], message[:])
+			current = current + len(message)
+		}
+		// 等待读取数据
+		size := binary.BigEndian.Uint16(buf[:2])
+		for (current - 2) < int(size) {
+			_, message, err := c.ReadMessage()
+			if err != nil {
+				logger.Info("read:", err)
+				break
+			}
+			copy(buf[current:], message[:])
+			current = current + len(message)
+		}
+		message := &msg.ClientToLogin{}
+		err := proto.Unmarshal(buf[2:size+2], message)
+		if err != nil {
+			logger.Debug("proto解析失败")
+			return
+		}
+		l.handleWebMessage(c, message)
+
+		copy(buf[0:], buf[size+2:current])
+		current = current - int(size) - 2
+	}
 }
 
 func (l *Login) handleConnect(conn *net.TCPConn) {
@@ -106,11 +160,7 @@ func newAccount(name string, passwordHash string) *db.DBAccount {
 	return account
 }
 
-func (l *Login) handleMessage(conn *net.TCPConn, message *msg.ClientToLogin) {
-	resp := &msg.LoginToClient{}
-	defer l.sendResponce(conn, resp)
-	defer protect.CatchPanic()
-
+func (l *Login) handleMessageImpl(message *msg.ClientToLogin, resp *msg.LoginToClient) {
 	success := false
 	var account *db.DBAccount
 	var err error
@@ -166,11 +216,9 @@ func (l *Login) handleMessage(conn *net.TCPConn, message *msg.ClientToLogin) {
 				}
 				resp.SessionCert = cert
 
-				ip, port := node.Instance.Net.GetGatePublicAddress(gateID)
-				resp.GateIP, resp.GatePort = ip, int32(port)
-				message := &msg.LoginToGate{
-					Cert: cert,
-				}
+				ip, port, webport := node.Instance.Net.GetGatePublicAddress(gateID)
+				resp.GateIP, resp.GatePort, resp.GateWebPort = ip, int32(port), int32(webport)
+				message := &msg.LoginToGate{Cert: cert}
 				node.Instance.Net.NotifyServer(msg.Command_SESSION_CERT_NTF, message, gateID)
 			} else {
 				logger.Error("没有找到门服务器")
@@ -179,6 +227,33 @@ func (l *Login) handleMessage(conn *net.TCPConn, message *msg.ClientToLogin) {
 		}
 		resp.Success = success
 	}
+}
+
+func (l *Login) handleWebMessage(conn *websocket.Conn, message *msg.ClientToLogin) {
+	resp := &msg.LoginToClient{}
+	defer l.sendWebResponce(conn, resp)
+	defer protect.CatchPanic()
+	l.handleMessageImpl(message, resp)
+}
+
+func (l *Login) handleMessage(conn *net.TCPConn, message *msg.ClientToLogin) {
+	resp := &msg.LoginToClient{}
+	defer l.sendResponce(conn, resp)
+	defer protect.CatchPanic()
+	l.handleMessageImpl(message, resp)
+}
+
+func (l *Login) sendWebResponce(conn *websocket.Conn, message *msg.LoginToClient) {
+	buff, _ := proto.Marshal(message)
+	buffer, _ := proto.Marshal(&msg.Message{
+		Header: &msg.MessageHeader{
+			Command:  msg.Command_SESSION_CERT_NTF,
+			Sequence: 0,
+			From:     global.ServerID,
+		},
+		Buffer: buff,
+	})
+	innet.SendWebBytesHelper(conn, buffer)
 }
 
 func (l *Login) sendResponce(conn *net.TCPConn, message *msg.LoginToClient) {

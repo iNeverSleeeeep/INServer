@@ -11,7 +11,8 @@
                 "GateConfig": {
                     "Address": "149.129.101.133",
                     "Port": 10999,
-                    "OutOfDateTimeout": 10
+                    "OutOfDateTimeout": 10,
+                    "WebPort": 10998
                 }
             }
         },
@@ -20,7 +21,8 @@
             "ServerType": "Login",
             "ServerConfig": {
                 "LoginConfig": {
-                    "Port": 10800
+                    "Port": 10800,
+                    "WebPort": 10801
                 }
             }
         },
