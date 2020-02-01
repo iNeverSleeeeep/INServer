@@ -221,7 +221,7 @@ func (l *Login) handleMessageImpl(message *msg.ClientToLogin, resp *msg.LoginToC
 				resp.GateIP, resp.GatePort, resp.GateWebPort = ip, int32(port), int32(webport)
 				message := &msg.LoginToGate{Cert: cert}
 				node.Instance.Net.NotifyServer(msg.Command_SESSION_CERT_NTF, message, gateID)
-				logger.Debug(fmt.Sprintf("角色登录成功 UUID:%s Name:%s CertKey:%s", cert.UUID, account.Name, cert.Key))
+				logger.Debug(fmt.Sprintf("玩家登录成功 UUID:%s Name:%s CertKey:%s", cert.UUID, account.Name, cert.Key))
 			} else {
 				logger.Error("没有找到门服务器")
 				success = false
