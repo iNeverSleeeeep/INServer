@@ -62,7 +62,8 @@ func (g *Gate) Start() {
 	// WebSocket
 	if global.ServerConfig.GateConfig.WebPort > 0 {
 		http.HandleFunc("/", g.handleWebConnect)
-		go http.ListenAndServe(fmt.Sprintf("localhost:%d", global.ServerConfig.GateConfig.WebPort), nil)
+		go http.ListenAndServe(fmt.Sprintf(":%d", global.ServerConfig.GateConfig.WebPort), nil)
+		logger.Info("门服务器 监听端口:" + strconv.Itoa(int(global.ServerConfig.GateConfig.WebPort)))
 	}
 
 }
