@@ -70,7 +70,6 @@ func (l *Login) Start() {
 }
 
 func (l *Login) handleWebConnect(w http.ResponseWriter, r *http.Request) {
-	logger.Info("handleWebConnect")
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		logger.Info("upgrade:", err)
@@ -85,7 +84,7 @@ func (l *Login) handleWebConnect(w http.ResponseWriter, r *http.Request) {
 			_, msg, err := c.ReadMessage()
 			if err != nil {
 				logger.Info("read:", err)
-				break
+				return
 			}
 			copy(buf[current:], msg[:])
 			current = current + len(msg)
@@ -96,7 +95,7 @@ func (l *Login) handleWebConnect(w http.ResponseWriter, r *http.Request) {
 			_, msg, err := c.ReadMessage()
 			if err != nil {
 				logger.Info("read:", err)
-				break
+				return
 			}
 			copy(buf[current:], msg[:])
 			current = current + len(msg)
@@ -107,7 +106,6 @@ func (l *Login) handleWebConnect(w http.ResponseWriter, r *http.Request) {
 			logger.Debug("proto解析失败")
 			return
 		}
-		logger.Info("handleWebMessage")
 		l.handleWebMessage(c, message)
 
 		copy(buf[0:], buf[size+2:current])
