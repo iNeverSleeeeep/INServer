@@ -104,7 +104,7 @@ func (g *Gate) handleWebConnect(w http.ResponseWriter, r *http.Request) {
 			_, msg, err := c.ReadMessage()
 			if err != nil {
 				logger.Info("read:", err)
-				break
+				return
 			}
 			copy(buf[current:], msg[:])
 			current = current + len(msg)
@@ -115,7 +115,7 @@ func (g *Gate) handleWebConnect(w http.ResponseWriter, r *http.Request) {
 			_, msg, err := c.ReadMessage()
 			if err != nil {
 				logger.Info("read:", err)
-				break
+				return
 			}
 			copy(buf[current:], msg[:])
 			current = current + len(msg)
