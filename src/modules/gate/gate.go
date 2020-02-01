@@ -101,24 +101,24 @@ func (g *Gate) handleWebConnect(w http.ResponseWriter, r *http.Request) {
 	current := 0
 	for {
 		for current < 2 {
-			_, message, err := c.ReadMessage()
+			_, msg, err := c.ReadMessage()
 			if err != nil {
 				logger.Info("read:", err)
 				break
 			}
-			copy(buf[current:], message[:])
-			current = current + len(message)
+			copy(buf[current:], msg[:])
+			current = current + len(msg)
 		}
 		// 等待读取数据
 		size := binary.BigEndian.Uint16(buf[:2])
 		for (current - 2) < int(size) {
-			_, message, err := c.ReadMessage()
+			_, msg, err := c.ReadMessage()
 			if err != nil {
 				logger.Info("read:", err)
 				break
 			}
-			copy(buf[current:], message[:])
-			current = current + len(message)
+			copy(buf[current:], msg[:])
+			current = current + len(msg)
 		}
 
 		message := &msg.ClientToGate{}
@@ -304,7 +304,7 @@ func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, webconn *we
 		} else if webconn != nil {
 			addr = webconn.RemoteAddr().String()
 		}
-		logger.Debug("客户端秘钥错误:" + addr + " uuid:" + *uuid)
+		logger.Info(fmt.Sprintf("客户端秘钥错误 addr:%d uuid:%s client:%s server:%s", addr, *uuid, message.SessionCert.Key, player.cert.Key))
 		return
 	} else {
 		player.conn = conn
