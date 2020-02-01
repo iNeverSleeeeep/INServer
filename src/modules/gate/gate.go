@@ -303,7 +303,7 @@ func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, webconn *we
 		} else if webconn != nil {
 			addr = webconn.RemoteAddr().String()
 		}
-		logger.Debug("客户端秘钥错误:" + addr + " uuid:" + *uuid)
+		logger.Info(fmt.Sprintf("客户端秘钥错误 addr:%d uuid:%s client:%s server:%s", addr, *uuid, message.SessionCert.Key, player.cert.Key))
 		return
 	} else {
 		player.conn = conn
