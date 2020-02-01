@@ -64,7 +64,8 @@ func (l *Login) Start() {
 	// WebSocket
 	if global.ServerConfig.LoginConfig.WebPort > 0 {
 		http.HandleFunc("/", l.handleWebConnect)
-		go http.ListenAndServe(fmt.Sprintf("localhost:%d", global.ServerConfig.LoginConfig.WebPort), nil)
+		go http.ListenAndServe(fmt.Sprintf(":%d", global.ServerConfig.LoginConfig.WebPort), nil)
+		logger.Info("登录服务器 监听端口:" + strconv.Itoa(int(global.ServerConfig.LoginConfig.WebPort)))
 	}
 }
 
