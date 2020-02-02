@@ -14,14 +14,16 @@ import (
 	"INServer/src/modules/web"
 	"INServer/src/modules/world"
 	_ "expvar"
-	"net/http"
 	"flag"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
+	"reflect"
 	"runtime"
 	"syscall"
+	"unsafe"
 )
 
 var serverID = flag.Int("id", -1, "本服务器ID(范围0~65535)")
@@ -58,10 +60,12 @@ func main() {
 		go startNode()
 	}
 
+	SetProcessName(fmt.Sprintf("INServer %s@%d", global.ServerType, global.ServerID))
+
 	for {
 		stopped := false
 		select {
-		case <- global.Stop:
+		case <-global.Stop:
 			break
 		case sig := <-sigs:
 			if sig.String() == "interrupt" {
@@ -134,10 +138,23 @@ func stopServer() {
 		world.Instance.Stop()
 		break
 	case global.DatabaseServer:
-		<- global.Stop
+		<-global.Stop
 		break
 	case global.CenterServer:
-		<- global.Stop
+		<-global.Stop
 		break
 	}
+}
+
+// SetProcessName 设置linux下进程名称
+func SetProcessName(name string) error {
+	argv0str := (*reflect.StringHeader)(unsafe.Pointer(&os.Args[0]))
+	argv0 := (*[1 << 30]byte)(unsafe.Pointer(argv0str.Data))[:argv0str.Len]
+
+	n := copy(argv0, name)
+	if n < len(argv0) {
+		argv0[n] = 0
+	}
+
+	return nil
 }
