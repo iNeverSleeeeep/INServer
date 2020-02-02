@@ -23,6 +23,7 @@ import (
 	"reflect"
 	"runtime"
 	"syscall"
+	"time"
 	"unsafe"
 )
 
@@ -77,6 +78,7 @@ func main() {
 		if stopped {
 			break
 		}
+		time.Sleep(time.Millisecond * 10)
 	}
 
 	logger.Info(fmt.Sprintf("%d-%s Shut Down!", global.ServerID, global.ServerType))
