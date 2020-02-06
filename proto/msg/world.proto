@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/msg";
+
+import "data.role.proto";
+
+message RoleEnterNTF {
+    int32 Gate = 1;
+    Role Role = 2;
+}

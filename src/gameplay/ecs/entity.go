@@ -9,6 +9,8 @@ type (
 	// Entity 游戏实体
 	Entity struct {
 		entityData *data.EntityData
+		entityType data.EntityType
+		controller Controller
 	}
 )
 
@@ -16,6 +18,8 @@ type (
 func NewEntity(entityData *data.EntityData, entityType data.EntityType) *Entity {
 	e := new(Entity)
 	e.entityData = entityData
+	e.entityType = entityType
+	initController(e)
 	return e
 }
 

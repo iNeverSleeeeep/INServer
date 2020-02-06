@@ -24,6 +24,10 @@ func New(gridSize float64, width int32, height int32) *Grid {
 	return g
 }
 
+func (i *Item) UUID() string {
+	return i.uuid
+}
+
 func (g *Grid) Add(uuid string, position *engine.Vector3) {
 	x := int32(position.X / g.gridSize)
 	z := int32(position.Z / g.gridSize)

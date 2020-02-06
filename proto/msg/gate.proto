@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/msg";
+
+message ForwardPlayerMessage {
+    string PlayerUUID = 1;
+    bytes Buffer = 2;
+}

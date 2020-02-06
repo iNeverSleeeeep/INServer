@@ -6,6 +6,7 @@ import (
 	"INServer/src/proto/config"
 	"INServer/src/proto/data"
 	"INServer/src/proto/engine"
+	"INServer/src/proto/msg"
 	"time"
 )
 
@@ -42,6 +43,13 @@ func NewMap(mapConfig *config.Map, mapData *data.MapData) *Map {
 
 func (m *Map) MapData() *data.MapData {
 	return m.mapData
+}
+
+func (m *Map) GetEntity(uuid string) *ecs.Entity {
+	if entity, ok := m.entitiesMap[uuid]; ok {
+		return entity
+	}
+	return nil
 }
 
 func (m *Map) Start() {
@@ -101,5 +109,13 @@ func (m *Map) tickSystems(dt float64) {
 		if transform != nil {
 			m.firstScene.SyncEntityPosition(uuid, entity, &cachedValues[uuid].position)
 		}
+	}
+}
+
+// OnRoleMoveINF 响应角色移动
+func (m *Map) OnRoleMoveINF(role *data.Role, inf *msg.MoveINF) {
+	entity := m.GetEntity(role.SummaryData.RoleUUID)
+	if entity != nil {
+		m.firstScene.onEntityMoveINF(entity, inf)
 	}
 }

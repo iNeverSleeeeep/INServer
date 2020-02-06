@@ -1,11 +1,13 @@
 package gamemap
 
 import (
+	"INServer/src/engine/extensions/vector3"
 	"INServer/src/engine/grid"
 	"INServer/src/gameplay/ecs"
 	"INServer/src/proto/config"
 	"INServer/src/proto/data"
 	"INServer/src/proto/engine"
+	"INServer/src/proto/msg"
 )
 
 type (
@@ -40,5 +42,27 @@ func (s *Scene) SyncEntityPosition(uuid string, entity *ecs.Entity, from *engine
 	transform := entity.GetComponent(data.ComponentType_Transofrm).Transform
 	if transform != nil {
 		s.search.Move(uuid, from, transform.Position)
+	}
+}
+
+func (s *Scene) onEntityMoveINF(entity *ecs.Entity, inf *msg.MoveINF) {
+	transform := entity.GetComponent(data.ComponentType_Transofrm).Transform
+	if transform != nil {
+		s.search.Move(entity.UUID(), transform.Position, inf.Position)
+		transform.Position = inf.Position
+		physics := entity.GetComponent(data.ComponentType_Physics).Physics
+		attribute := entity.GetComponent(data.ComponentType_Attribute).Attribute
+		move := entity.GetComponent(data.ComponentType_Move).Move
+		if physics != nil && attribute != nil && move != nil {
+			move.Destination = inf.To
+			physics.RawSpeed = vector3.Multiply(vector3.Normalize(vector3.Minus(inf.To, inf.Position)), float64(attribute.Speed))
+			ntf := &msg.MoveNTF{}
+			ntf.EntityUUID = entity.UUID()
+			ntf.To = inf.To
+			items := s.search.GetNearItems(inf.Position)
+			for _, item := range items {
+				nearEntity := s.masterMap.GetEntity(item.UUID())
+			}
+		}
 	}
 }

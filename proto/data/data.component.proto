@@ -4,12 +4,18 @@ option go_package = "INServer/src/proto/data";
 
 import "math.proto";
 
-// 注意 新加的ComponentType加在Max之前
 enum ComponentType {
     Invalid = 0;
     Transofrm = 1;
     Physics = 2;
     Attribute = 3;
+    Move = 4;
+    Controller = 5;
+}
+
+enum ControllerType {
+    PlayerController = 0;
+    AIController = 1;
 }
 
 message TransformComponent {
@@ -28,9 +34,19 @@ message AttributeComponent {
     float HP = 2;
 }
 
+message MoveComponent {
+    Vector3 Destination = 1;
+}
+
+message ControllerComponent {
+    ControllerType ControllerType = 1;
+}
+
 message Component {
     ComponentType Type = 1;
     TransformComponent Transform = 2;
     PhysicsComponent Physics = 3;
     AttributeComponent Attribute = 4;
+    MoveComponent Move = 5;
+    ControllerComponent Controller = 6;
 }

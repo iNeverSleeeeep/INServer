@@ -10,16 +10,19 @@ import (
 	"INServer/src/proto/data"
 	"INServer/src/proto/msg"
 	"fmt"
-	"github.com/gogo/protobuf/proto"
 	"time"
+
+	"github.com/gogo/protobuf/proto"
 )
 
 var Instance *World
 
 type (
 	World struct {
-		gameMaps map[string]*gamemap.Map
-		roles    map[string]*data.Role
+		gameMaps   map[string]*gamemap.Map
+		roles      map[string]*data.Role
+		playerRole map[string]string
+		roleGate   map[string]int32
 	}
 )
 
@@ -27,6 +30,8 @@ func New() *World {
 	w := new(World)
 	w.gameMaps = make(map[string]*gamemap.Map)
 	w.roles = make(map[string]*data.Role)
+	w.playerRole = make(map[string]string)
+	w.roleGate = make(map[string]int32)
 	w.initMessageHandler()
 	return w
 }
@@ -89,6 +94,7 @@ func (w *World) Stop() {
 func (w *World) initMessageHandler() {
 	node.Instance.Net.Listen(msg.Command_ROLE_ENTER, w.onRoleEnterNTF)
 	node.Instance.Net.Listen(msg.Command_GET_MAP_ID, w.onGetMapIDReq)
+	node.Instance.Net.Listen(msg.Command_MOVE_INF, w.onRoleMoveINF)
 }
 
 // GetMap 根据UUID返回Map实例
@@ -100,16 +106,19 @@ func (w *World) GetMap(uuid string) *gamemap.Map {
 }
 
 func (w *World) onRoleEnterNTF(header *msg.MessageHeader, buffer []byte) {
-	role := &data.Role{}
-	err := proto.Unmarshal(buffer, role)
+	roleEnterNTF := &msg.RoleEnterNTF{}
+	err := proto.Unmarshal(buffer, roleEnterNTF)
 	if err != nil {
 		logger.Error(err)
 		return
 	}
+	role := roleEnterNTF.Role
+	w.roleGate[role.SummaryData.GetRoleUUID()] = roleEnterNTF.Gate
 
 	if gameMap, ok := w.gameMaps[role.SummaryData.GetMapUUID()]; ok {
 		entity := ecs.NewEntity(role.OnlineData.EntityData, data.EntityType_RoleEntity)
 		gameMap.EntityEnter(role.SummaryData.RoleUUID, entity)
+
 		ntf := &msg.UpdatePlayerAddressNTF{
 			PlayerUUID: role.SummaryData.PlayerUUID,
 			Address: &data.PlayerAddress{
@@ -138,4 +147,28 @@ func (w *World) onGetMapIDReq(header *msg.MessageHeader, buffer []byte) {
 	} else {
 		logger.Error("这个地图不在当前服务器")
 	}
+}
+
+func (w *World) onRoleMoveINF(header *msg.MessageHeader, buffer []byte) {
+	inf := &msg.MoveINF{}
+	err := proto.Unmarshal(buffer, inf)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+
+	if roleUUID, ok := w.playerRole[header.PlayerUUID]; ok {
+		if role, ok2 := w.roles[roleUUID]; ok2 {
+			if gameMap, ok := w.gameMaps[role.SummaryData.GetMapUUID()]; ok {
+				gameMap.OnRoleMoveINF(role, inf)
+			}
+		}
+	}
+}
+
+func (w *World) RoleGate(uuid string) int32 {
+	if gate, ok := w.roleGate[uuid]; ok {
+		return gate
+	}
+	return global.InvalidServerID
 }
