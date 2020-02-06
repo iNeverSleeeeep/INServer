@@ -22,4 +22,6 @@ protoc 3.11.2
 
 https://github.com/netdata/netdata
 
+[一些想法](https://github.com/iNeverSleeeeep/INServer/blob/master/MIND.md)
+
 
