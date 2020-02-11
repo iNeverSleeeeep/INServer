@@ -23,56 +23,59 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-type ServerState int32
+type NodeState int32
 
 const (
-	ServerState_Start   ServerState = 0
-	ServerState_Ready   ServerState = 1
-	ServerState_Running ServerState = 2
-	ServerState_Offline ServerState = 3
+	NodeState_Unset   NodeState = 0
+	NodeState_Ready   NodeState = 1
+	NodeState_Running NodeState = 2
+	NodeState_Offline NodeState = 3
 )
 
-var ServerState_name = map[int32]string{
-	0: "Start",
+var NodeState_name = map[int32]string{
+	0: "Unset",
 	1: "Ready",
 	2: "Running",
 	3: "Offline",
 }
 
-var ServerState_value = map[string]int32{
-	"Start":   0,
+var NodeState_value = map[string]int32{
+	"Unset":   0,
 	"Ready":   1,
 	"Running": 2,
 	"Offline": 3,
 }
 
-func (x ServerState) String() string {
-	return proto.EnumName(ServerState_name, int32(x))
+func (x NodeState) String() string {
+	return proto.EnumName(NodeState_name, int32(x))
 }
 
-func (ServerState) EnumDescriptor() ([]byte, []int) {
+func (NodeState) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_1de517c49d537f4b, []int{0}
 }
 
-type ServerStateReq struct {
-	Info                 *ServerInfo `protobuf:"bytes,1,opt,name=Info,proto3" json:"Info,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
+type ETCSyncNTF struct {
+	BasicConfig          *etc.BasicConfig `protobuf:"bytes,1,opt,name=BasicConfig,proto3" json:"BasicConfig,omitempty"`
+	Database             *etc.Database    `protobuf:"bytes,2,opt,name=Database,proto3" json:"Database,omitempty"`
+	ServerList           *etc.ServerList  `protobuf:"bytes,3,opt,name=ServerList,proto3" json:"ServerList,omitempty"`
+	ZoneList             *etc.ZoneList    `protobuf:"bytes,4,opt,name=ZoneList,proto3" json:"ZoneList,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
 }
 
-func (m *ServerStateReq) Reset()         { *m = ServerStateReq{} }
-func (m *ServerStateReq) String() string { return proto.CompactTextString(m) }
-func (*ServerStateReq) ProtoMessage()    {}
-func (*ServerStateReq) Descriptor() ([]byte, []int) {
+func (m *ETCSyncNTF) Reset()         { *m = ETCSyncNTF{} }
+func (m *ETCSyncNTF) String() string { return proto.CompactTextString(m) }
+func (*ETCSyncNTF) ProtoMessage()    {}
+func (*ETCSyncNTF) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1de517c49d537f4b, []int{0}
 }
-func (m *ServerStateReq) XXX_Unmarshal(b []byte) error {
+func (m *ETCSyncNTF) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *ServerStateReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *ETCSyncNTF) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_ServerStateReq.Marshal(b, m, deterministic)
+		return xxx_messageInfo_ETCSyncNTF.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -82,45 +85,65 @@ func (m *ServerStateReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, erro
 		return b[:n], nil
 	}
 }
-func (m *ServerStateReq) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ServerStateReq.Merge(m, src)
+func (m *ETCSyncNTF) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ETCSyncNTF.Merge(m, src)
 }
-func (m *ServerStateReq) XXX_Size() int {
+func (m *ETCSyncNTF) XXX_Size() int {
 	return m.Size()
 }
-func (m *ServerStateReq) XXX_DiscardUnknown() {
-	xxx_messageInfo_ServerStateReq.DiscardUnknown(m)
+func (m *ETCSyncNTF) XXX_DiscardUnknown() {
+	xxx_messageInfo_ETCSyncNTF.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ServerStateReq proto.InternalMessageInfo
+var xxx_messageInfo_ETCSyncNTF proto.InternalMessageInfo
 
-func (m *ServerStateReq) GetInfo() *ServerInfo {
+func (m *ETCSyncNTF) GetBasicConfig() *etc.BasicConfig {
 	if m != nil {
-		return m.Info
+		return m.BasicConfig
 	}
 	return nil
 }
 
-type StaticMapLocation struct {
-	MapID                int32    `protobuf:"varint,1,opt,name=MapID,proto3" json:"MapID,omitempty"`
-	ServerID             int32    `protobuf:"varint,2,opt,name=ServerID,proto3" json:"ServerID,omitempty"`
+func (m *ETCSyncNTF) GetDatabase() *etc.Database {
+	if m != nil {
+		return m.Database
+	}
+	return nil
+}
+
+func (m *ETCSyncNTF) GetServerList() *etc.ServerList {
+	if m != nil {
+		return m.ServerList
+	}
+	return nil
+}
+
+func (m *ETCSyncNTF) GetZoneList() *etc.ZoneList {
+	if m != nil {
+		return m.ZoneList
+	}
+	return nil
+}
+
+type NodeStartNTF struct {
+	Address              []byte   `protobuf:"bytes,1,opt,name=Address,proto3" json:"Address,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *StaticMapLocation) Reset()         { *m = StaticMapLocation{} }
-func (m *StaticMapLocation) String() string { return proto.CompactTextString(m) }
-func (*StaticMapLocation) ProtoMessage()    {}
-func (*StaticMapLocation) Descriptor() ([]byte, []int) {
+func (m *NodeStartNTF) Reset()         { *m = NodeStartNTF{} }
+func (m *NodeStartNTF) String() string { return proto.CompactTextString(m) }
+func (*NodeStartNTF) ProtoMessage()    {}
+func (*NodeStartNTF) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1de517c49d537f4b, []int{1}
 }
-func (m *StaticMapLocation) XXX_Unmarshal(b []byte) error {
+func (m *NodeStartNTF) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *StaticMapLocation) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *NodeStartNTF) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_StaticMapLocation.Marshal(b, m, deterministic)
+		return xxx_messageInfo_NodeStartNTF.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -130,264 +153,45 @@ func (m *StaticMapLocation) XXX_Marshal(b []byte, deterministic bool) ([]byte, e
 		return b[:n], nil
 	}
 }
-func (m *StaticMapLocation) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_StaticMapLocation.Merge(m, src)
+func (m *NodeStartNTF) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NodeStartNTF.Merge(m, src)
 }
-func (m *StaticMapLocation) XXX_Size() int {
+func (m *NodeStartNTF) XXX_Size() int {
 	return m.Size()
 }
-func (m *StaticMapLocation) XXX_DiscardUnknown() {
-	xxx_messageInfo_StaticMapLocation.DiscardUnknown(m)
+func (m *NodeStartNTF) XXX_DiscardUnknown() {
+	xxx_messageInfo_NodeStartNTF.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_StaticMapLocation proto.InternalMessageInfo
+var xxx_messageInfo_NodeStartNTF proto.InternalMessageInfo
 
-func (m *StaticMapLocation) GetMapID() int32 {
-	if m != nil {
-		return m.MapID
-	}
-	return 0
-}
-
-func (m *StaticMapLocation) GetServerID() int32 {
-	if m != nil {
-		return m.ServerID
-	}
-	return 0
-}
-
-type ZoneLocation struct {
-	ZoneID               int32                `protobuf:"varint,1,opt,name=ZoneID,proto3" json:"ZoneID,omitempty"`
-	StaticMapLocations   []*StaticMapLocation `protobuf:"bytes,2,rep,name=StaticMapLocations,proto3" json:"StaticMapLocations,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
-	XXX_unrecognized     []byte               `json:"-"`
-	XXX_sizecache        int32                `json:"-"`
-}
-
-func (m *ZoneLocation) Reset()         { *m = ZoneLocation{} }
-func (m *ZoneLocation) String() string { return proto.CompactTextString(m) }
-func (*ZoneLocation) ProtoMessage()    {}
-func (*ZoneLocation) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1de517c49d537f4b, []int{2}
-}
-func (m *ZoneLocation) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *ZoneLocation) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_ZoneLocation.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *ZoneLocation) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ZoneLocation.Merge(m, src)
-}
-func (m *ZoneLocation) XXX_Size() int {
-	return m.Size()
-}
-func (m *ZoneLocation) XXX_DiscardUnknown() {
-	xxx_messageInfo_ZoneLocation.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ZoneLocation proto.InternalMessageInfo
-
-func (m *ZoneLocation) GetZoneID() int32 {
-	if m != nil {
-		return m.ZoneID
-	}
-	return 0
-}
-
-func (m *ZoneLocation) GetStaticMapLocations() []*StaticMapLocation {
-	if m != nil {
-		return m.StaticMapLocations
-	}
-	return nil
-}
-
-type ServerStateResp struct {
-	ServerType           string            `protobuf:"bytes,1,opt,name=ServerType,proto3" json:"ServerType,omitempty"`
-	Message              string            `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
-	ServerConfig         *etc.ServerConfig `protobuf:"bytes,3,opt,name=ServerConfig,proto3" json:"ServerConfig,omitempty"`
-	ServerInfoList       []*ServerInfo     `protobuf:"bytes,4,rep,name=ServerInfoList,proto3" json:"ServerInfoList,omitempty"`
-	Servers              []*etc.Server     `protobuf:"bytes,5,rep,name=Servers,proto3" json:"Servers,omitempty"`
-	Zones                []*etc.Zone       `protobuf:"bytes,6,rep,name=Zones,proto3" json:"Zones,omitempty"`
-	ZoneLocations        []*ZoneLocation   `protobuf:"bytes,7,rep,name=ZoneLocations,proto3" json:"ZoneLocations,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
-}
-
-func (m *ServerStateResp) Reset()         { *m = ServerStateResp{} }
-func (m *ServerStateResp) String() string { return proto.CompactTextString(m) }
-func (*ServerStateResp) ProtoMessage()    {}
-func (*ServerStateResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1de517c49d537f4b, []int{3}
-}
-func (m *ServerStateResp) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *ServerStateResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_ServerStateResp.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *ServerStateResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ServerStateResp.Merge(m, src)
-}
-func (m *ServerStateResp) XXX_Size() int {
-	return m.Size()
-}
-func (m *ServerStateResp) XXX_DiscardUnknown() {
-	xxx_messageInfo_ServerStateResp.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ServerStateResp proto.InternalMessageInfo
-
-func (m *ServerStateResp) GetServerType() string {
-	if m != nil {
-		return m.ServerType
-	}
-	return ""
-}
-
-func (m *ServerStateResp) GetMessage() string {
-	if m != nil {
-		return m.Message
-	}
-	return ""
-}
-
-func (m *ServerStateResp) GetServerConfig() *etc.ServerConfig {
-	if m != nil {
-		return m.ServerConfig
-	}
-	return nil
-}
-
-func (m *ServerStateResp) GetServerInfoList() []*ServerInfo {
-	if m != nil {
-		return m.ServerInfoList
-	}
-	return nil
-}
-
-func (m *ServerStateResp) GetServers() []*etc.Server {
-	if m != nil {
-		return m.Servers
-	}
-	return nil
-}
-
-func (m *ServerStateResp) GetZones() []*etc.Zone {
-	if m != nil {
-		return m.Zones
-	}
-	return nil
-}
-
-func (m *ServerStateResp) GetZoneLocations() []*ZoneLocation {
-	if m != nil {
-		return m.ZoneLocations
-	}
-	return nil
-}
-
-type ServerInfo struct {
-	ServerID             int32       `protobuf:"varint,1,opt,name=ServerID,proto3" json:"ServerID,omitempty"`
-	Address              []byte      `protobuf:"bytes,2,opt,name=Address,proto3" json:"Address,omitempty"`
-	State                ServerState `protobuf:"varint,3,opt,name=State,proto3,enum=ServerState" json:"State,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
-}
-
-func (m *ServerInfo) Reset()         { *m = ServerInfo{} }
-func (m *ServerInfo) String() string { return proto.CompactTextString(m) }
-func (*ServerInfo) ProtoMessage()    {}
-func (*ServerInfo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1de517c49d537f4b, []int{4}
-}
-func (m *ServerInfo) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *ServerInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_ServerInfo.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *ServerInfo) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ServerInfo.Merge(m, src)
-}
-func (m *ServerInfo) XXX_Size() int {
-	return m.Size()
-}
-func (m *ServerInfo) XXX_DiscardUnknown() {
-	xxx_messageInfo_ServerInfo.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ServerInfo proto.InternalMessageInfo
-
-func (m *ServerInfo) GetServerID() int32 {
-	if m != nil {
-		return m.ServerID
-	}
-	return 0
-}
-
-func (m *ServerInfo) GetAddress() []byte {
+func (m *NodeStartNTF) GetAddress() []byte {
 	if m != nil {
 		return m.Address
 	}
 	return nil
 }
 
-func (m *ServerInfo) GetState() ServerState {
-	if m != nil {
-		return m.State
-	}
-	return ServerState_Start
+type Node struct {
+	NodeState            NodeState `protobuf:"varint,1,opt,name=NodeState,proto3,enum=NodeState" json:"NodeState,omitempty"`
+	NodeAddress          []byte    `protobuf:"bytes,2,opt,name=NodeAddress,proto3" json:"NodeAddress,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
+	XXX_unrecognized     []byte    `json:"-"`
+	XXX_sizecache        int32     `json:"-"`
 }
 
-type ServerInfoList struct {
-	Servers              []*ServerInfo `protobuf:"bytes,1,rep,name=Servers,proto3" json:"Servers,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
-	XXX_unrecognized     []byte        `json:"-"`
-	XXX_sizecache        int32         `json:"-"`
+func (m *Node) Reset()         { *m = Node{} }
+func (m *Node) String() string { return proto.CompactTextString(m) }
+func (*Node) ProtoMessage()    {}
+func (*Node) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1de517c49d537f4b, []int{2}
 }
-
-func (m *ServerInfoList) Reset()         { *m = ServerInfoList{} }
-func (m *ServerInfoList) String() string { return proto.CompactTextString(m) }
-func (*ServerInfoList) ProtoMessage()    {}
-func (*ServerInfoList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1de517c49d537f4b, []int{5}
-}
-func (m *ServerInfoList) XXX_Unmarshal(b []byte) error {
+func (m *Node) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *ServerInfoList) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *Node) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_ServerInfoList.Marshal(b, m, deterministic)
+		return xxx_messageInfo_Node.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -397,47 +201,51 @@ func (m *ServerInfoList) XXX_Marshal(b []byte, deterministic bool) ([]byte, erro
 		return b[:n], nil
 	}
 }
-func (m *ServerInfoList) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ServerInfoList.Merge(m, src)
+func (m *Node) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Node.Merge(m, src)
 }
-func (m *ServerInfoList) XXX_Size() int {
+func (m *Node) XXX_Size() int {
 	return m.Size()
 }
-func (m *ServerInfoList) XXX_DiscardUnknown() {
-	xxx_messageInfo_ServerInfoList.DiscardUnknown(m)
+func (m *Node) XXX_DiscardUnknown() {
+	xxx_messageInfo_Node.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ServerInfoList proto.InternalMessageInfo
+var xxx_messageInfo_Node proto.InternalMessageInfo
 
-func (m *ServerInfoList) GetServers() []*ServerInfo {
+func (m *Node) GetNodeState() NodeState {
 	if m != nil {
-		return m.Servers
+		return m.NodeState
+	}
+	return NodeState_Unset
+}
+
+func (m *Node) GetNodeAddress() []byte {
+	if m != nil {
+		return m.NodeAddress
 	}
 	return nil
 }
 
-type UpdateETC struct {
-	ServerConfig         *etc.ServerConfig `protobuf:"bytes,1,opt,name=ServerConfig,proto3" json:"ServerConfig,omitempty"`
-	Servers              []*etc.Server     `protobuf:"bytes,2,rep,name=Servers,proto3" json:"Servers,omitempty"`
-	Zones                []*etc.Zone       `protobuf:"bytes,3,rep,name=Zones,proto3" json:"Zones,omitempty"`
-	ZoneLocations        []*ZoneLocation   `protobuf:"bytes,4,rep,name=ZoneLocations,proto3" json:"ZoneLocations,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
+type NodesInfoNTF struct {
+	Nodes                []*Node  `protobuf:"bytes,1,rep,name=Nodes,proto3" json:"Nodes,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *UpdateETC) Reset()         { *m = UpdateETC{} }
-func (m *UpdateETC) String() string { return proto.CompactTextString(m) }
-func (*UpdateETC) ProtoMessage()    {}
-func (*UpdateETC) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1de517c49d537f4b, []int{6}
+func (m *NodesInfoNTF) Reset()         { *m = NodesInfoNTF{} }
+func (m *NodesInfoNTF) String() string { return proto.CompactTextString(m) }
+func (*NodesInfoNTF) ProtoMessage()    {}
+func (*NodesInfoNTF) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1de517c49d537f4b, []int{3}
 }
-func (m *UpdateETC) XXX_Unmarshal(b []byte) error {
+func (m *NodesInfoNTF) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *UpdateETC) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *NodesInfoNTF) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_UpdateETC.Marshal(b, m, deterministic)
+		return xxx_messageInfo_NodesInfoNTF.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -447,94 +255,62 @@ func (m *UpdateETC) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *UpdateETC) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateETC.Merge(m, src)
+func (m *NodesInfoNTF) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NodesInfoNTF.Merge(m, src)
 }
-func (m *UpdateETC) XXX_Size() int {
+func (m *NodesInfoNTF) XXX_Size() int {
 	return m.Size()
 }
-func (m *UpdateETC) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateETC.DiscardUnknown(m)
+func (m *NodesInfoNTF) XXX_DiscardUnknown() {
+	xxx_messageInfo_NodesInfoNTF.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_UpdateETC proto.InternalMessageInfo
+var xxx_messageInfo_NodesInfoNTF proto.InternalMessageInfo
 
-func (m *UpdateETC) GetServerConfig() *etc.ServerConfig {
+func (m *NodesInfoNTF) GetNodes() []*Node {
 	if m != nil {
-		return m.ServerConfig
-	}
-	return nil
-}
-
-func (m *UpdateETC) GetServers() []*etc.Server {
-	if m != nil {
-		return m.Servers
-	}
-	return nil
-}
-
-func (m *UpdateETC) GetZones() []*etc.Zone {
-	if m != nil {
-		return m.Zones
-	}
-	return nil
-}
-
-func (m *UpdateETC) GetZoneLocations() []*ZoneLocation {
-	if m != nil {
-		return m.ZoneLocations
+		return m.Nodes
 	}
 	return nil
 }
 
 func init() {
-	proto.RegisterEnum("ServerState", ServerState_name, ServerState_value)
-	proto.RegisterType((*ServerStateReq)(nil), "ServerStateReq")
-	proto.RegisterType((*StaticMapLocation)(nil), "StaticMapLocation")
-	proto.RegisterType((*ZoneLocation)(nil), "ZoneLocation")
-	proto.RegisterType((*ServerStateResp)(nil), "ServerStateResp")
-	proto.RegisterType((*ServerInfo)(nil), "ServerInfo")
-	proto.RegisterType((*ServerInfoList)(nil), "ServerInfoList")
-	proto.RegisterType((*UpdateETC)(nil), "UpdateETC")
+	proto.RegisterEnum("NodeState", NodeState_name, NodeState_value)
+	proto.RegisterType((*ETCSyncNTF)(nil), "ETCSyncNTF")
+	proto.RegisterType((*NodeStartNTF)(nil), "NodeStartNTF")
+	proto.RegisterType((*Node)(nil), "Node")
+	proto.RegisterType((*NodesInfoNTF)(nil), "NodesInfoNTF")
 }
 
 func init() { proto.RegisterFile("center.proto", fileDescriptor_1de517c49d537f4b) }
 
 var fileDescriptor_1de517c49d537f4b = []byte{
-	// 478 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x93, 0x4b, 0x6e, 0xd3, 0x40,
-	0x18, 0xc7, 0x3b, 0x4e, 0x1c, 0x93, 0xcf, 0x4e, 0x9b, 0x8e, 0x50, 0x35, 0x2a, 0x92, 0x29, 0x96,
-	0x90, 0x22, 0x16, 0x8e, 0x9a, 0x2c, 0x58, 0xb1, 0xa0, 0x8f, 0x45, 0xa4, 0x06, 0xa4, 0x69, 0xd9,
-	0x74, 0x67, 0x9c, 0x71, 0x64, 0x04, 0x63, 0xe3, 0x19, 0x90, 0xca, 0x49, 0x38, 0x02, 0x7b, 0x2e,
-	0xc1, 0x92, 0x23, 0xa0, 0x70, 0x11, 0x34, 0x9f, 0xed, 0x60, 0xd7, 0x48, 0x61, 0xe7, 0xff, 0x63,
-	0x5e, 0xbf, 0x4f, 0x06, 0x2f, 0x16, 0x52, 0x8b, 0x22, 0xcc, 0x8b, 0x4c, 0x67, 0xc7, 0x87, 0x42,
-	0xc7, 0xa1, 0x12, 0xc5, 0x67, 0x51, 0xa8, 0xca, 0x3a, 0x30, 0xd6, 0x97, 0x4c, 0x8a, 0xca, 0x08,
-	0x4e, 0x61, 0xff, 0x1a, 0x1b, 0xd7, 0x3a, 0xd2, 0x82, 0x8b, 0x8f, 0xf4, 0x31, 0xf4, 0x17, 0x32,
-	0xc9, 0x18, 0x39, 0x21, 0x13, 0x77, 0xe6, 0x86, 0x65, 0x6c, 0x2c, 0x8e, 0x41, 0x70, 0x09, 0x87,
-	0xa6, 0x9c, 0xc6, 0xcb, 0x28, 0xbf, 0xca, 0xe2, 0x48, 0xa7, 0x99, 0xa4, 0x0f, 0xc1, 0x5e, 0x46,
-	0xf9, 0xe2, 0x02, 0x97, 0xd9, 0xbc, 0x14, 0xf4, 0x18, 0x1e, 0x54, 0xcb, 0x2f, 0x98, 0x85, 0xc1,
-	0x56, 0x07, 0xef, 0xc0, 0xbb, 0xcd, 0xa4, 0xd8, 0xee, 0x70, 0x04, 0x03, 0xa3, 0xb7, 0x5b, 0x54,
-	0x8a, 0x9e, 0x01, 0xed, 0x1c, 0xa7, 0x98, 0x75, 0xd2, 0x9b, 0xb8, 0x33, 0x1a, 0x76, 0x22, 0xfe,
-	0x8f, 0x76, 0xf0, 0xcd, 0x82, 0x83, 0xd6, 0x33, 0x55, 0x4e, 0x7d, 0x80, 0xd2, 0xba, 0xb9, 0xcb,
-	0x05, 0x9e, 0x39, 0xe4, 0x0d, 0x87, 0x32, 0x70, 0x96, 0x42, 0xa9, 0x68, 0x2d, 0xf0, 0xea, 0x43,
-	0x5e, 0x4b, 0x7a, 0x0a, 0x5e, 0xd9, 0x3b, 0xcf, 0x64, 0x92, 0xae, 0x59, 0x0f, 0x49, 0x8d, 0xc2,
-	0xa6, 0xc9, 0x5b, 0x15, 0x3a, 0xaf, 0x31, 0x1b, 0x82, 0x57, 0xa9, 0xd2, 0xac, 0x8f, 0x0f, 0x68,
-	0xe1, 0xbd, 0x57, 0xa1, 0x4f, 0xc0, 0x29, 0x1d, 0xc5, 0x6c, 0x6c, 0x3b, 0x55, 0x9b, 0xd7, 0x3e,
-	0x7d, 0x04, 0xb6, 0xc1, 0xa4, 0xd8, 0x00, 0x0b, 0x76, 0x68, 0x14, 0x2f, 0x3d, 0x3a, 0x87, 0x51,
-	0x93, 0xb0, 0x62, 0x0e, 0x96, 0x46, 0x61, 0xd3, 0xe5, 0xed, 0x4e, 0x90, 0xd4, 0x58, 0xcc, 0x35,
-	0x5a, 0x03, 0x24, 0xed, 0x01, 0x1a, 0x40, 0x2f, 0x57, 0xab, 0x42, 0x28, 0x85, 0x80, 0x3c, 0x5e,
-	0x4b, 0x1a, 0x80, 0x8d, 0x9c, 0x91, 0xcc, 0xfe, 0xcc, 0x0b, 0x9b, 0xec, 0xcb, 0x28, 0x78, 0x7e,
-	0x9f, 0x08, 0x7d, 0xfa, 0xf7, 0xb9, 0xa4, 0x0b, 0xa7, 0xce, 0x82, 0xef, 0x04, 0x86, 0x6f, 0xf2,
-	0x55, 0xa4, 0xc5, 0xe5, 0xcd, 0x79, 0x67, 0x16, 0x64, 0xf7, 0x2c, 0x1a, 0x58, 0xad, 0x5d, 0x58,
-	0x7b, 0xff, 0x83, 0xb5, 0xbf, 0x1b, 0xeb, 0xb3, 0x17, 0xe0, 0x36, 0x20, 0xd0, 0x21, 0x12, 0x2a,
-	0xf4, 0x78, 0xcf, 0x7c, 0x72, 0x11, 0xad, 0xee, 0xc6, 0x84, 0xba, 0xe0, 0xf0, 0x4f, 0x52, 0xa6,
-	0x72, 0x3d, 0xb6, 0x8c, 0x78, 0x9d, 0x24, 0xef, 0x53, 0x29, 0xc6, 0xbd, 0xb3, 0xc9, 0x8f, 0x8d,
-	0x4f, 0x7e, 0x6e, 0x7c, 0xf2, 0x6b, 0xe3, 0x93, 0xaf, 0xbf, 0xfd, 0xbd, 0xdb, 0xa3, 0xc5, 0xab,
-	0x72, 0xc3, 0xa9, 0x2a, 0xe2, 0x29, 0xfe, 0xcc, 0xd3, 0x0f, 0x6a, 0xfd, 0x76, 0x80, 0x9f, 0xf3,
-	0x3f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xed, 0xe6, 0x8e, 0x83, 0x0b, 0x04, 0x00, 0x00,
+	// 351 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x54, 0x91, 0xcf, 0x4a, 0xf3, 0x40,
+	0x14, 0xc5, 0x3b, 0xfd, 0xf3, 0xf5, 0xeb, 0x4d, 0xd0, 0x38, 0x0b, 0x09, 0x0a, 0xa1, 0x04, 0x84,
+	0x60, 0x21, 0x85, 0xba, 0x74, 0x65, 0xab, 0x42, 0x41, 0x2a, 0x4c, 0xeb, 0xa6, 0xbb, 0x34, 0xb9,
+	0x29, 0x01, 0x9d, 0xc8, 0xcc, 0x28, 0xd4, 0x27, 0xf1, 0x4d, 0x7c, 0x05, 0x97, 0x3e, 0x82, 0xd4,
+	0x17, 0x91, 0x99, 0x24, 0x6d, 0xdc, 0xcd, 0xf9, 0x9d, 0x73, 0xcf, 0xbd, 0x24, 0x60, 0xc7, 0xc8,
+	0x15, 0x8a, 0xf0, 0x59, 0xe4, 0x2a, 0x3f, 0x39, 0x42, 0x15, 0x87, 0x12, 0xc5, 0x2b, 0x0a, 0x59,
+	0xa2, 0x43, 0x8d, 0xde, 0x72, 0x8e, 0x7f, 0xc0, 0x2a, 0x92, 0x59, 0x5c, 0x02, 0xaa, 0x41, 0x12,
+	0xa9, 0x68, 0x15, 0x49, 0x2c, 0x98, 0xff, 0x41, 0x00, 0x6e, 0x16, 0x93, 0xf9, 0x86, 0xc7, 0xb3,
+	0xc5, 0x2d, 0x0d, 0xc1, 0x1a, 0xeb, 0x89, 0x49, 0xce, 0xd3, 0x6c, 0xed, 0x92, 0x3e, 0x09, 0xac,
+	0x91, 0x1d, 0xd6, 0x18, 0xab, 0x07, 0xe8, 0x19, 0xfc, 0xbf, 0x2e, 0x0b, 0xdd, 0xa6, 0x09, 0xf7,
+	0xc2, 0x0a, 0xb0, 0x9d, 0x45, 0x07, 0x00, 0x73, 0x73, 0xec, 0x5d, 0x26, 0x95, 0xdb, 0x32, 0x41,
+	0x2b, 0xdc, 0x23, 0x56, 0xb3, 0x75, 0xe7, 0x32, 0xe7, 0x68, 0xa2, 0xed, 0xb2, 0xb3, 0x02, 0x6c,
+	0x67, 0xf9, 0x01, 0xd8, 0xb3, 0x3c, 0xc1, 0xb9, 0x8a, 0x84, 0xd2, 0xa7, 0xbb, 0xd0, 0xbd, 0x4a,
+	0x12, 0x81, 0x52, 0x9a, 0xb3, 0x6d, 0x56, 0x49, 0x9f, 0x41, 0x5b, 0x27, 0x69, 0x00, 0xbd, 0x72,
+	0x42, 0xa1, 0xc9, 0x1c, 0x8c, 0x20, 0xdc, 0x11, 0xb6, 0x37, 0x69, 0x1f, 0x2c, 0x2d, 0xaa, 0xbe,
+	0xa6, 0xe9, 0xab, 0x23, 0x7f, 0x50, 0x6c, 0x97, 0x53, 0x9e, 0xe6, 0x7a, 0xfb, 0x29, 0x74, 0x8c,
+	0x76, 0x49, 0xbf, 0x15, 0x58, 0xa3, 0x8e, 0xe9, 0x65, 0x05, 0x3b, 0xbf, 0xac, 0x2d, 0xa6, 0x3d,
+	0xe8, 0x3c, 0x70, 0x89, 0xca, 0x69, 0xe8, 0x27, 0xc3, 0x28, 0xd9, 0x38, 0x84, 0x5a, 0xd0, 0x65,
+	0x2f, 0x9c, 0x67, 0x7c, 0xed, 0x34, 0xb5, 0xb8, 0x4f, 0xd3, 0xc7, 0x8c, 0xa3, 0xd3, 0x1a, 0x07,
+	0x9f, 0x5b, 0x8f, 0x7c, 0x6d, 0x3d, 0xf2, 0xbd, 0xf5, 0xc8, 0xfb, 0x8f, 0xd7, 0x58, 0x1e, 0x4f,
+	0x67, 0xc5, 0xe7, 0x1a, 0x4a, 0x11, 0x0f, 0xcd, 0x7f, 0x1c, 0x3e, 0xc9, 0xf5, 0xea, 0x9f, 0x79,
+	0x5e, 0xfc, 0x06, 0x00, 0x00, 0xff, 0xff, 0xeb, 0xfc, 0x24, 0xa1, 0x2b, 0x02, 0x00, 0x00,
 }
 
-func (m *ServerStateReq) Marshal() (dAtA []byte, err error) {
+func (m *ETCSyncNTF) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -544,12 +320,12 @@ func (m *ServerStateReq) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *ServerStateReq) MarshalTo(dAtA []byte) (int, error) {
+func (m *ETCSyncNTF) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *ServerStateReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *ETCSyncNTF) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -558,9 +334,9 @@ func (m *ServerStateReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i -= len(m.XXX_unrecognized)
 		copy(dAtA[i:], m.XXX_unrecognized)
 	}
-	if m.Info != nil {
+	if m.ZoneList != nil {
 		{
-			size, err := m.Info.MarshalToSizedBuffer(dAtA[:i])
+			size, err := m.ZoneList.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
@@ -568,177 +344,11 @@ func (m *ServerStateReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			i = encodeVarintCenter(dAtA, i, uint64(size))
 		}
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x22
 	}
-	return len(dAtA) - i, nil
-}
-
-func (m *StaticMapLocation) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *StaticMapLocation) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *StaticMapLocation) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.XXX_unrecognized != nil {
-		i -= len(m.XXX_unrecognized)
-		copy(dAtA[i:], m.XXX_unrecognized)
-	}
-	if m.ServerID != 0 {
-		i = encodeVarintCenter(dAtA, i, uint64(m.ServerID))
-		i--
-		dAtA[i] = 0x10
-	}
-	if m.MapID != 0 {
-		i = encodeVarintCenter(dAtA, i, uint64(m.MapID))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *ZoneLocation) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *ZoneLocation) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ZoneLocation) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.XXX_unrecognized != nil {
-		i -= len(m.XXX_unrecognized)
-		copy(dAtA[i:], m.XXX_unrecognized)
-	}
-	if len(m.StaticMapLocations) > 0 {
-		for iNdEx := len(m.StaticMapLocations) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.StaticMapLocations[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintCenter(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x12
-		}
-	}
-	if m.ZoneID != 0 {
-		i = encodeVarintCenter(dAtA, i, uint64(m.ZoneID))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *ServerStateResp) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *ServerStateResp) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ServerStateResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.XXX_unrecognized != nil {
-		i -= len(m.XXX_unrecognized)
-		copy(dAtA[i:], m.XXX_unrecognized)
-	}
-	if len(m.ZoneLocations) > 0 {
-		for iNdEx := len(m.ZoneLocations) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.ZoneLocations[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintCenter(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x3a
-		}
-	}
-	if len(m.Zones) > 0 {
-		for iNdEx := len(m.Zones) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Zones[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintCenter(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x32
-		}
-	}
-	if len(m.Servers) > 0 {
-		for iNdEx := len(m.Servers) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Servers[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintCenter(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x2a
-		}
-	}
-	if len(m.ServerInfoList) > 0 {
-		for iNdEx := len(m.ServerInfoList) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.ServerInfoList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintCenter(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x22
-		}
-	}
-	if m.ServerConfig != nil {
+	if m.ServerList != nil {
 		{
-			size, err := m.ServerConfig.MarshalToSizedBuffer(dAtA[:i])
+			size, err := m.ServerList.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
@@ -748,24 +358,34 @@ func (m *ServerStateResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.Message) > 0 {
-		i -= len(m.Message)
-		copy(dAtA[i:], m.Message)
-		i = encodeVarintCenter(dAtA, i, uint64(len(m.Message)))
+	if m.Database != nil {
+		{
+			size, err := m.Database.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintCenter(dAtA, i, uint64(size))
+		}
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.ServerType) > 0 {
-		i -= len(m.ServerType)
-		copy(dAtA[i:], m.ServerType)
-		i = encodeVarintCenter(dAtA, i, uint64(len(m.ServerType)))
+	if m.BasicConfig != nil {
+		{
+			size, err := m.BasicConfig.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintCenter(dAtA, i, uint64(size))
+		}
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *ServerInfo) Marshal() (dAtA []byte, err error) {
+func (m *NodeStartNTF) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -775,12 +395,12 @@ func (m *ServerInfo) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *ServerInfo) MarshalTo(dAtA []byte) (int, error) {
+func (m *NodeStartNTF) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *ServerInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *NodeStartNTF) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -788,28 +408,18 @@ func (m *ServerInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	if m.XXX_unrecognized != nil {
 		i -= len(m.XXX_unrecognized)
 		copy(dAtA[i:], m.XXX_unrecognized)
-	}
-	if m.State != 0 {
-		i = encodeVarintCenter(dAtA, i, uint64(m.State))
-		i--
-		dAtA[i] = 0x18
 	}
 	if len(m.Address) > 0 {
 		i -= len(m.Address)
 		copy(dAtA[i:], m.Address)
 		i = encodeVarintCenter(dAtA, i, uint64(len(m.Address)))
 		i--
-		dAtA[i] = 0x12
-	}
-	if m.ServerID != 0 {
-		i = encodeVarintCenter(dAtA, i, uint64(m.ServerID))
-		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *ServerInfoList) Marshal() (dAtA []byte, err error) {
+func (m *Node) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -819,12 +429,12 @@ func (m *ServerInfoList) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *ServerInfoList) MarshalTo(dAtA []byte) (int, error) {
+func (m *Node) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *ServerInfoList) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *Node) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -833,10 +443,49 @@ func (m *ServerInfoList) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i -= len(m.XXX_unrecognized)
 		copy(dAtA[i:], m.XXX_unrecognized)
 	}
-	if len(m.Servers) > 0 {
-		for iNdEx := len(m.Servers) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.NodeAddress) > 0 {
+		i -= len(m.NodeAddress)
+		copy(dAtA[i:], m.NodeAddress)
+		i = encodeVarintCenter(dAtA, i, uint64(len(m.NodeAddress)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.NodeState != 0 {
+		i = encodeVarintCenter(dAtA, i, uint64(m.NodeState))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *NodesInfoNTF) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *NodesInfoNTF) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *NodesInfoNTF) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i -= len(m.XXX_unrecognized)
+		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	if len(m.Nodes) > 0 {
+		for iNdEx := len(m.Nodes) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.Servers[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.Nodes[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -846,87 +495,6 @@ func (m *ServerInfoList) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			i--
 			dAtA[i] = 0xa
 		}
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *UpdateETC) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *UpdateETC) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *UpdateETC) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.XXX_unrecognized != nil {
-		i -= len(m.XXX_unrecognized)
-		copy(dAtA[i:], m.XXX_unrecognized)
-	}
-	if len(m.ZoneLocations) > 0 {
-		for iNdEx := len(m.ZoneLocations) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.ZoneLocations[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintCenter(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x22
-		}
-	}
-	if len(m.Zones) > 0 {
-		for iNdEx := len(m.Zones) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Zones[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintCenter(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x1a
-		}
-	}
-	if len(m.Servers) > 0 {
-		for iNdEx := len(m.Servers) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Servers[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintCenter(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x12
-		}
-	}
-	if m.ServerConfig != nil {
-		{
-			size, err := m.ServerConfig.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintCenter(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -942,14 +510,26 @@ func encodeVarintCenter(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *ServerStateReq) Size() (n int) {
+func (m *ETCSyncNTF) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.Info != nil {
-		l = m.Info.Size()
+	if m.BasicConfig != nil {
+		l = m.BasicConfig.Size()
+		n += 1 + l + sovCenter(uint64(l))
+	}
+	if m.Database != nil {
+		l = m.Database.Size()
+		n += 1 + l + sovCenter(uint64(l))
+	}
+	if m.ServerList != nil {
+		l = m.ServerList.Size()
+		n += 1 + l + sovCenter(uint64(l))
+	}
+	if m.ZoneList != nil {
+		l = m.ZoneList.Size()
 		n += 1 + l + sovCenter(uint64(l))
 	}
 	if m.XXX_unrecognized != nil {
@@ -958,157 +538,49 @@ func (m *ServerStateReq) Size() (n int) {
 	return n
 }
 
-func (m *StaticMapLocation) Size() (n int) {
+func (m *NodeStartNTF) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.MapID != 0 {
-		n += 1 + sovCenter(uint64(m.MapID))
-	}
-	if m.ServerID != 0 {
-		n += 1 + sovCenter(uint64(m.ServerID))
-	}
-	if m.XXX_unrecognized != nil {
-		n += len(m.XXX_unrecognized)
-	}
-	return n
-}
-
-func (m *ZoneLocation) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.ZoneID != 0 {
-		n += 1 + sovCenter(uint64(m.ZoneID))
-	}
-	if len(m.StaticMapLocations) > 0 {
-		for _, e := range m.StaticMapLocations {
-			l = e.Size()
-			n += 1 + l + sovCenter(uint64(l))
-		}
-	}
-	if m.XXX_unrecognized != nil {
-		n += len(m.XXX_unrecognized)
-	}
-	return n
-}
-
-func (m *ServerStateResp) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.ServerType)
-	if l > 0 {
-		n += 1 + l + sovCenter(uint64(l))
-	}
-	l = len(m.Message)
-	if l > 0 {
-		n += 1 + l + sovCenter(uint64(l))
-	}
-	if m.ServerConfig != nil {
-		l = m.ServerConfig.Size()
-		n += 1 + l + sovCenter(uint64(l))
-	}
-	if len(m.ServerInfoList) > 0 {
-		for _, e := range m.ServerInfoList {
-			l = e.Size()
-			n += 1 + l + sovCenter(uint64(l))
-		}
-	}
-	if len(m.Servers) > 0 {
-		for _, e := range m.Servers {
-			l = e.Size()
-			n += 1 + l + sovCenter(uint64(l))
-		}
-	}
-	if len(m.Zones) > 0 {
-		for _, e := range m.Zones {
-			l = e.Size()
-			n += 1 + l + sovCenter(uint64(l))
-		}
-	}
-	if len(m.ZoneLocations) > 0 {
-		for _, e := range m.ZoneLocations {
-			l = e.Size()
-			n += 1 + l + sovCenter(uint64(l))
-		}
-	}
-	if m.XXX_unrecognized != nil {
-		n += len(m.XXX_unrecognized)
-	}
-	return n
-}
-
-func (m *ServerInfo) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.ServerID != 0 {
-		n += 1 + sovCenter(uint64(m.ServerID))
-	}
 	l = len(m.Address)
 	if l > 0 {
 		n += 1 + l + sovCenter(uint64(l))
 	}
-	if m.State != 0 {
-		n += 1 + sovCenter(uint64(m.State))
-	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
 	}
 	return n
 }
 
-func (m *ServerInfoList) Size() (n int) {
+func (m *Node) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.Servers) > 0 {
-		for _, e := range m.Servers {
-			l = e.Size()
-			n += 1 + l + sovCenter(uint64(l))
-		}
+	if m.NodeState != 0 {
+		n += 1 + sovCenter(uint64(m.NodeState))
 	}
-	if m.XXX_unrecognized != nil {
-		n += len(m.XXX_unrecognized)
-	}
-	return n
-}
-
-func (m *UpdateETC) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.ServerConfig != nil {
-		l = m.ServerConfig.Size()
+	l = len(m.NodeAddress)
+	if l > 0 {
 		n += 1 + l + sovCenter(uint64(l))
 	}
-	if len(m.Servers) > 0 {
-		for _, e := range m.Servers {
-			l = e.Size()
-			n += 1 + l + sovCenter(uint64(l))
-		}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
 	}
-	if len(m.Zones) > 0 {
-		for _, e := range m.Zones {
-			l = e.Size()
-			n += 1 + l + sovCenter(uint64(l))
-		}
+	return n
+}
+
+func (m *NodesInfoNTF) Size() (n int) {
+	if m == nil {
+		return 0
 	}
-	if len(m.ZoneLocations) > 0 {
-		for _, e := range m.ZoneLocations {
+	var l int
+	_ = l
+	if len(m.Nodes) > 0 {
+		for _, e := range m.Nodes {
 			l = e.Size()
 			n += 1 + l + sovCenter(uint64(l))
 		}
@@ -1125,7 +597,7 @@ func sovCenter(x uint64) (n int) {
 func sozCenter(x uint64) (n int) {
 	return sovCenter(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *ServerStateReq) Unmarshal(dAtA []byte) error {
+func (m *ETCSyncNTF) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1148,15 +620,15 @@ func (m *ServerStateReq) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ServerStateReq: wiretype end group for non-group")
+			return fmt.Errorf("proto: ETCSyncNTF: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ServerStateReq: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: ETCSyncNTF: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Info", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field BasicConfig", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1183,181 +655,16 @@ func (m *ServerStateReq) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Info == nil {
-				m.Info = &ServerInfo{}
+			if m.BasicConfig == nil {
+				m.BasicConfig = &etc.BasicConfig{}
 			}
-			if err := m.Info.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.BasicConfig.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipCenter(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthCenter
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthCenter
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *StaticMapLocation) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowCenter
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: StaticMapLocation: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: StaticMapLocation: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MapID", wireType)
-			}
-			m.MapID = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCenter
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.MapID |= int32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ServerID", wireType)
-			}
-			m.ServerID = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCenter
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ServerID |= int32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipCenter(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthCenter
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthCenter
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *ZoneLocation) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowCenter
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ZoneLocation: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ZoneLocation: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ZoneID", wireType)
-			}
-			m.ZoneID = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCenter
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ZoneID |= int32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field StaticMapLocations", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Database", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1384,132 +691,16 @@ func (m *ZoneLocation) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.StaticMapLocations = append(m.StaticMapLocations, &StaticMapLocation{})
-			if err := m.StaticMapLocations[len(m.StaticMapLocations)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if m.Database == nil {
+				m.Database = &etc.Database{}
+			}
+			if err := m.Database.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipCenter(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthCenter
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthCenter
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *ServerStateResp) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowCenter
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ServerStateResp: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ServerStateResp: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ServerType", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCenter
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthCenter
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthCenter
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ServerType = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Message", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCenter
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthCenter
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthCenter
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Message = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ServerConfig", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ServerList", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1536,16 +727,16 @@ func (m *ServerStateResp) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.ServerConfig == nil {
-				m.ServerConfig = &etc.ServerConfig{}
+			if m.ServerList == nil {
+				m.ServerList = &etc.ServerList{}
 			}
-			if err := m.ServerConfig.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.ServerList.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ServerInfoList", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ZoneList", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1572,110 +763,10 @@ func (m *ServerStateResp) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ServerInfoList = append(m.ServerInfoList, &ServerInfo{})
-			if err := m.ServerInfoList[len(m.ServerInfoList)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
+			if m.ZoneList == nil {
+				m.ZoneList = &etc.ZoneList{}
 			}
-			iNdEx = postIndex
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Servers", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCenter
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCenter
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCenter
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Servers = append(m.Servers, &etc.Server{})
-			if err := m.Servers[len(m.Servers)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 6:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Zones", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCenter
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCenter
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCenter
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Zones = append(m.Zones, &etc.Zone{})
-			if err := m.Zones[len(m.Zones)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 7:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ZoneLocations", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCenter
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCenter
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCenter
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ZoneLocations = append(m.ZoneLocations, &ZoneLocation{})
-			if err := m.ZoneLocations[len(m.ZoneLocations)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.ZoneList.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1704,7 +795,7 @@ func (m *ServerStateResp) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *ServerInfo) Unmarshal(dAtA []byte) error {
+func (m *NodeStartNTF) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1727,32 +818,13 @@ func (m *ServerInfo) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ServerInfo: wiretype end group for non-group")
+			return fmt.Errorf("proto: NodeStartNTF: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ServerInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: NodeStartNTF: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ServerID", wireType)
-			}
-			m.ServerID = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCenter
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ServerID |= int32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 			}
@@ -1786,11 +858,65 @@ func (m *ServerInfo) Unmarshal(dAtA []byte) error {
 				m.Address = []byte{}
 			}
 			iNdEx = postIndex
-		case 3:
+		default:
+			iNdEx = preIndex
+			skippy, err := skipCenter(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthCenter
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthCenter
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Node) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowCenter
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Node: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Node: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field State", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field NodeState", wireType)
 			}
-			m.State = 0
+			m.NodeState = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowCenter
@@ -1800,194 +926,16 @@ func (m *ServerInfo) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.State |= ServerState(b&0x7F) << shift
+				m.NodeState |= NodeState(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipCenter(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthCenter
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthCenter
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *ServerInfoList) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowCenter
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ServerInfoList: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ServerInfoList: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Servers", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCenter
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCenter
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCenter
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Servers = append(m.Servers, &ServerInfo{})
-			if err := m.Servers[len(m.Servers)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipCenter(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthCenter
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthCenter
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *UpdateETC) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowCenter
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: UpdateETC: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: UpdateETC: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ServerConfig", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCenter
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCenter
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCenter
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.ServerConfig == nil {
-				m.ServerConfig = &etc.ServerConfig{}
-			}
-			if err := m.ServerConfig.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Servers", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field NodeAddress", wireType)
 			}
-			var msglen int
+			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowCenter
@@ -1997,63 +945,83 @@ func (m *UpdateETC) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				byteLen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			if byteLen < 0 {
 				return ErrInvalidLengthCenter
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + byteLen
 			if postIndex < 0 {
 				return ErrInvalidLengthCenter
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Servers = append(m.Servers, &etc.Server{})
-			if err := m.Servers[len(m.Servers)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
+			m.NodeAddress = append(m.NodeAddress[:0], dAtA[iNdEx:postIndex]...)
+			if m.NodeAddress == nil {
+				m.NodeAddress = []byte{}
 			}
 			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Zones", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCenter
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCenter
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCenter
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Zones = append(m.Zones, &etc.Zone{})
-			if err := m.Zones[len(m.Zones)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipCenter(dAtA[iNdEx:])
+			if err != nil {
 				return err
 			}
-			iNdEx = postIndex
-		case 4:
+			if skippy < 0 {
+				return ErrInvalidLengthCenter
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthCenter
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *NodesInfoNTF) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowCenter
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: NodesInfoNTF: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: NodesInfoNTF: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ZoneLocations", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Nodes", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2080,8 +1048,8 @@ func (m *UpdateETC) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ZoneLocations = append(m.ZoneLocations, &ZoneLocation{})
-			if err := m.ZoneLocations[len(m.ZoneLocations)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.Nodes = append(m.Nodes, &Node{})
+			if err := m.Nodes[len(m.Nodes)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

@@ -2,53 +2,34 @@ syntax = "proto3";
 
 import "etc.servers.proto";
 import "etc.zones.proto";
+import "etc.basic.proto";
+import "etc.database.proto";
 
 option go_package = "INServer/src/proto/msg";
 
-enum ServerState {
-    Start = 0;
+enum NodeState {
+    Unset = 0;
     Ready = 1;
     Running = 2;
     Offline = 3;
 }
 
-message ServerStateReq {
-    ServerInfo Info = 1;
+message ETCSyncNTF {
+    BasicConfig BasicConfig = 1;
+    Database Database = 2;
+    ServerList ServerList = 3;
+    ZoneList ZoneList = 4;
 }
 
-message StaticMapLocation {
-    int32 MapID = 1;
-    int32 ServerID = 2;
+message NodeStartNTF {
+    bytes Address = 1;
 }
 
-message ZoneLocation {
-    int32 ZoneID = 1;
-    repeated StaticMapLocation StaticMapLocations = 2;
+message Node {
+    NodeState NodeState = 1;
+    bytes NodeAddress = 2;
 }
 
-message ServerStateResp {
-    string ServerType = 1; 
-    string Message = 2;
-    ServerConfig ServerConfig = 3;
-    repeated ServerInfo ServerInfoList = 4;
-    repeated Server Servers = 5;
-    repeated Zone Zones = 6;
-    repeated ZoneLocation ZoneLocations = 7;
-}
-
-message ServerInfo {
-    int32 ServerID = 1;
-    bytes Address = 2;
-    ServerState State = 3;
-}
-
-message ServerInfoList {
-    repeated ServerInfo Servers = 1;
-}
-
-message UpdateETC {
-    ServerConfig ServerConfig = 1;
-    repeated Server Servers = 2;
-    repeated Zone Zones = 3;
-    repeated ZoneLocation ZoneLocations = 4;
+message NodesInfoNTF {
+    repeated Node Nodes = 1;
 }

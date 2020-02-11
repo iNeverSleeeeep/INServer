@@ -3,6 +3,7 @@ package innet
 import (
 	"INServer/src/common/global"
 	"INServer/src/common/logger"
+	"INServer/src/modules/cluster"
 	"INServer/src/proto/msg"
 	"fmt"
 	"net"
@@ -12,8 +13,8 @@ import (
 type (
 	server struct {
 		addr      *net.UDPAddr
-		info      *msg.ServerInfo
 		packageID uint64
+		id        int32
 	}
 
 	address struct {
@@ -35,33 +36,27 @@ func newAddress(innet *INNet) *address {
 	a.center = &server{
 		addr:      addr,
 		packageID: 0,
-		info: &msg.ServerInfo{
-			ServerID: global.CenterID,
-			Address:  nil,
-			State:    msg.ServerState_Running,
-		},
+		id:        global.CenterID,
 	}
 	return a
 }
 
-func (a *address) addServerList(servers []*msg.ServerInfo) {
-	for _, serverToAdd := range servers {
-		if serverExist, ok := a.servers[serverToAdd.ServerID]; ok {
-			serverExist.info = serverToAdd
-		} else {
-			ip := &net.IPAddr{IP: serverToAdd.Address}
-			addr := &net.UDPAddr{IP: ip.IP, Port: int(serverToAdd.ServerID) + recvport, Zone: ip.Zone}
-			a.servers[serverToAdd.ServerID] = &server{
-				addr:      addr,
-				info:      serverToAdd,
-				packageID: 0,
+func (a *address) refresh() {
+	servers := cluster.GetNodes()
+	for serverID, info := range servers {
+		if info.NodeAddress != nil && len(info.NodeAddress) > 0 {
+			var svr *server
+			var ok = false
+			if svr, ok = a.servers[int32(serverID)]; ok == false {
+				svr = &server{
+					packageID: 0,
+					id:        int32(serverID),
+				}
+				a.servers[svr.id] = svr
 			}
-		}
-		// 服务器离线了 要重置的一些状态
-		if serverToAdd.State == msg.ServerState_Offline {
-			a.resetServer(serverToAdd.ServerID)
-			a.innet.receiver.resetServer(serverToAdd.ServerID)
-			a.innet.retry.resetServer(serverToAdd.ServerID)
+			ip := &net.IPAddr{IP: info.NodeAddress}
+			addr := &net.UDPAddr{IP: ip.IP, Port: serverID + recvport, Zone: ip.Zone}
+			svr.addr = addr
 		}
 	}
 }
@@ -72,33 +67,39 @@ func (a *address) resetServer(serverID int32) {
 	}
 }
 
-func (a *address) getByCommand(command msg.Command) *server {
+func (a *address) getByCommand(command msg.CMD) *server {
 	switch command {
-	case msg.Command_SERVER_STATE, msg.Command_KEEP_ALIVE, msg.Command_RELOAD_ETC_REQ:
+	case msg.CMD_SERVER_STATE, msg.CMD_KEEP_ALIVE, msg.CMD_RELOAD_ETC_REQ:
 		return a.center
-	case msg.Command_LD_CREATE_PLAYER_REQ, 
-		msg.Command_GD_LOAD_PLAYER_REQ, 
-		msg.Command_GD_RELEASE_PLAYER_NTF, 
-		msg.Command_GD_CREATE_ROLE_REQ, 
-		msg.Command_GD_LOAD_ROLE_REQ, 
-		msg.Command_LOAD_STATIC_MAP_REQ,
-		msg.Command_SAVE_STATIC_MAP_REQ:
-		if svr, ok := a.servers[a.innet.database]; ok {
-			return svr
+	case msg.CMD_LD_CREATE_PLAYER_REQ,
+		msg.CMD_GD_LOAD_PLAYER_REQ,
+		msg.CMD_GD_RELEASE_PLAYER_NTF,
+		msg.CMD_GD_CREATE_ROLE_REQ,
+		msg.CMD_GD_LOAD_ROLE_REQ,
+		msg.CMD_LOAD_STATIC_MAP_REQ,
+		msg.CMD_SAVE_STATIC_MAP_REQ:
+		serverID := cluster.RunningDatabase()
+		if serverID != global.InvalidServerID {
+			if svr, ok := a.servers[serverID]; ok {
+				return svr
+			}
 		}
-		logger.Error(fmt.Sprintf("没有找到Database服务器 id:%d", a.innet.database))
+		logger.Error(fmt.Sprintf("没有找到Database服务器"))
 		break
-	case msg.Command_GET_MAP_ADDRESS_REQ, 
-		msg.Command_GET_STATIC_MAP_UUID_REQ, 
-		msg.Command_UPDATE_MAP_ADDRESS_NTF,
-		msg.Command_UPDATE_PLAYER_ADDRESS_NTF,
-		msg.Command_UPDATE_STATIC_MAP_UUID_NTF:
-		if svr, ok := a.servers[a.innet.gps]; ok {
-			return svr
+	case msg.CMD_GET_MAP_ADDRESS_REQ,
+		msg.CMD_GET_STATIC_MAP_UUID_REQ,
+		msg.CMD_UPDATE_MAP_ADDRESS_NTF,
+		msg.CMD_UPDATE_PLAYER_ADDRESS_NTF,
+		msg.CMD_UPDATE_STATIC_MAP_UUID_NTF:
+		serverID := cluster.RunningGPS()
+		if serverID != global.InvalidServerID {
+			if svr, ok := a.servers[serverID]; ok {
+				return svr
+			}
 		}
-		logger.Error(fmt.Sprintf("没有找到GPS服务器 id:%d", a.innet.gps))
+		logger.Error(fmt.Sprintf("没有找到GPS服务器"))
 		break
-	case msg.Command_ROLE_ENTER:
+	case msg.CMD_ROLE_ENTER:
 		break
 	}
 	return nil

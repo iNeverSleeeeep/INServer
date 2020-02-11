@@ -35,20 +35,20 @@ func New() *Database {
 	d.players = make(map[string]*data.Player)
 	d.staticMaps = make(map[int32]map[int32]*data.MapData)
 	d.DB = dbobj.New()
-	d.DB.Open(global.ServerConfig.DatabaseConfig.Database, global.DatabaseSchema)
+	d.DB.Open(global.CurrentServerConfig.DatabaseConfig.Database, global.DatabaseSchema)
 	d.loadAllRoleSummaryData()
 	d.loadAllStaticMapsData()
 	return d
 }
 
 func (d *Database) Start() {
-	node.Instance.Net.Listen(msg.Command_LD_CREATE_PLAYER_REQ, d.onCreatePlayerReq)
-	node.Instance.Net.Listen(msg.Command_GD_LOAD_PLAYER_REQ, d.onLoadPlayerReq)
-	node.Instance.Net.Listen(msg.Command_GD_RELEASE_PLAYER_NTF, d.onReleasePlayerNtf)
-	node.Instance.Net.Listen(msg.Command_GD_CREATE_ROLE_REQ, d.onCreateRoleReq)
-	node.Instance.Net.Listen(msg.Command_GD_LOAD_ROLE_REQ, d.onLoadRoleReq)
-	node.Instance.Net.Listen(msg.Command_LOAD_STATIC_MAP_REQ, d.onLoadStaticMapReq)
-	node.Instance.Net.Listen(msg.Command_SAVE_STATIC_MAP_REQ, d.onSaveStaticMapReq)
+	node.Instance.Net.Listen(msg.CMD_LD_CREATE_PLAYER_REQ, d.onCreatePlayerReq)
+	node.Instance.Net.Listen(msg.CMD_GD_LOAD_PLAYER_REQ, d.onLoadPlayerReq)
+	node.Instance.Net.Listen(msg.CMD_GD_RELEASE_PLAYER_NTF, d.onReleasePlayerNtf)
+	node.Instance.Net.Listen(msg.CMD_GD_CREATE_ROLE_REQ, d.onCreateRoleReq)
+	node.Instance.Net.Listen(msg.CMD_GD_LOAD_ROLE_REQ, d.onLoadRoleReq)
+	node.Instance.Net.Listen(msg.CMD_LOAD_STATIC_MAP_REQ, d.onLoadStaticMapReq)
+	node.Instance.Net.Listen(msg.CMD_SAVE_STATIC_MAP_REQ, d.onSaveStaticMapReq)
 }
 
 func (d *Database) onCreatePlayerReq(header *msg.MessageHeader, buffer []byte) {
@@ -148,7 +148,7 @@ func (d *Database) onCreateRoleReq(header *msg.MessageHeader, buffer []byte) {
 			StaticMapID: 1,
 		}
 		getStaticMapUUIDResp := &msg.GetStaticMapUUIDResp{}
-		err := node.Instance.Net.Request(msg.Command_GET_STATIC_MAP_UUID_REQ, getStaticMapUUIDReq, getStaticMapUUIDResp)
+		err := node.Instance.Net.Request(msg.CMD_GET_STATIC_MAP_UUID_REQ, getStaticMapUUIDReq, getStaticMapUUIDResp)
 		if err != nil {
 			logger.Error(err)
 			return
@@ -228,7 +228,7 @@ func (d *Database) onLoadRoleReq(header *msg.MessageHeader, buffer []byte) {
 
 		mapAddressReq := &msg.GetMapAddressReq{MapUUID: roleSummary.MapUUID}
 		mapAddressResp := &msg.GetMapAddressResp{}
-		err := node.Instance.Net.Request(msg.Command_GET_MAP_ADDRESS_REQ, mapAddressReq, mapAddressResp)
+		err := node.Instance.Net.Request(msg.CMD_GET_MAP_ADDRESS_REQ, mapAddressReq, mapAddressResp)
 		if err != nil {
 			logger.Error(err)
 			return
@@ -265,7 +265,7 @@ func (d *Database) onLoadRoleReq(header *msg.MessageHeader, buffer []byte) {
 			Role: role,
 		}
 
-		node.Instance.Net.NotifyServer(msg.Command_ROLE_ENTER, roleEnterNTF, mapAddressResp.ServerID)
+		node.Instance.Net.NotifyServer(msg.CMD_ROLE_ENTER, roleEnterNTF, mapAddressResp.ServerID)
 	} else {
 		logger.Error("角色不存在 UUID:" + message.RoleUUID)
 	}

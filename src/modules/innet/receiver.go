@@ -33,7 +33,7 @@ func (r *receiver) start() {
 }
 
 func (r *receiver) receiveLoop() {
-	conn, err := net.ListenUDP("udp", &net.UDPAddr{Port: int(global.ServerID) + recvport})
+	conn, err := net.ListenUDP("udp", &net.UDPAddr{Port: int(global.CurrentServerID) + recvport})
 	if err != nil {
 		logger.Fatal(err)
 	}

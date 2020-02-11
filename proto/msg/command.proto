@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option go_package = "INServer/src/proto/msg";
 
-enum Command {
+enum CMD {
     KEEP_ALIVE = 0; // any -> center
     RESP = 1;
     GATE = 2; // client -> gate -> any
@@ -39,4 +39,8 @@ enum Command {
     GET_MAP_ID = 33; // gate -> world
     MOVE_INF = 34; // client -> world
     FORWARD_PLAYER_MESSAGE = 35; // any -> gate -> client
+
+    NODE_START_NTF = 1000; // any -> center
+    ETC_SYNC_NTF = 1001; // center -> any
+    NODES_INFO_NTF = 1002; // any <-> center
 }

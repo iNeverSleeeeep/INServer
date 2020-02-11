@@ -27,7 +27,7 @@ func newSession(conn *net.TCPConn, uuid string) *session {
 		info: &data.PlayerSessionInfo{
 			UUID: uuid,
 			Address: &data.PlayerAddress{
-				Gate:   global.ServerID,
+				Gate:   global.CurrentServerID,
 				Entity: -1,
 			},
 			State: data.SessionState_Connected,
@@ -49,5 +49,5 @@ func (s *session) generateNewCertKey() {
 }
 
 func generateCertOutOfDateTime() int64 {
-	return time.Now().Unix() + global.ServerConfig.GateConfig.OutOfDateTimeout
+	return time.Now().Unix() + global.CurrentServerConfig.GateConfig.OutOfDateTimeout
 }

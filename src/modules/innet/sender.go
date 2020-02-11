@@ -5,7 +5,6 @@ import (
 	"INServer/src/common/logger"
 	"INServer/src/proto/msg"
 	"encoding/binary"
-	"errors"
 	"net"
 	"time"
 
@@ -55,28 +54,7 @@ func SendWebBytesHelper(conn *websocket.Conn, bytes []byte) error {
 	return err
 }
 
-func checkServerValid(svr *server) bool {
-	return svr.info.State != msg.ServerState_Offline
-}
-
-// 这个是发给center用的
-func (s *sender) sendstate(svr *server, buffer []byte) error {
-	var packages []*msg.Package
-	packages = append(packages, &msg.Package{
-		UniqueID: 0,
-		From:     int32(global.ServerID),
-		Index:    0,
-		Total:    1,
-		Buffer:   buffer,
-	})
-	s.sendPackages(svr.addr, packages)
-	return nil
-}
-
 func (s *sender) send(svr *server, buffer []byte) error {
-	if checkServerValid(svr) == false {
-		return errors.New("Server Offline")
-	}
 	svr.packageID++
 	slices := cutslices(buffer)
 	var packages []*msg.Package
@@ -84,7 +62,7 @@ func (s *sender) send(svr *server, buffer []byte) error {
 	for index, slice := range slices {
 		packages = append(packages, &msg.Package{
 			UniqueID: svr.packageID,
-			From:     int32(global.ServerID),
+			From:     int32(global.CurrentServerID),
 			Index:    int32(index),
 			Total:    total,
 			Buffer:   slice,
@@ -96,15 +74,27 @@ func (s *sender) send(svr *server, buffer []byte) error {
 		addr:       svr.addr,
 		packages:   packages,
 		retryTime:  time.Now().UnixNano() + timeout,
-		toServerID: svr.info.ServerID,
+		toServerID: svr.id,
 	})
 	return nil
+}
+
+func (s *sender) start(svr *server, buffer []byte) {
+	var packages []*msg.Package
+	packages = append(packages, &msg.Package{
+		UniqueID: 0,
+		From:     int32(global.CurrentServerID),
+		Index:    0,
+		Total:    1,
+		Buffer:   buffer,
+	})
+	s.sendPackages(svr.addr, packages)
 }
 
 func (s *sender) ack(addr *net.UDPAddr, pkg *msg.Package) {
 	buffer, _ := proto.Marshal(&msg.Package{
 		UniqueID: pkg.UniqueID,
-		From:     int32(global.ServerID),
+		From:     int32(global.CurrentServerID),
 		Index:    pkg.Index,
 		Total:    pkg.Total,
 	})

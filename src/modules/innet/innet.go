@@ -26,17 +26,13 @@ type (
 
 	INNet struct {
 		responces map[uint64]*responce
-		listeners map[msg.Command]chan *msg.Message
+		listeners map[msg.CMD]chan *msg.Message
 		sender    *sender
 		address   *address
 		retry     *retry
 		receiver  *receiver
 		conn      *net.UDPConn
 		IP        []byte
-
-		gates    []int32
-		database int32
-		gps      int32
 	}
 )
 
@@ -46,16 +42,14 @@ func New() *INNet {
 	}
 	innet := new(INNet)
 	innet.IP = getIP()
-	conn, err := net.ListenUDP("udp", &net.UDPAddr{Port: int(global.ServerID) + sendport})
+	conn, err := net.ListenUDP("udp", &net.UDPAddr{Port: int(global.CurrentServerID) + sendport})
 	if err != nil {
 		logger.Fatal(err)
 	}
 	udpconn = conn
 	innet.conn = conn
-	innet.database = global.InvalidServerID
-	innet.gps = global.InvalidServerID
 	innet.responces = make(map[uint64]*responce)
-	innet.listeners = make(map[msg.Command]chan *msg.Message)
+	innet.listeners = make(map[msg.CMD]chan *msg.Message)
 	innet.address = newAddress(innet)
 	innet.retry = newRetry(innet)
 	innet.receiver = newReceiver(innet)
@@ -68,11 +62,11 @@ func (n *INNet) Start() {
 	n.receiver.start()
 }
 
-func (n *INNet) Request(command msg.Command, req proto.Message, resp proto.Message) error {
+func (n *INNet) Request(command msg.CMD, req proto.Message, resp proto.Message) error {
 	return n.RequestServer(command, req, resp, global.InvalidServerID)
 }
 
-func (n *INNet) RequestServer(command msg.Command, req proto.Message, resp proto.Message, serverID int32) error {
+func (n *INNet) RequestServer(command msg.CMD, req proto.Message, resp proto.Message, serverID int32) error {
 	sequence++
 	err := n.sendMessage(command, sequence, req, serverID)
 	if err != nil {
@@ -90,12 +84,12 @@ func (n *INNet) RequestServer(command msg.Command, req proto.Message, resp proto
 }
 
 // RequestClientBytes 发送源头为客户端的消息
-func (n *INNet) RequestClientBytes(command msg.Command, uuid string, bytes []byte) ([]byte, error) {
+func (n *INNet) RequestClientBytes(command msg.CMD, uuid string, bytes []byte) ([]byte, error) {
 	return n.RequestClientBytesToServer(command, uuid, bytes, global.InvalidServerID)
 }
 
 // RequestClientBytesToServer 发送源头为客户端的消息
-func (n *INNet) RequestClientBytesToServer(command msg.Command, uuid string, bytes []byte, serverID int32) ([]byte, error) {
+func (n *INNet) RequestClientBytesToServer(command msg.CMD, uuid string, bytes []byte, serverID int32) ([]byte, error) {
 	sequence++
 	err := n.sendClientBytes(command, sequence, uuid, bytes, serverID)
 	if err != nil {
@@ -109,7 +103,7 @@ func (n *INNet) RequestClientBytesToServer(command msg.Command, uuid string, byt
 }
 
 // RequestBytes 发送
-func (n *INNet) RequestBytes(command msg.Command, bytes []byte) ([]byte, error) {
+func (n *INNet) RequestBytes(command msg.CMD, bytes []byte) ([]byte, error) {
 	sequence++
 	err := n.sendBytes(command, sequence, bytes, global.InvalidServerID)
 	if err != nil {
@@ -123,42 +117,58 @@ func (n *INNet) RequestBytes(command msg.Command, bytes []byte) ([]byte, error) 
 }
 
 func (n *INNet) Responce(header *msg.MessageHeader, message proto.Message) error {
-	return n.sendMessage(msg.Command_RESP, header.Sequence, message, header.From)
+	return n.sendMessage(msg.CMD_RESP, header.Sequence, message, header.From)
 }
 
 func (n *INNet) ResponceBytes(header *msg.MessageHeader, bytes []byte) error {
-	return n.sendBytes(msg.Command_RESP, header.Sequence, bytes, header.From)
+	return n.sendBytes(msg.CMD_RESP, header.Sequence, bytes, header.From)
 }
 
-func (n *INNet) Notify(command msg.Command, message proto.Message) error {
+func (n *INNet) Notify(command msg.CMD, message proto.Message) error {
 	sequence++
 	return n.sendMessage(command, sequence, message, global.InvalidServerID)
 }
 
 // NotifyClientBytes 发送源头为客户端的消息
-func (n *INNet) NotifyClientBytes(command msg.Command, uuid string, bytes []byte) error {
+func (n *INNet) NotifyClientBytes(command msg.CMD, uuid string, bytes []byte) error {
 	sequence++
 	return n.sendClientBytes(command, sequence, uuid, bytes, global.InvalidServerID)
 }
 
 // NotifyClientBytesToServer 发送源头为客户端的消息
-func (n *INNet) NotifyClientBytesToServer(command msg.Command, uuid string, bytes []byte, serverID int32) error {
+func (n *INNet) NotifyClientBytesToServer(command msg.CMD, uuid string, bytes []byte, serverID int32) error {
 	sequence++
 	return n.sendClientBytes(command, sequence, uuid, bytes, serverID)
 }
 
-func (n *INNet) NotifyBytes(command msg.Command, bytes []byte) error {
+func (n *INNet) NotifyBytes(command msg.CMD, bytes []byte) error {
 	sequence++
 	return n.sendBytes(command, sequence, bytes, global.InvalidServerID)
 }
 
-func (n *INNet) NotifyServer(command msg.Command, message proto.Message, serverID int32) error {
+// SendNodeStartNTF 服务器启动通知 只在服务器启动时发送
+func (n *INNet) SendNodeStartNTF() {
+	sequence++
+	ntf := &msg.NodeStartNTF{Address: n.IP}
+	if buffer, err := proto.Marshal(ntf); err == nil {
+		header := &msg.MessageHeader{
+			Command:  msg.CMD_NODE_START_NTF,
+			Sequence: sequence,
+			From:     global.CurrentServerID,
+		}
+		svr := n.address.getByServerID(global.CenterID)
+		bytes, _ := proto.Marshal(&msg.Message{Header: header, Buffer: buffer})
+		n.sender.start(svr, bytes)
+	}
+}
+
+func (n *INNet) NotifyServer(command msg.CMD, message proto.Message, serverID int32) error {
 	sequence++
 	return n.sendMessage(command, sequence, message, serverID)
 }
 
 // TODO 缺少取消监听
-func (n *INNet) Listen(command msg.Command, listener func(header *msg.MessageHeader, buffer []byte)) {
+func (n *INNet) Listen(command msg.CMD, listener func(header *msg.MessageHeader, buffer []byte)) {
 	pkgChan := make(chan *msg.Message)
 	n.listeners[command] = pkgChan
 	go func() {
@@ -174,57 +184,19 @@ func (n *INNet) Listen(command msg.Command, listener func(header *msg.MessageHea
 	}()
 }
 
-func (n *INNet) Gates() []int32 {
-	return n.gates
+// RefreshNodesAddress 刷新地址
+func (n *INNet) RefreshNodesAddress() {
+	n.address.refresh()
 }
 
-// GetGateAddress 网关内网地址
-func (n *INNet) GetGateAddress(serverID int32) ([]byte, int) {
-	if info, ok := n.address.servers[serverID]; ok {
-		return info.info.Address, int(global.Servers[serverID].ServerConfig.GateConfig.Port)
-	}
-	return nil, 0
+// ResetServer 重置服务器连接状态
+func (n *INNet) ResetServer(serverID int32) {
+	n.address.resetServer(serverID)
+	n.receiver.resetServer(serverID)
+	n.retry.resetServer(serverID)
 }
 
-// GetGatePublicAddress 网关公网地址
-func (n *INNet) GetGatePublicAddress(serverID int32) (string, int, int) {
-	ip := global.Servers[serverID].ServerConfig.GateConfig.Address
-	port := int(global.Servers[serverID].ServerConfig.GateConfig.Port)
-	webport := int(global.Servers[serverID].ServerConfig.GateConfig.WebPort)
-	return ip, port, webport
-}
-
-func (n *INNet) AddServers(servers []*msg.ServerInfo) {
-	n.address.addServerList(servers)
-	n.refreshRunningServers()
-}
-
-func (n *INNet) ResetServers(servers []*msg.ServerInfo) {
-	for _, svr := range servers {
-		n.address.resetServer(svr.ServerID)
-		n.receiver.resetServer(svr.ServerID)
-		n.retry.resetServer(svr.ServerID)
-	}
-	n.refreshRunningServers()
-}
-
-func (n *INNet) ResetServer(svr *msg.ServerInfo) {
-	n.address.resetServer(svr.ServerID)
-	n.receiver.resetServer(svr.ServerID)
-	n.retry.resetServer(svr.ServerID)
-	n.refreshRunningServers()
-}
-
-func (n *INNet) IsServerRunning(serverID int32) bool {
-	for _, info := range n.address.servers {
-		if info.info.ServerID == serverID {
-			return info.info.State == msg.ServerState_Running
-		}
-	}
-	return false
-}
-
-func (n *INNet) sendMessage(command msg.Command, sequence uint64, message proto.Message, serverID int32) error {
+func (n *INNet) sendMessage(command msg.CMD, sequence uint64, message proto.Message, serverID int32) error {
 	var err error
 	if buffer, err := proto.Marshal(message); err == nil {
 		return n.sendBytes(command, sequence, buffer, serverID)
@@ -232,20 +204,20 @@ func (n *INNet) sendMessage(command msg.Command, sequence uint64, message proto.
 	return err
 }
 
-func (n *INNet) sendBytes(command msg.Command, sequence uint64, bytes []byte, serverID int32) error {
+func (n *INNet) sendBytes(command msg.CMD, sequence uint64, bytes []byte, serverID int32) error {
 	header := &msg.MessageHeader{
 		Command:  command,
 		Sequence: sequence,
-		From:     global.ServerID,
+		From:     global.CurrentServerID,
 	}
 	return n.send(header, bytes, serverID)
 }
 
-func (n *INNet) sendClientBytes(command msg.Command, sequence uint64, uuid string, bytes []byte, serverID int32) error {
+func (n *INNet) sendClientBytes(command msg.CMD, sequence uint64, uuid string, bytes []byte, serverID int32) error {
 	header := &msg.MessageHeader{
 		Command:    command,
 		Sequence:   sequence,
-		From:       global.ServerID,
+		From:       global.CurrentServerID,
 		PlayerUUID: uuid,
 	}
 	return n.send(header, bytes, serverID)
@@ -269,11 +241,7 @@ func (n *INNet) send(header *msg.MessageHeader, bytes []byte, serverID int32) er
 				return errors.New("Server Not Found By Command:" + header.Command.String())
 			}
 		}
-		if header.Command == msg.Command_SERVER_STATE {
-			err = n.sender.sendstate(svr, buf)
-		} else {
-			err = n.sender.send(svr, buf)
-		}
+		err = n.sender.send(svr, buf)
 	}
 	return err
 }
@@ -288,33 +256,6 @@ func (n *INNet) handleMessage(message *msg.Message) {
 		resp.c <- message.Buffer
 	} else {
 		logger.Debug("handleMessage error:" + message.Header.String())
-	}
-}
-
-func (n *INNet) refreshRunningServers() {
-	n.gates = make([]int32, 0)
-	n.database = global.InvalidServerID
-	n.gps = global.InvalidServerID
-	allstop := true
-
-	for _, info := range n.address.servers {
-		if info.info.State == msg.ServerState_Running {
-			serverType := global.Servers[int(info.info.ServerID)].ServerType
-			if serverType == global.GateServer {
-				n.gates = append(n.gates, info.info.ServerID)
-			} else if serverType == global.DatabaseServer {
-				n.database = info.info.ServerID
-			} else if serverType == global.GPSServer {
-				n.gps = info.info.ServerID
-			}
-			if info.info.ServerID != global.ServerID {
-				allstop = false
-			}
-		}
-	}
-	if allstop {
-		// 不一定走关服流程 还依赖于当前服务器是否收到了signal 2
-		global.Stop <- true
 	}
 }
 

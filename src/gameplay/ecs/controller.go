@@ -1,9 +1,6 @@
 package ecs
 
 import (
-	"INServer/src/common/global"
-	"INServer/src/modules/node"
-	"INServer/src/modules/world"
 	"INServer/src/proto/data"
 	"INServer/src/proto/msg"
 
@@ -49,15 +46,15 @@ func (c *AIController) OnOtherMove(entity *Entity, ntf *msg.MoveNTF) {
 
 }
 func (c *PlayerController) OnOtherMove(entity *Entity, ntf *msg.MoveNTF) {
-	c.sendMessage(msg.Command_MOVE_NTF, ntf)
+	c.sendMessage(msg.CMD_MOVE_NTF, ntf)
 }
 
-func (c *PlayerController) sendMessage(command msg.Command, message proto.Message) {
-	gate := world.Instance.RoleGate(c.entity.UUID())
-	if gate != global.InvalidServerID {
-		if buffer, err := proto.Marshal(message); err == nil {
-			forward := &msg.ForwardPlayerMessage{}
-		}
-		node.Instance.Net.NotifyServer(msg.Command_MOVE_NTF, message, gate)
-	}
+func (c *PlayerController) sendMessage(command msg.CMD, message proto.Message) {
+	//gate := world.Instance.RoleGate(c.entity.UUID())
+	//if gate != global.InvalidServerID {
+	//	if buffer, err := proto.Marshal(message); err == nil {
+	//		forward := &msg.ForwardPlayerMessage{}
+	//	}
+	//	node.Instance.Net.NotifyServer(msg.CMD_MOVE_NTF, message, gate)
+	//}
 }

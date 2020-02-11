@@ -31,14 +31,14 @@ message RoleEnterResp {
 }
 
 message ClientToGate {
-    Command Command = 1;
+    CMD Command = 1;
     uint64 Sequence = 2;
     bytes Request = 3;
     bytes Notify = 4;
 }
 
 message GateToClient {
-    Command Command = 1;
+    CMD Command = 1;
     uint64 Sequence = 2;
     bytes Buffer = 3;
 }

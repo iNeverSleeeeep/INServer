@@ -1,6 +1,7 @@
 package gamemap
 
 import (
+	"INServer/src/common/logger"
 	"INServer/src/engine/extensions/vector3"
 	"INServer/src/engine/grid"
 	"INServer/src/gameplay/ecs"
@@ -61,7 +62,8 @@ func (s *Scene) onEntityMoveINF(entity *ecs.Entity, inf *msg.MoveINF) {
 			ntf.To = inf.To
 			items := s.search.GetNearItems(inf.Position)
 			for _, item := range items {
-				nearEntity := s.masterMap.GetEntity(item.UUID())
+				logger.Info(item.UUID())
+				//nearEntity := s.masterMap.GetEntity(item.UUID())
 			}
 		}
 	}

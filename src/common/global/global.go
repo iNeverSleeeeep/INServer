@@ -1,40 +1,15 @@
 package global
 
-import (
-	"INServer/src/proto/etc"
-)
-
-const (
-	CenterID        int32  = 0
-	InvalidServerID int32  = -1
-	InvalidServer   string = "InvalidServer"
-
-	CenterServer   string = "Center"
-	GateServer     string = "Gate"
-	LoginServer    string = "Login"
-	ChatServer     string = "Chat"
-	GPSServer      string = "GPS"
-	WorldServer    string = "World"
-	DatabaseServer string = "Database"
-	WebServer      string = "Web"
-
-	ZoneStateOpen   string = "Open"
-	ZoneStateClosed string = "Closed"
-
-	DatabaseSchema string = "indb"
-
-	SERVER_ID_MAX = 999
-	CERT_KEY_LEN  = 10
-)
+import "INServer/src/proto/etc"
 
 var (
-	ServerID     int32  = 0
-	ServerType   string = InvalidServer
-	ServerConfig *etc.ServerConfig
-	Servers      []*etc.Server
-	Zones        []*etc.Zone
+	// CurrentServerID 当前服务器ID
+	CurrentServerID int32 = 0
+	// CurrentServerType 当前服务器类型
+	CurrentServerType string = InvalidServer
+	// CurrentServerConfig 当前服务器配置
+	CurrentServerConfig *etc.ServerConfig = nil
 
-	Stop chan bool
-
+	// CenterIP 中心服默认IP
 	CenterIP string = "127.0.0.1"
 )

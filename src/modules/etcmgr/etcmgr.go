@@ -4,9 +4,12 @@ import (
 	"INServer/src/common/global"
 	"INServer/src/common/logger"
 	"INServer/src/proto/etc"
+	"INServer/src/proto/msg"
 	"encoding/json"
 	"io/ioutil"
 	"os"
+
+	"github.com/gogo/protobuf/proto"
 )
 
 var Instance *ETC
@@ -18,11 +21,20 @@ type (
 		basic        *etc.BasicConfig
 		zones        []*etc.Zone
 		zoneLocation map[int32][]int32 // 每个游戏区都在哪些WorldServer里面
+		ok           bool
 	}
 )
 
 func New() *ETC {
 	e := new(ETC)
+	if global.CurrentServerID == global.CenterID {
+		dir, err := os.Getwd()
+		if err != nil {
+			logger.Fatal(err)
+			return nil
+		}
+		e.Load(dir + "/etc")
+	}
 	return e
 }
 
@@ -56,6 +68,7 @@ func (e *ETC) Load(path string) {
 	e.zones = zones
 	e.servers = servers
 	e.makeConfig()
+	e.ok = true
 }
 
 func (e *ETC) checkAllConfig(basic *etc.BasicConfig, database *etc.Database, zones []*etc.Zone, servers []*etc.Server) bool {
@@ -191,6 +204,8 @@ func (e *ETC) GetServerConfig(serverID int32) *etc.ServerConfig {
 	if len(e.servers) >= int(serverID) {
 		server := e.servers[int(serverID)]
 		switch server.ServerType {
+		case global.CenterServer:
+			return server.ServerConfig
 		case global.GateServer:
 			return server.ServerConfig
 		case global.LoginServer:
@@ -217,6 +232,14 @@ func (e *ETC) GetServerConfig(serverID int32) *etc.ServerConfig {
 	return nil
 }
 
+func (e *ETC) BasicConfig() *etc.BasicConfig {
+	return e.basic
+}
+
+func (e *ETC) Database() *etc.Database {
+	return e.database
+}
+
 func (e *ETC) Servers() []*etc.Server {
 	return e.servers
 }
@@ -230,4 +253,38 @@ func (e *ETC) GetZoneLocation(zoneID int32) []int32 {
 		return list
 	}
 	return nil
+}
+
+// OK 配置是否加载完成，对于center是读文件完成，对于node是center返回数据
+func (e *ETC) OK() bool {
+	return e.ok
+}
+
+func (e *ETC) HANDLE_ETC_SYNC_NTF(header *msg.MessageHeader, buffer []byte) {
+	ntf := &msg.ETCSyncNTF{}
+	err := proto.Unmarshal(buffer, ntf)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+	e.servers = ntf.ServerList.Servers
+	e.database = ntf.Database
+	e.basic = ntf.BasicConfig
+	e.zones = ntf.ZoneList.Zones
+	e.makeConfig()
+	e.ok = true
+}
+
+func (e *ETC) GenerateETCSyncNTF() *msg.ETCSyncNTF {
+	ntf := &msg.ETCSyncNTF{
+		BasicConfig: e.BasicConfig(),
+		Database:    e.Database(),
+		ServerList: &etc.ServerList{
+			Servers: e.Servers(),
+		},
+		ZoneList: &etc.ZoneList{
+			Zones: e.Zones(),
+		},
+	}
+	return ntf
 }

@@ -32,7 +32,7 @@ func Setup() {
 		log.Fatalln(err)
 	}
 	now := time.Now()
-	file := wd + "/log/" + fmt.Sprintf("%d-%d%02d%02d.log", int(global.ServerID), now.Year(), now.Month(), now.Day())
+	file := wd + "/log/" + fmt.Sprintf("%d-%d%02d%02d.log", int(global.CurrentServerID), now.Year(), now.Month(), now.Day())
 
 	logFile, err := os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
 	if err != nil {
@@ -43,7 +43,7 @@ func Setup() {
 
 func format(level string, v ...interface{}) string {
 	now := time.Now().Format(timeFormat)
-	return fmt.Sprintf("{\"server\": {\"type\":\"%s\", \"id\":\"%d\"}, \"level\":\"%s\", \"@timestamp\":\"%s\", \"message\":\"%s\"}", global.ServerType, global.ServerID, level, now, fmt.Sprint(v...))
+	return fmt.Sprintf("{\"server\": {\"type\":\"%s\", \"id\":\"%d\"}, \"level\":\"%s\", \"@timestamp\":\"%s\", \"message\":\"%s\"}", global.CurrentServerType, global.CurrentServerID, level, now, fmt.Sprint(v...))
 }
 
 // Debug 调试日志

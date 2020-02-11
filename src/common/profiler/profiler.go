@@ -35,18 +35,18 @@ func getRT() interface{} {
 }
 
 func getServerID() interface{} {
-	return global.ServerID
+	return global.CurrentServerID
 }
 
 func getServerType() interface{} {
-	return global.ServerType
+	return global.CurrentServerType
 }
 
 func Start() {
 	expvar.Publish("Message RT", expvar.Func(getRT))
 	expvar.Publish("ServerID", expvar.Func(getServerID))
 	expvar.Publish("ServerType", expvar.Func(getServerType))
-	go http.ListenAndServe(":"+strconv.Itoa(expvarport+int(global.ServerID)), nil)
+	go http.ListenAndServe(":"+strconv.Itoa(expvarport+int(global.CurrentServerID)), nil)
 	enabled = true
 }
 

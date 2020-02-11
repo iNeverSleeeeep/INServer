@@ -8,6 +8,7 @@ import (
 	"INServer/src/common/util"
 	"INServer/src/common/uuid"
 	"INServer/src/dao"
+	"INServer/src/modules/cluster"
 	"INServer/src/modules/innet"
 	"INServer/src/modules/node"
 	"INServer/src/proto/db"
@@ -37,19 +38,19 @@ type (
 func New() *Login {
 	l := new(Login)
 	l.DB = dbobj.New()
-	l.DB.Open(global.ServerConfig.LoginConfig.Database, global.DatabaseSchema)
+	l.DB.Open(global.CurrentServerConfig.LoginConfig.Database, global.DatabaseSchema)
 	return l
 }
 
 func (l *Login) Start() {
 	// TCP
-	listener, err := net.ListenTCP("tcp", &net.TCPAddr{Port: int(global.ServerConfig.LoginConfig.Port)})
+	listener, err := net.ListenTCP("tcp", &net.TCPAddr{Port: int(global.CurrentServerConfig.LoginConfig.Port)})
 	if err != nil {
 		log.Fatalln(err)
 	}
 	l.listener = listener
 
-	logger.Info("登录服务器 启动 监听端口:" + strconv.Itoa(int(global.ServerConfig.LoginConfig.Port)))
+	logger.Info("登录服务器 启动 监听端口:" + strconv.Itoa(int(global.CurrentServerConfig.LoginConfig.Port)))
 	go func() {
 		for {
 			conn, err := l.listener.AcceptTCP()
@@ -62,10 +63,10 @@ func (l *Login) Start() {
 	}()
 
 	// WebSocket
-	if global.ServerConfig.LoginConfig.WebPort > 0 {
+	if global.CurrentServerConfig.LoginConfig.WebPort > 0 {
 		http.HandleFunc("/", l.handleWebConnect)
-		go http.ListenAndServe(fmt.Sprintf(":%d", global.ServerConfig.LoginConfig.WebPort), nil)
-		logger.Info("登录服务器 监听端口:" + strconv.Itoa(int(global.ServerConfig.LoginConfig.WebPort)))
+		go http.ListenAndServe(fmt.Sprintf(":%d", global.CurrentServerConfig.LoginConfig.WebPort), nil)
+		logger.Info("登录服务器 监听端口:" + strconv.Itoa(int(global.CurrentServerConfig.LoginConfig.WebPort)))
 	}
 }
 
@@ -171,7 +172,7 @@ func (l *Login) handleMessageImpl(message *msg.ClientToLogin, resp *msg.LoginToC
 			PlayerUUID: account.PlayerUUID,
 		}
 		createPlayerResp := &msg.CreatePlayerResp{}
-		err = node.Instance.Net.Request(msg.Command_LD_CREATE_PLAYER_REQ, createPlayerReq, createPlayerResp)
+		err = node.Instance.Net.Request(msg.CMD_LD_CREATE_PLAYER_REQ, createPlayerReq, createPlayerResp)
 		if err != nil {
 			logger.Debug(err)
 		} else if createPlayerResp.Success {
@@ -217,10 +218,10 @@ func (l *Login) handleMessageImpl(message *msg.ClientToLogin, resp *msg.LoginToC
 				}
 				resp.SessionCert = cert
 
-				ip, port, webport := node.Instance.Net.GetGatePublicAddress(gateID)
+				ip, port, webport := cluster.GetGatePublicAddress(gateID)
 				resp.GateIP, resp.GatePort, resp.GateWebPort = ip, int32(port), int32(webport)
 				message := &msg.LoginToGate{Cert: cert}
-				node.Instance.Net.NotifyServer(msg.Command_SESSION_CERT_NTF, message, gateID)
+				node.Instance.Net.NotifyServer(msg.CMD_SESSION_CERT_NTF, message, gateID)
 				logger.Debug(fmt.Sprintf("玩家登录成功 UUID:%s Name:%s CertKey:%s", cert.UUID, account.Name, cert.Key))
 			} else {
 				logger.Error("没有找到门服务器")
@@ -249,9 +250,9 @@ func (l *Login) sendWebResponce(conn *websocket.Conn, message *msg.LoginToClient
 	buff, _ := proto.Marshal(message)
 	buffer, _ := proto.Marshal(&msg.Message{
 		Header: &msg.MessageHeader{
-			Command:  msg.Command_SESSION_CERT_NTF,
+			Command:  msg.CMD_SESSION_CERT_NTF,
 			Sequence: 0,
-			From:     global.ServerID,
+			From:     global.CurrentServerID,
 		},
 		Buffer: buff,
 	})
@@ -262,9 +263,9 @@ func (l *Login) sendResponce(conn *net.TCPConn, message *msg.LoginToClient) {
 	buff, _ := proto.Marshal(message)
 	buffer, _ := proto.Marshal(&msg.Message{
 		Header: &msg.MessageHeader{
-			Command:  msg.Command_SESSION_CERT_NTF,
+			Command:  msg.CMD_SESSION_CERT_NTF,
 			Sequence: 0,
-			From:     global.ServerID,
+			From:     global.CurrentServerID,
 		},
 		Buffer: buff,
 	})
@@ -272,7 +273,7 @@ func (l *Login) sendResponce(conn *net.TCPConn, message *msg.LoginToClient) {
 }
 
 func (l *Login) selectGate() int32 {
-	gates := node.Instance.Net.Gates()
+	gates := cluster.RunningGates()
 	if len(gates) > 0 {
 		index := time.Now().UnixNano() % int64(len(gates))
 		return gates[index]

@@ -7,6 +7,7 @@ import (
 	"INServer/src/proto/data"
 	"INServer/src/proto/msg"
 	"fmt"
+
 	"github.com/gogo/protobuf/proto"
 )
 
@@ -43,13 +44,13 @@ func (g *GPS) Start() {
 }
 
 func (g *GPS) initMessageHandler() {
-	node.Instance.Net.Listen(msg.Command_UPDATE_PLAYER_ADDRESS_NTF, g.onUpdatePlayerAddressNTF)
-	node.Instance.Net.Listen(msg.Command_REMOVE_PLAYER_ADDRESS_NTF, g.onRemovePlayerAddressNTF)
-	node.Instance.Net.Listen(msg.Command_UPDATE_MAP_ADDRESS_NTF, g.onUpdateMapAddressNTF)
-	node.Instance.Net.Listen(msg.Command_REMOVE_MAP_ADDRESS_NTF, g.onRemoveMapAddressNTF)
-	node.Instance.Net.Listen(msg.Command_GET_MAP_ADDRESS_REQ, g.onGetMapLocationReq)
-	node.Instance.Net.Listen(msg.Command_UPDATE_STATIC_MAP_UUID_NTF, g.onUpdateStaticMapUUIDNTF)
-	node.Instance.Net.Listen(msg.Command_GET_STATIC_MAP_UUID_REQ, g.onGetStaticMapUUIDReq)
+	node.Instance.Net.Listen(msg.CMD_UPDATE_PLAYER_ADDRESS_NTF, g.onUpdatePlayerAddressNTF)
+	node.Instance.Net.Listen(msg.CMD_REMOVE_PLAYER_ADDRESS_NTF, g.onRemovePlayerAddressNTF)
+	node.Instance.Net.Listen(msg.CMD_UPDATE_MAP_ADDRESS_NTF, g.onUpdateMapAddressNTF)
+	node.Instance.Net.Listen(msg.CMD_REMOVE_MAP_ADDRESS_NTF, g.onRemoveMapAddressNTF)
+	node.Instance.Net.Listen(msg.CMD_GET_MAP_ADDRESS_REQ, g.onGetMapLocationReq)
+	node.Instance.Net.Listen(msg.CMD_UPDATE_STATIC_MAP_UUID_NTF, g.onUpdateStaticMapUUIDNTF)
+	node.Instance.Net.Listen(msg.CMD_GET_STATIC_MAP_UUID_REQ, g.onGetStaticMapUUIDReq)
 }
 
 func (g *GPS) onUpdatePlayerAddressNTF(header *msg.MessageHeader, buffer []byte) {

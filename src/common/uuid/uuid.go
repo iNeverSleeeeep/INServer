@@ -49,7 +49,7 @@ func New() string {
 	timeNow, clockSeq, _ := generator.getClockSequence()
 	binary.BigEndian.PutUint32(u[0:], uint32(timeNow))
 	binary.BigEndian.PutUint16(u[4:], clockSeq)
-	binary.BigEndian.PutUint16(u[6:], uint16(global.ServerID))
+	binary.BigEndian.PutUint16(u[6:], uint16(global.CurrentServerID))
 
 	return strconv.FormatUint(binary.BigEndian.Uint64(u), 36)
 }

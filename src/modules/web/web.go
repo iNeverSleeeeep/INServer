@@ -3,6 +3,7 @@ package web
 import (
 	"INServer/src/common/global"
 	"INServer/src/common/logger"
+	"INServer/src/modules/etcmgr"
 	"INServer/src/modules/node"
 	"INServer/src/proto/msg"
 	"encoding/json"
@@ -26,11 +27,11 @@ func New() *Web {
 func (w *Web) Start() {
 	http.HandleFunc("/zones", w.zones)
 	http.HandleFunc("/reloadetc", w.reloadetc)
-	go http.ListenAndServe(":"+strconv.Itoa(int(global.ServerConfig.WebConfig.Port)), nil)
+	go http.ListenAndServe(":"+strconv.Itoa(int(global.CurrentServerConfig.WebConfig.Port)), nil)
 }
 
 func (w *Web) zones(writer http.ResponseWriter, req *http.Request) {
-	bytes, err := json.Marshal(global.Zones)
+	bytes, err := json.Marshal(etcmgr.Instance.Zones())
 	if err != nil {
 		logger.Debug(err)
 	} else {
@@ -39,7 +40,7 @@ func (w *Web) zones(writer http.ResponseWriter, req *http.Request) {
 }
 
 func (w *Web) reloadetc(writer http.ResponseWriter, req *http.Request) {
-	_, err := node.Instance.Net.RequestBytes(msg.Command_RELOAD_ETC_REQ, make([]byte, 1))
+	_, err := node.Instance.Net.RequestBytes(msg.CMD_RELOAD_ETC_REQ, make([]byte, 1))
 	if err != nil {
 		io.WriteString(writer, err.Error())
 	} else {

@@ -41,13 +41,13 @@ func New() *Gate {
 
 func (g *Gate) Start() {
 	// TCP
-	listener, err := net.ListenTCP("tcp", &net.TCPAddr{Port: int(global.ServerConfig.GateConfig.Port)})
+	listener, err := net.ListenTCP("tcp", &net.TCPAddr{Port: int(global.CurrentServerConfig.GateConfig.Port)})
 	if err != nil {
 		logger.Fatal(err)
 	}
 	g.listener = listener
 
-	logger.Info("门服务器 启动 监听端口:" + strconv.Itoa(int(global.ServerConfig.GateConfig.Port)))
+	logger.Info("门服务器 启动 监听端口:" + strconv.Itoa(int(global.CurrentServerConfig.GateConfig.Port)))
 	go func() {
 		for {
 			conn, err := g.listener.AcceptTCP()
@@ -60,16 +60,16 @@ func (g *Gate) Start() {
 	}()
 
 	// WebSocket
-	if global.ServerConfig.GateConfig.WebPort > 0 {
+	if global.CurrentServerConfig.GateConfig.WebPort > 0 {
 		http.HandleFunc("/", g.handleWebConnect)
-		go http.ListenAndServe(fmt.Sprintf(":%d", global.ServerConfig.GateConfig.WebPort), nil)
-		logger.Info("门服务器 监听端口:" + strconv.Itoa(int(global.ServerConfig.GateConfig.WebPort)))
+		go http.ListenAndServe(fmt.Sprintf(":%d", global.CurrentServerConfig.GateConfig.WebPort), nil)
+		logger.Info("门服务器 监听端口:" + strconv.Itoa(int(global.CurrentServerConfig.GateConfig.WebPort)))
 	}
 
 }
 
 func (g *Gate) initMessageHandler() {
-	node.Instance.Net.Listen(msg.Command_UPDATE_PLAYER_ADDRESS_NTF, g.onUpdatePlayerAddressNTF)
+	node.Instance.Net.Listen(msg.CMD_UPDATE_PLAYER_ADDRESS_NTF, g.onUpdatePlayerAddressNTF)
 }
 
 func (g *Gate) onUpdatePlayerAddressNTF(header *msg.MessageHeader, buffer []byte) {
@@ -127,7 +127,7 @@ func (g *Gate) handleWebConnect(w http.ResponseWriter, r *http.Request) {
 			logger.Debug("消息解析失败:", c.RemoteAddr())
 			continue
 		}
-		if message.Command == msg.Command_CONNECT_GATE_REQ {
+		if message.Command == msg.CMD_CONNECT_GATE_REQ {
 			connectReq := &msg.ConnectGateReq{}
 			err := proto.Unmarshal(message.Request, connectReq)
 			if err != nil {
@@ -191,7 +191,7 @@ func (g *Gate) handleConnect(conn *net.TCPConn) {
 			logger.Debug("消息解析失败:" + conn.RemoteAddr().String())
 			continue
 		}
-		if message.Command == msg.Command_CONNECT_GATE_REQ {
+		if message.Command == msg.CMD_CONNECT_GATE_REQ {
 			connectReq := &msg.ConnectGateReq{}
 			err := proto.Unmarshal(message.Request, connectReq)
 			if err != nil {
@@ -264,7 +264,7 @@ func (g *Gate) onPlayerConnect(player *session) (*data.Player, error) {
 		PlayerUUID: player.info.UUID,
 	}
 	loadPlayerResp := &msg.LoadPlayerResp{}
-	err := node.Instance.Net.Request(msg.Command_GD_LOAD_PLAYER_REQ, loadPlayerReq, loadPlayerResp)
+	err := node.Instance.Net.Request(msg.CMD_GD_LOAD_PLAYER_REQ, loadPlayerReq, loadPlayerResp)
 	if err != nil {
 		return nil, err
 	}
@@ -280,7 +280,7 @@ func (g *Gate) onPlayerReconnect(player *session) error {
 func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, webconn *websocket.Conn, sequence uint64, message *msg.ConnectGateReq) {
 	connectResp := &msg.ConnectGateResp{}
 	resp := &msg.GateToClient{}
-	resp.Command = msg.Command_RESP
+	resp.Command = msg.CMD_RESP
 	resp.Sequence = sequence
 	if conn != nil {
 		defer g.sendResp(conn, resp)
@@ -314,14 +314,14 @@ func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, webconn *we
 		player.info.State = data.SessionState_Online
 		player.info.UUID = *uuid
 		player.info.Address = &data.PlayerAddress{
-			Gate:   global.ServerID,
+			Gate:   global.CurrentServerID,
 			Entity: global.InvalidServerID,
 		}
 		ntf := &msg.UpdatePlayerAddressNTF{
 			PlayerUUID: *uuid,
 			Address:    player.info.Address,
 		}
-		node.Instance.Net.Notify(msg.Command_UPDATE_PLAYER_ADDRESS_NTF, ntf)
+		node.Instance.Net.Notify(msg.CMD_UPDATE_PLAYER_ADDRESS_NTF, ntf)
 		if oldState == data.SessionState_Offline || oldState == data.SessionState_Connected || oldState == data.SessionState_Online {
 			playerData, err := g.onPlayerConnect(player)
 			if err != nil {
@@ -343,10 +343,10 @@ func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, webconn *we
 }
 
 func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
-	if message.Command == msg.Command_ROLE_ENTER {
+	if message.Command == msg.CMD_ROLE_ENTER {
 		roleEnterResp := &msg.RoleEnterResp{}
 		resp := &msg.GateToClient{}
-		resp.Command = msg.Command_RESP
+		resp.Command = msg.CMD_RESP
 		resp.Sequence = message.Sequence
 		defer g.sendSessionResp(player, resp)
 		roleEnterReq := &msg.RoleEnterReq{}
@@ -358,7 +358,7 @@ func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
 			RoleUUID: roleEnterReq.RoleUUID,
 		}
 		loadRoleResp := &msg.LoadRoleResp{}
-		if err := node.Instance.Net.Request(msg.Command_GD_LOAD_ROLE_REQ, loadRoleReq, loadRoleResp); err != nil {
+		if err := node.Instance.Net.Request(msg.CMD_GD_LOAD_ROLE_REQ, loadRoleReq, loadRoleResp); err != nil {
 			logger.Info(err)
 			return
 		}
@@ -369,7 +369,7 @@ func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
 				MapUUID: loadRoleResp.MapUUID,
 			}
 			getMapIDResp := &msg.GetMapIDResp{}
-			err := node.Instance.Net.RequestServer(msg.Command_GET_MAP_ID, getMapIDReq, getMapIDResp, loadRoleResp.WorldID)
+			err := node.Instance.Net.RequestServer(msg.CMD_GET_MAP_ID, getMapIDReq, getMapIDResp, loadRoleResp.WorldID)
 			if err != nil {
 				logger.Info(err)
 				return
@@ -386,7 +386,7 @@ func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
 				RoleUUID:   roleEnterReq.RoleUUID,
 				Address:    player.info.Address,
 			}
-			node.Instance.Net.Notify(msg.Command_UPDATE_PLAYER_ADDRESS_NTF, ntf)
+			node.Instance.Net.Notify(msg.CMD_UPDATE_PLAYER_ADDRESS_NTF, ntf)
 		}
 	} else if message.Request != nil {
 		buffer, err := node.Instance.Net.RequestClientBytesToServer(message.Command, player.info.UUID, message.Request, player.info.Address.Entity)
@@ -394,7 +394,7 @@ func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
 			logger.Debug(err)
 		} else {
 			resp := &msg.GateToClient{}
-			resp.Command = msg.Command_RESP
+			resp.Command = msg.CMD_RESP
 			resp.Sequence = message.Sequence
 			resp.Buffer = buffer
 			respBuffer, err := proto.Marshal(resp)
@@ -423,9 +423,9 @@ func (g *Gate) pushNewSessionCert(player *session) {
 	})
 	message := &msg.Message{
 		Header: &msg.MessageHeader{
-			Command:  msg.Command_SESSION_CERT_NTF,
+			Command:  msg.CMD_SESSION_CERT_NTF,
 			Sequence: 0,
-			From:     global.ServerID,
+			From:     global.CurrentServerID,
 		},
 		Buffer: buff,
 	}
