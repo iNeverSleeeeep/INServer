@@ -43,4 +43,5 @@ enum CMD {
     NODE_START_NTF = 1000; // any -> center
     ETC_SYNC_NTF = 1001; // center -> any
     NODES_INFO_NTF = 1002; // any <-> center
+    RESET_CONNECTION_NTF = 1003; // center -> any
 }

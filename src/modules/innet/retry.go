@@ -63,7 +63,7 @@ func (r *retry) startTickRetry() {
 	r.stoped = false
 	go func() {
 		for r.stoped == false {
-			time.Sleep(time.Millisecond * 10)
+			time.Sleep(time.Millisecond * 30)
 			current := time.Now().UnixNano()
 			for _, cache := range r.cachedPackages {
 				retryTime := cache.retryTime

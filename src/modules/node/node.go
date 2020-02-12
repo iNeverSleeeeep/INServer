@@ -68,6 +68,7 @@ func (n *Node) Start() {
 func (n *Node) registerListeners() {
 	n.Net.Listen(msg.CMD_NODES_INFO_NTF, n.HANDLE_NODES_INFO_NTF)
 	n.Net.Listen(msg.CMD_ETC_SYNC_NTF, etcmgr.Instance.HANDLE_ETC_SYNC_NTF)
+	n.Net.Listen(msg.CMD_RESET_CONNECTION_NTF, n.HANDLE_RESET_CONNECTION_NTF)
 }
 
 func (n *Node) HANDLE_NODES_INFO_NTF(header *msg.MessageHeader, buffer []byte) {
@@ -79,6 +80,16 @@ func (n *Node) HANDLE_NODES_INFO_NTF(header *msg.MessageHeader, buffer []byte) {
 	}
 	cluster.SetNodes(ntf.Nodes)
 	n.Net.RefreshNodesAddress()
+}
+
+func (n *Node) HANDLE_RESET_CONNECTION_NTF(header *msg.MessageHeader, buffer []byte) {
+	ntf := &msg.ResetConnectionNTF{}
+	err := proto.Unmarshal(buffer, ntf)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+	n.Net.ResetServer(ntf.ServerID)
 }
 
 func (n *Node) keepAlive() {

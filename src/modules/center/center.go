@@ -69,6 +69,8 @@ func (c *Center) HANDLE_NODE_START_NTF(header *msg.MessageHeader, buffer []byte)
 		NodeAddress: ntf.Address,
 	})
 	c.Net.RefreshNodesAddress()
+	c.Net.ResetServer(header.From)
+	c.broadcastResetConnectionNTF(header.From)
 	c.sendETCSyncNTF(header.From)
 }
 
@@ -171,6 +173,19 @@ func (c *Center) broadcastETCSyncNTF() {
 func (c *Center) sendETCSyncNTF(serverID int32) {
 	ntf := etcmgr.Instance.GenerateETCSyncNTF()
 	c.Net.NotifyServer(msg.CMD_ETC_SYNC_NTF, ntf, int32(serverID))
+}
+
+func (c *Center) broadcastResetConnectionNTF(server int32) {
+	ntf := &msg.ResetConnectionNTF{
+		ServerID: server,
+	}
+	for serverID, info := range cluster.GetNodes() {
+		if int32(serverID) != global.CenterID {
+			if info.NodeState != msg.NodeState_Unset {
+				c.Net.NotifyServer(msg.CMD_RESET_CONNECTION_NTF, ntf, int32(serverID))
+			}
+		}
+	}
 }
 
 func (c *Center) printServerState() {

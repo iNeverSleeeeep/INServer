@@ -4,6 +4,8 @@ import (
 	"INServer/src/common/global"
 	"INServer/src/modules/world"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -11,7 +13,10 @@ import (
 var Stop chan bool
 
 // Wait 等待结束
-func Wait(sigs chan os.Signal) {
+func Wait() {
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT)
+
 	for {
 		stopped := false
 		select {

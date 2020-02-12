@@ -33,3 +33,7 @@ message Node {
 message NodesInfoNTF {
     repeated Node Nodes = 1;
 }
+
+message ResetConnectionNTF {
+    int32 ServerID = 1;
+}

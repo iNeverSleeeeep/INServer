@@ -69,5 +69,7 @@ func refreshRunningZones() {
 
 func init() {
 	gates = make([]int32, 0)
+	database = global.InvalidServerID
+	gps = global.InvalidServerID
 	zones = make([]*etc.Zone, 0)
 }
