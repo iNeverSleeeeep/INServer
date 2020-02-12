@@ -18,8 +18,8 @@ func SetNodes(nodesArray []*msg.Node) {
 			nodes[i] = node
 		}
 	}
-	refreshRunning()
-	refreshRunningZones()
+	RefreshRunning()
+	RefreshRunningZones()
 }
 
 // SetNode 设置单个节点信息
@@ -28,8 +28,8 @@ func SetNode(serverID int32, node *msg.Node) {
 		nodes = append(nodes, &msg.Node{})
 	}
 	nodes[serverID] = node
-	refreshRunning()
-	refreshRunningZones()
+	RefreshRunning()
+	RefreshRunningZones()
 }
 
 // GetNode 取得单个节点信息

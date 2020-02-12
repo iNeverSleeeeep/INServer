@@ -2,15 +2,15 @@ package finalize
 
 import (
 	"INServer/src/common/global"
+	"INServer/src/common/logger"
+	"INServer/src/common/util"
+	"INServer/src/modules/cluster"
 	"INServer/src/modules/world"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 )
-
-// Stop 关服
-var Stop chan bool
 
 // Wait 等待结束
 func Wait() {
@@ -20,8 +20,6 @@ func Wait() {
 	for {
 		stopped := false
 		select {
-		case <-Stop:
-			break
 		case sig := <-sigs:
 			if sig.String() == "interrupt" {
 				stopped = true
@@ -37,6 +35,7 @@ func Wait() {
 }
 
 func stopNode() {
+	global.PendingExit = true
 	stopServer()
 }
 
@@ -46,14 +45,19 @@ func stopServer() {
 		world.Instance.Stop()
 		break
 	case global.DatabaseServer:
-		<-Stop
+		util.Wait(func() bool {
+			return cluster.RunningCount() == 2
+		}, "等待其他服务器关服完成...", time.Second)
 		break
 	case global.CenterServer:
-		<-Stop
+		util.Wait(func() bool {
+			logger.Info(cluster.RunningCount())
+			return cluster.RunningCount() == 1
+		}, "等待其他服务器关服完成...", time.Second)
 		break
 	}
 }
 
 func init() {
-	Stop = make(chan bool)
+	global.PendingExit = false
 }

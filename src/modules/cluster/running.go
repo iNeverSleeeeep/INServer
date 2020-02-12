@@ -8,6 +8,7 @@ import (
 )
 
 var (
+	running  []int32
 	gates    []int32
 	database int32
 	gps      int32
@@ -29,13 +30,16 @@ func RunningGPS() int32 {
 	return gps
 }
 
-func refreshRunning() {
+// RefreshRunning 刷新活跃中的服务器
+func RefreshRunning() {
+	running = make([]int32, 0)
 	gates = make([]int32, 0)
 	database = global.InvalidServerID
 	gps = global.InvalidServerID
 	for serverID, info := range nodes {
 		serverType := etcmgr.Instance.GetServerType(int32(serverID))
 		if info.NodeState == msg.NodeState_Running {
+			running = append(running, int32(serverID))
 			if serverType == global.GateServer {
 				gates = append(gates, int32(serverID))
 			} else if serverType == global.DatabaseServer {
@@ -47,7 +51,8 @@ func refreshRunning() {
 	}
 }
 
-func refreshRunningZones() {
+// RefreshRunningZones 刷新游戏区状态
+func RefreshRunningZones() {
 	zones = make([]*etc.Zone, 0)
 	for _, zone := range etcmgr.Instance.Zones() {
 		realZone := &etc.Zone{}
@@ -67,7 +72,13 @@ func refreshRunningZones() {
 	}
 }
 
+// RunningCount 运行中服务器数量
+func RunningCount() int {
+	return len(running)
+}
+
 func init() {
+	running = make([]int32, 0)
 	gates = make([]int32, 0)
 	database = global.InvalidServerID
 	gps = global.InvalidServerID

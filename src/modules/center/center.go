@@ -3,7 +3,6 @@ package center
 import (
 	"INServer/src/common/global"
 	"INServer/src/common/logger"
-	"INServer/src/lifetime/finalize"
 	"INServer/src/modules/cluster"
 	"INServer/src/modules/etcmgr"
 	"INServer/src/modules/innet"
@@ -59,6 +58,9 @@ func (c *Center) registerListeners() {
 
 // HANDLE_NODE_START_NTF 节点启动
 func (c *Center) HANDLE_NODE_START_NTF(header *msg.MessageHeader, buffer []byte) {
+	if global.PendingExit {
+		return
+	}
 	ntf := &msg.NodeStartNTF{}
 	err := proto.Unmarshal(buffer, ntf)
 	if err != nil {
@@ -111,6 +113,8 @@ func (c *Center) HANDLE_KEEP_ALIVE(header *msg.MessageHeader, buffer []byte) {
 	info := cluster.GetNode(serverID)
 	if info.NodeState == msg.NodeState_Offline {
 		info.NodeState = msg.NodeState_Running
+		cluster.RefreshRunning()
+		cluster.RefreshRunningZones()
 		c.pushNodesInfo()
 	}
 }
@@ -128,7 +132,6 @@ func (c *Center) tickServerState() {
 		for {
 			time.Sleep(time.Millisecond * 10)
 			now := time.Now().UnixNano()
-			alloffline := true
 			stateDirty := false
 			for serverID, info := range cluster.GetNodes() {
 				if int32(serverID) == global.CenterID {
@@ -144,16 +147,12 @@ func (c *Center) tickServerState() {
 						logger.Info(fmt.Sprintf("Node Offline ID:%d Type:%s", serverID, serverType))
 						stateDirty = true
 					}
-					if info.NodeState != msg.NodeState_Offline {
-						alloffline = false
-					}
 				}
 			}
 			if stateDirty {
+				cluster.RefreshRunning()
+				cluster.RefreshRunningZones()
 				c.pushNodesInfo()
-				if alloffline {
-					finalize.Stop <- true
-				}
 			}
 		}
 	}()

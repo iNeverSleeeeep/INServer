@@ -12,4 +12,7 @@ var (
 
 	// CenterIP 中心服默认IP
 	CenterIP string = "127.0.0.1"
+
+	// PendingExit 等待进程终止状态
+	PendingExit bool
 )
