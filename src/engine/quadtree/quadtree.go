@@ -149,10 +149,8 @@ func (qt *QuadTree) divide() {
 
 	var position *engine.Vector3
 	bb := &AABB{
-		position = &engine.Vector3{X: qt.boundary.center.X - qt.boundary.half.X/2, Y: 0, Z: qt.boundary.center.Z + qt.boundary.half.Z/2}
-		&Point{position: position, uuid: ""},
-		position = &engine.Vector3{X: qt.boundary.half.X / 2, Y: 0, Z: qt.boundary.center.Z + qt.boundary.half.Z/2}
-		&Point{qt.boundary.half.x / 2, qt.boundary.half.y / 2, nil},
+		center: &engine.Vector3{X: qt.boundary.center.X - qt.boundary.half.X/2, Y: 0, Z: qt.boundary.center.Z + qt.boundary.half.Z/2},
+		half:   &engine.Vector3{X: qt.boundary.half.X / 2, Y: 0, Z: qt.boundary.center.Z + qt.boundary.half.Z/2},
 	}
 
 	qt.nodes[0] = New(bb, qt.depth, qt)
