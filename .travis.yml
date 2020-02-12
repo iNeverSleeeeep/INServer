@@ -2,7 +2,6 @@ language: go
 go:
   - 1.12.9
 script:
-  - export GO111MODULE="on"
   - go build main.go
 notifications:
   email:
@@ -11,3 +10,5 @@ notifications:
     on_success: always
 git:
     submodules: false
+env:
+  - GO111MODULE=on
