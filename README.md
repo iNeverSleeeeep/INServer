@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/iNeverSleeeeep/INServer.svg?branch=master)](https://travis-ci.org/iNeverSleeeeep/INServer)
+
 # INServer
 
 #### 介绍
