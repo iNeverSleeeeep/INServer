@@ -1,0 +1,8 @@
+language: go
+go:
+  - 1.12.9
+  notifications:
+  email:
+    recipients:
+      - 362761534@qq.com
+    on_success: always
