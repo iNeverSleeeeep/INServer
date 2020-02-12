@@ -3,6 +3,7 @@ syntax = "proto3";
 option go_package = "INServer/src/proto/msg";
 
 import "client-gate.proto";
+import "data.player.proto";
 
 message CLLogon {
     string Name = 1;
@@ -20,10 +21,21 @@ message CLChangePassword {
     string NewPasswordHash = 3;
 }
 
+message CLRoleEnterGame {
+    string RoleUUID = 1;
+}
+
+message CLCreateRole {
+    string RoleName = 1;
+    int32 Zone = 2;
+}
+
 message ClientToLogin {
     CLLogon Logon = 1;
     CLLogin Login = 2;
     CLChangePassword ChangePassword = 3;
+    CLCreateRole CreateRole = 4;
+    CLRoleEnterGame EnterGame = 5;
 }
 
 message LoginToClient {
@@ -32,4 +44,5 @@ message LoginToClient {
     string GateIP = 3;
     int32 GatePort = 4;
     int32 GateWebPort = 5;
+    Player Player = 6;
 }

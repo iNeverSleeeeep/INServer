@@ -10,7 +10,7 @@ import (
 )
 
 // MarshalJSON implements json.Marshaler
-func (msg *PlayerSessionInfo) MarshalJSON() ([]byte, error) {
+func (msg *RoleSessionInfo) MarshalJSON() ([]byte, error) {
 	var buf bytes.Buffer
 	err := (&jsonpb.Marshaler{
 		EnumsAsInts:  false,
@@ -21,7 +21,7 @@ func (msg *PlayerSessionInfo) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON implements json.Unmarshaler
-func (msg *PlayerSessionInfo) UnmarshalJSON(b []byte) error {
+func (msg *RoleSessionInfo) UnmarshalJSON(b []byte) error {
 	return jsonpb.Unmarshal(bytes.NewReader(b), msg)
 }
 

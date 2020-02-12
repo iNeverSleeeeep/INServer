@@ -26,14 +26,14 @@ var upgrader = websocket.Upgrader{}
 type (
 	Gate struct {
 		listener *net.TCPListener
-		players  map[string]*session
+		roles    map[string]*session
 		serv     *services
 	}
 )
 
 func New() *Gate {
 	g := new(Gate)
-	g.players = make(map[string]*session)
+	g.roles = make(map[string]*session)
 	g.serv = newServices()
 	g.serv.start()
 	return g
@@ -69,18 +69,18 @@ func (g *Gate) Start() {
 }
 
 func (g *Gate) initMessageHandler() {
-	node.Instance.Net.Listen(msg.CMD_UPDATE_PLAYER_ADDRESS_NTF, g.onUpdatePlayerAddressNTF)
+	node.Instance.Net.Listen(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, g.HANDLE_UPDATE_ROLE_ADDRESS_NTF)
 }
 
-func (g *Gate) onUpdatePlayerAddressNTF(header *msg.MessageHeader, buffer []byte) {
-	ntf := &msg.UpdatePlayerAddressNTF{}
+func (g *Gate) HANDLE_UPDATE_ROLE_ADDRESS_NTF(header *msg.MessageHeader, buffer []byte) {
+	ntf := &msg.UpdateRoleAddressNTF{}
 	err := proto.Unmarshal(buffer, ntf)
 	if err != nil {
 		logger.Error(err)
 		return
 	}
 
-	if session, ok := g.players[ntf.PlayerUUID]; ok {
+	if session, ok := g.roles[ntf.RoleUUID]; ok {
 		if ntf.Address.Entity != global.InvalidServerID {
 			session.info.Address.Entity = ntf.Address.Entity
 		}
@@ -139,16 +139,16 @@ func (g *Gate) handleWebConnect(w http.ResponseWriter, r *http.Request) {
 			}
 			g.handleConnectMessage(uuid, nil, c, message.Sequence, connectReq)
 		} else if uuid != nil {
-			if player, ok := g.players[*uuid]; ok {
-				if player.info.State == data.SessionState_Online {
-					g.handleMessage(player, message)
+			if role, ok := g.roles[*uuid]; ok {
+				if role.info.State == data.SessionState_Online {
+					g.handleMessage(role, message)
 				} else {
-					logger.Debug("客户端状态错误:" + c.RemoteAddr().String() + " 当前状态:" + player.info.State.String())
+					logger.Info("客户端状态错误:" + c.RemoteAddr().String() + " 当前状态:" + role.info.State.String())
 					return
 				}
 			}
 		} else {
-			logger.Debug("客户端需要先发送Connect协议:" + c.RemoteAddr().String())
+			logger.Info("客户端需要先发送Connect协议:" + c.RemoteAddr().String())
 			return
 		}
 
@@ -203,11 +203,11 @@ func (g *Gate) handleConnect(conn *net.TCPConn) {
 			}
 			g.handleConnectMessage(uuid, conn, nil, message.Sequence, connectReq)
 		} else if uuid != nil {
-			if player, ok := g.players[*uuid]; ok {
-				if player.info.State == data.SessionState_Online {
-					g.handleMessage(player, message)
+			if role, ok := g.roles[*uuid]; ok {
+				if role.info.State == data.SessionState_Online {
+					g.handleMessage(role, message)
 				} else {
-					logger.Debug("客户端状态错误:" + conn.RemoteAddr().String() + " 当前状态:" + player.info.State.String())
+					logger.Debug("客户端状态错误:" + conn.RemoteAddr().String() + " 当前状态:" + role.info.State.String())
 					return
 				}
 			}
@@ -229,11 +229,11 @@ func (g *Gate) closeConnection(uuid *string, conn *net.TCPConn, webconn *websock
 		webconn.Close()
 	}
 	if uuid != nil {
-		if player, ok := g.players[*uuid]; ok {
-			player.conn = nil
-			player.webconn = nil
-			player.info.State = data.SessionState_OutOfContact
-			player.cert.OutOfDateTime = generateCertOutOfDateTime()
+		if role, ok := g.roles[*uuid]; ok {
+			role.conn = nil
+			role.webconn = nil
+			role.info.State = data.SessionState_OutOfContact
+			role.cert.OutOfDateTime = generateCertOutOfDateTime()
 		}
 	}
 }
@@ -243,38 +243,17 @@ func (g *Gate) tickOutOfContact() {
 		for {
 			time.Sleep(time.Second)
 			now := time.Now().Unix()
-			var outOfDatePlayers []string
-			for uuid, player := range g.players {
-				if player.info.State == data.SessionState_OutOfContact && player.cert.OutOfDateTime < now {
-					outOfDatePlayers = append(outOfDatePlayers, uuid)
+			var outOfDateRoles []string
+			for uuid, role := range g.roles {
+				if role.info.State == data.SessionState_OutOfContact && role.cert.OutOfDateTime < now {
+					outOfDateRoles = append(outOfDateRoles, uuid)
 				}
 			}
-			for _, uuid := range outOfDatePlayers {
-				delete(g.players, uuid)
+			for _, uuid := range outOfDateRoles {
+				delete(g.roles, uuid)
 			}
 		}
 	}()
-}
-
-func (g *Gate) onPlayerConnect(player *session) (*data.Player, error) {
-	// 推送消息到其他服务器
-	logger.Info("客户端登录成功:" + player.info.UUID)
-
-	loadPlayerReq := &msg.LoadPlayerReq{
-		PlayerUUID: player.info.UUID,
-	}
-	loadPlayerResp := &msg.LoadPlayerResp{}
-	err := node.Instance.Net.Request(msg.CMD_GD_LOAD_PLAYER_REQ, loadPlayerReq, loadPlayerResp)
-	if err != nil {
-		return nil, err
-	}
-
-	return loadPlayerResp.Player, nil
-}
-
-func (g *Gate) onPlayerReconnect(player *session) error {
-	// 推送从消息到其他服务器
-	return nil
 }
 
 func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, webconn *websocket.Conn, sequence uint64, message *msg.ConnectGateReq) {
@@ -287,7 +266,7 @@ func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, webconn *we
 	} else {
 		defer g.sendWebResp(webconn, resp)
 	}
-	player, ok := g.players[*uuid]
+	role, ok := g.roles[*uuid]
 	if ok == false {
 		addr := ""
 		if conn != nil {
@@ -297,58 +276,42 @@ func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, webconn *we
 		}
 		logger.Debug("拒绝连接，没有数据:" + addr + " uuid:" + *uuid)
 		return
-	} else if message.SessionCert.Key != player.cert.Key {
+	} else if message.SessionCert.Key != role.cert.Key {
 		addr := ""
 		if conn != nil {
 			addr = conn.RemoteAddr().String()
 		} else if webconn != nil {
 			addr = webconn.RemoteAddr().String()
 		}
-		logger.Info(fmt.Sprintf("客户端秘钥错误 addr:%d uuid:%s client:%s server:%s", addr, *uuid, message.SessionCert.Key, player.cert.Key))
+		logger.Info(fmt.Sprintf("客户端秘钥错误 addr:%d uuid:%s client:%s server:%s", addr, *uuid, message.SessionCert.Key, role.cert.Key))
 		return
 	} else {
-		player.conn = conn
-		player.webconn = webconn
-		player.generateNewCertKey()
-		oldState := player.info.State
-		player.info.State = data.SessionState_Online
-		player.info.UUID = *uuid
-		player.info.Address = &data.PlayerAddress{
+		role.conn = conn
+		role.webconn = webconn
+		role.generateNewCertKey()
+		role.info.State = data.SessionState_Online
+		role.info.RoleUUID = *uuid
+		role.info.Address = &data.RoleAddress{
 			Gate:   global.CurrentServerID,
 			Entity: global.InvalidServerID,
 		}
-		ntf := &msg.UpdatePlayerAddressNTF{
-			PlayerUUID: *uuid,
-			Address:    player.info.Address,
+		ntf := &msg.UpdateRoleAddressNTF{
+			RoleUUID: *uuid,
+			Address:  role.info.Address,
 		}
-		node.Instance.Net.Notify(msg.CMD_UPDATE_PLAYER_ADDRESS_NTF, ntf)
-		if oldState == data.SessionState_Offline || oldState == data.SessionState_Connected || oldState == data.SessionState_Online {
-			playerData, err := g.onPlayerConnect(player)
-			if err != nil {
-				logger.Debug(err)
-				return
-			}
-			connectResp.Success = true
-			connectResp.Player = playerData
-		} else if oldState == data.SessionState_OutOfContact {
-			err := g.onPlayerReconnect(player)
-			if err != nil {
-				logger.Debug(err)
-				return
-			}
-			connectResp.Success = true
-		}
+		node.Instance.Net.Notify(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, ntf)
+		connectResp.Success = true
 	}
 	resp.Buffer, _ = proto.Marshal(connectResp)
 }
 
-func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
+func (g *Gate) handleMessage(role *session, message *msg.ClientToGate) {
 	if message.Command == msg.CMD_ROLE_ENTER {
 		roleEnterResp := &msg.RoleEnterResp{}
 		resp := &msg.GateToClient{}
 		resp.Command = msg.CMD_RESP
 		resp.Sequence = message.Sequence
-		defer g.sendSessionResp(player, resp)
+		defer g.sendSessionResp(role, resp)
 		roleEnterReq := &msg.RoleEnterReq{}
 		if err := proto.Unmarshal(message.Request, roleEnterReq); err != nil {
 			logger.Info(err)
@@ -378,18 +341,17 @@ func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
 		}
 		resp.Buffer, _ = proto.Marshal(roleEnterResp)
 		if loadRoleResp.Success == false {
-			logger.Info("Role Enter Fail! UUID:" + player.info.UUID)
+			logger.Info("Role Enter Fail! UUID:" + role.info.RoleUUID)
 		} else {
-			player.info.Address.Entity = loadRoleResp.WorldID
-			ntf := &msg.UpdatePlayerAddressNTF{
-				PlayerUUID: player.info.UUID,
-				RoleUUID:   roleEnterReq.RoleUUID,
-				Address:    player.info.Address,
+			role.info.Address.Entity = loadRoleResp.WorldID
+			ntf := &msg.UpdateRoleAddressNTF{
+				RoleUUID: roleEnterReq.RoleUUID,
+				Address:  role.info.Address,
 			}
-			node.Instance.Net.Notify(msg.CMD_UPDATE_PLAYER_ADDRESS_NTF, ntf)
+			node.Instance.Net.Notify(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, ntf)
 		}
 	} else if message.Request != nil {
-		buffer, err := node.Instance.Net.RequestClientBytesToServer(message.Command, player.info.UUID, message.Request, player.info.Address.Entity)
+		buffer, err := node.Instance.Net.RequestClientBytesToServer(message.Command, role.info.RoleUUID, message.Request, role.info.Address.Entity)
 		if err != nil {
 			logger.Debug(err)
 		} else {
@@ -401,25 +363,25 @@ func (g *Gate) handleMessage(player *session, message *msg.ClientToGate) {
 			if err != nil {
 				logger.Debug(err)
 			} else {
-				if player.conn != nil {
-					innet.SendBytesHelper(player.conn, respBuffer)
-				} else if player.webconn != nil {
-					innet.SendWebBytesHelper(player.webconn, respBuffer)
+				if role.conn != nil {
+					innet.SendBytesHelper(role.conn, respBuffer)
+				} else if role.webconn != nil {
+					innet.SendWebBytesHelper(role.webconn, respBuffer)
 				}
 			}
 		}
 	} else if message.Notify != nil {
-		err := node.Instance.Net.NotifyClientBytesToServer(message.Command, player.info.UUID, message.Notify, player.info.Address.Entity)
+		err := node.Instance.Net.NotifyClientBytesToServer(message.Command, role.info.RoleUUID, message.Notify, role.info.Address.Entity)
 		if err != nil {
 			logger.Debug(err)
 		}
 	}
 }
 
-func (g *Gate) pushNewSessionCert(player *session) {
+func (g *Gate) pushNewSessionCert(role *session) {
 	buff, _ := proto.Marshal(&msg.SessionCert{
-		UUID: player.info.UUID,
-		Key:  player.cert.Key,
+		UUID: role.info.RoleUUID,
+		Key:  role.cert.Key,
 	})
 	message := &msg.Message{
 		Header: &msg.MessageHeader{
@@ -429,7 +391,7 @@ func (g *Gate) pushNewSessionCert(player *session) {
 		},
 		Buffer: buff,
 	}
-	g.sendSessionResp(player, message)
+	g.sendSessionResp(role, message)
 }
 
 func (g *Gate) sendSessionResp(s *session, resp proto.Message) error {

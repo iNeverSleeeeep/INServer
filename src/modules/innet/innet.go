@@ -215,10 +215,10 @@ func (n *INNet) sendBytes(command msg.CMD, sequence uint64, bytes []byte, server
 
 func (n *INNet) sendClientBytes(command msg.CMD, sequence uint64, uuid string, bytes []byte, serverID int32) error {
 	header := &msg.MessageHeader{
-		Command:    command,
-		Sequence:   sequence,
-		From:       global.CurrentServerID,
-		PlayerUUID: uuid,
+		Command:  command,
+		Sequence: sequence,
+		From:     global.CurrentServerID,
+		RoleUUID: uuid,
 	}
 	return n.send(header, bytes, serverID)
 }

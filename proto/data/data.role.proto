@@ -14,6 +14,11 @@ message RoleSummaryData {
     string MailUUID = 6; // 邮件地址
 }
 
+message RoleAddress {
+    int32 Gate = 1;
+    int32 Entity = 2;
+}
+
 // 在线数据
 message RoleOnlineData {
     EntityData EntityData = 1;

@@ -26,17 +26,6 @@ message ReleasePlayerNtf {
     string PlayerUUID = 1;
 }
 
-message CreateRoleReq {
-    string PlayerUUID = 1;
-    string RoleName = 2;
-    int32 Zone = 3;
-}
-
-message CreateRoleResp {
-    bool Success = 1;
-    RoleSummaryData Role = 2;
-}
-
 message LoadRoleReq {
     string RoleUUID = 1;
 }
@@ -46,4 +35,15 @@ message LoadRoleResp {
     int32 WorldID = 2;
     string MapUUID = 3;
     Role Role = 4;
+}
+
+message CreateRoleReq {
+    string PlayerUUID = 1;
+    string RoleName = 2;
+    int32 Zone = 3;
+}
+
+message CreateRoleResp {
+    bool Success = 1;
+    RoleSummaryData Role = 2;
 }

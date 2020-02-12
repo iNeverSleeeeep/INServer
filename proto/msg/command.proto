@@ -24,8 +24,8 @@ enum CMD {
     NEAR_ENTITIES_NTF = 18; // world -> client
     ENTITY_DATA_REQ = 19; // client -> world
     ROLE_ENTER = 20; // client -> gate; any -> world
-    UPDATE_PLAYER_ADDRESS_NTF = 21; // any -> gps
-    REMOVE_PLAYER_ADDRESS_NTF = 22; // gate -> gps
+    UPDATE_ROLE_ADDRESS_NTF = 21; // any -> gps
+    REMOVE_ROLE_ADDRESS_NTF = 22; // gate -> gps
     UPDATE_MAP_ADDRESS_NTF = 23; // world -> gps
     REMOVE_MAP_ADDRESS_NTF = 24; // world -> gps
     GET_MAP_ADDRESS_REQ = 25; // database -> gps

@@ -29,12 +29,12 @@ func (s *services) onSessionCert(header *msg.MessageHeader, buffer []byte) {
 		return
 	}
 	UUID := message.Cert.UUID
-	player, ok := Instance.players[UUID]
+	role, ok := Instance.roles[UUID]
 	if ok == false {
-		player = newSession(nil, UUID)
-		player.info.State = data.SessionState_Offline
-		Instance.players[UUID] = player
+		role = newSession(nil, UUID)
+		role.info.State = data.SessionState_Offline
+		Instance.roles[UUID] = role
 	}
-	player.cert.Key = message.Cert.Key
-	player.cert.OutOfDateTime = generateCertOutOfDateTime()
+	role.cert.Key = message.Cert.Key
+	role.cert.OutOfDateTime = generateCertOutOfDateTime()
 }

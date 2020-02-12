@@ -16,7 +16,7 @@ type (
 	session struct {
 		conn    *net.TCPConn
 		webconn *websocket.Conn
-		info    *data.PlayerSessionInfo
+		info    *data.RoleSessionInfo
 		cert    *data.SessionCertData
 	}
 )
@@ -24,9 +24,9 @@ type (
 func newSession(conn *net.TCPConn, uuid string) *session {
 	s := &session{
 		conn: conn,
-		info: &data.PlayerSessionInfo{
-			UUID: uuid,
-			Address: &data.PlayerAddress{
+		info: &data.RoleSessionInfo{
+			RoleUUID: uuid,
+			Address: &data.RoleAddress{
 				Gate:   global.CurrentServerID,
 				Entity: -1,
 			},

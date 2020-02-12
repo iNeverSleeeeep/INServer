@@ -31,5 +31,3 @@ do
 echo $file
 protoc --csharp_out=../clientproto --proto_path=./etc $file
 done
-
-sleep 1s

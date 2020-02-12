@@ -14,16 +14,15 @@ import (
 var Instance *GPS
 
 type (
-	player struct {
-		address  *data.PlayerAddress
-		roleUUID string
+	role struct {
+		address *data.RoleAddress
+		uuid    string
 	}
 
 	// GPS 定位服务器 可以查询每个地图和每个角色的位置
 	GPS struct {
 		maps       map[string]int32
-		players    map[string]*player
-		roles      map[string]string
+		roles      map[string]*role
 		staticmaps map[int32]map[int32]string
 	}
 )
@@ -32,8 +31,7 @@ type (
 func New() *GPS {
 	g := new(GPS)
 	g.maps = make(map[string]int32)
-	g.players = make(map[string]*player)
-	g.roles = make(map[string]string)
+	g.roles = make(map[string]*role)
 	g.staticmaps = make(map[int32]map[int32]string)
 	return g
 }
@@ -44,8 +42,8 @@ func (g *GPS) Start() {
 }
 
 func (g *GPS) initMessageHandler() {
-	node.Instance.Net.Listen(msg.CMD_UPDATE_PLAYER_ADDRESS_NTF, g.onUpdatePlayerAddressNTF)
-	node.Instance.Net.Listen(msg.CMD_REMOVE_PLAYER_ADDRESS_NTF, g.onRemovePlayerAddressNTF)
+	node.Instance.Net.Listen(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, g.HANDLE_UPDATE_ROLE_ADDRESS_NTF)
+	node.Instance.Net.Listen(msg.CMD_REMOVE_ROLE_ADDRESS_NTF, g.HANDLE_REMOVE_ROLE_ADDRESS_NTF)
 	node.Instance.Net.Listen(msg.CMD_UPDATE_MAP_ADDRESS_NTF, g.onUpdateMapAddressNTF)
 	node.Instance.Net.Listen(msg.CMD_REMOVE_MAP_ADDRESS_NTF, g.onRemoveMapAddressNTF)
 	node.Instance.Net.Listen(msg.CMD_GET_MAP_ADDRESS_REQ, g.onGetMapLocationReq)
@@ -53,47 +51,42 @@ func (g *GPS) initMessageHandler() {
 	node.Instance.Net.Listen(msg.CMD_GET_STATIC_MAP_UUID_REQ, g.onGetStaticMapUUIDReq)
 }
 
-func (g *GPS) onUpdatePlayerAddressNTF(header *msg.MessageHeader, buffer []byte) {
-	ntf := &msg.UpdatePlayerAddressNTF{}
+func (g *GPS) HANDLE_UPDATE_ROLE_ADDRESS_NTF(header *msg.MessageHeader, buffer []byte) {
+	ntf := &msg.UpdateRoleAddressNTF{}
 	err := proto.Unmarshal(buffer, ntf)
 	if err != nil {
 		logger.Error(err)
 		return
 	}
-	if len(ntf.PlayerUUID) > 0 {
-		if _, ok := g.players[ntf.PlayerUUID]; ok == false {
-			address := &data.PlayerAddress{
+	if len(ntf.RoleUUID) > 0 {
+		if _, ok := g.roles[ntf.RoleUUID]; ok == false {
+			address := &data.RoleAddress{
 				Gate:   global.InvalidServerID,
 				Entity: global.InvalidServerID,
 			}
-			g.players[ntf.PlayerUUID] = &player{
+			g.roles[ntf.RoleUUID] = &role{
 				address: address,
 			}
 
 		}
 		if ntf.Address.Gate != global.InvalidServerID {
-			g.players[ntf.PlayerUUID].address.Gate = ntf.Address.Gate
+			g.roles[ntf.RoleUUID].address.Gate = ntf.Address.Gate
 		}
 		if ntf.Address.Entity != global.InvalidServerID {
-			g.players[ntf.PlayerUUID].address.Entity = ntf.Address.Entity
-		}
-		if len(ntf.RoleUUID) > 0 {
-			g.players[ntf.PlayerUUID].roleUUID = ntf.RoleUUID
-			g.roles[ntf.RoleUUID] = ntf.PlayerUUID
+			g.roles[ntf.RoleUUID].address.Entity = ntf.Address.Entity
 		}
 	} else {
-		logger.Error("Empty PlayerUUID")
+		logger.Error("Empty RoleUUID")
 	}
 }
 
-func (g *GPS) onRemovePlayerAddressNTF(header *msg.MessageHeader, buffer []byte) {
-	ntf := &msg.RemovePlayerAddressNTF{}
+func (g *GPS) HANDLE_REMOVE_ROLE_ADDRESS_NTF(header *msg.MessageHeader, buffer []byte) {
+	ntf := &msg.RemoveRoleAddressNTF{}
 	proto.Unmarshal(buffer, ntf)
-	if p, ok := g.players[ntf.PlayerUUID]; ok {
-		if _, ok := g.roles[p.roleUUID]; ok {
-			delete(g.roles, p.roleUUID)
+	if r, ok := g.roles[ntf.RoleUUID]; ok {
+		if _, ok := g.roles[r.uuid]; ok {
+			delete(g.roles, r.uuid)
 		}
-		delete(g.players, ntf.PlayerUUID)
 	}
 }
 

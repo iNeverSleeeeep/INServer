@@ -47,5 +47,3 @@ do
 echo $file
 protoc --gofast_out=../../ --proto_path=./db --proto_path=./gogoproto --proto_path=./protobuf $file
 done
-
-sleep 3s

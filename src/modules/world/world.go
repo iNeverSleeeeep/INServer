@@ -19,10 +19,9 @@ var Instance *World
 
 type (
 	World struct {
-		gameMaps   map[string]*gamemap.Map
-		roles      map[string]*data.Role
-		playerRole map[string]string
-		roleGate   map[string]int32
+		gameMaps map[string]*gamemap.Map
+		roles    map[string]*data.Role
+		roleGate map[string]int32
 	}
 )
 
@@ -30,7 +29,6 @@ func New() *World {
 	w := new(World)
 	w.gameMaps = make(map[string]*gamemap.Map)
 	w.roles = make(map[string]*data.Role)
-	w.playerRole = make(map[string]string)
 	w.roleGate = make(map[string]int32)
 	w.initMessageHandler()
 	return w
@@ -119,14 +117,14 @@ func (w *World) onRoleEnterNTF(header *msg.MessageHeader, buffer []byte) {
 		entity := ecs.NewEntity(role.OnlineData.EntityData, data.EntityType_RoleEntity)
 		gameMap.EntityEnter(role.SummaryData.RoleUUID, entity)
 
-		ntf := &msg.UpdatePlayerAddressNTF{
-			PlayerUUID: role.SummaryData.PlayerUUID,
-			Address: &data.PlayerAddress{
+		ntf := &msg.UpdateRoleAddressNTF{
+			RoleUUID: role.SummaryData.RoleUUID,
+			Address: &data.RoleAddress{
 				Gate:   global.InvalidServerID,
 				Entity: global.CurrentServerID,
 			},
 		}
-		node.Instance.Net.Notify(msg.CMD_UPDATE_PLAYER_ADDRESS_NTF, ntf)
+		node.Instance.Net.Notify(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, ntf)
 	} else {
 		logger.Error(fmt.Sprintf("角色进入失败，地图不存在 role:%s map:%s", role.SummaryData.RoleUUID, role.SummaryData.MapUUID))
 	}
@@ -156,12 +154,9 @@ func (w *World) onRoleMoveINF(header *msg.MessageHeader, buffer []byte) {
 		logger.Error(err)
 		return
 	}
-
-	if roleUUID, ok := w.playerRole[header.PlayerUUID]; ok {
-		if role, ok2 := w.roles[roleUUID]; ok2 {
-			if gameMap, ok := w.gameMaps[role.SummaryData.GetMapUUID()]; ok {
-				gameMap.OnRoleMoveINF(role, inf)
-			}
+	if role, ok := w.roles[header.RoleUUID]; ok {
+		if gameMap, ok2 := w.gameMaps[role.SummaryData.GetMapUUID()]; ok2 {
+			gameMap.OnRoleMoveINF(role, inf)
 		}
 	}
 }

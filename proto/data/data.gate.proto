@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option go_package = "INServer/src/proto/data";
 
-import "data.player.proto";
+import "data.role.proto";
 
 enum SessionState {
     Offline = 0; // 无连接 默认状态 可以认为无连接的用户应该被Gate删除
@@ -11,9 +11,9 @@ enum SessionState {
     OutOfContact = 3;  // 短暂失联状态，可以断线重连
 }
 
-message PlayerSessionInfo {
-    string UUID = 1;
-    PlayerAddress Address = 2;
+message RoleSessionInfo {
+    string RoleUUID = 1;
+    RoleAddress Address = 2;
     SessionState State = 3;
 }
 

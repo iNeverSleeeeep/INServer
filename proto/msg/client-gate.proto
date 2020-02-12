@@ -3,7 +3,6 @@ syntax = "proto3";
 option go_package = "INServer/src/proto/msg";
 
 import "command.proto";
-import "data.player.proto";
 import "data.role.proto";
 
 message SessionCert {
@@ -17,7 +16,6 @@ message ConnectGateReq {
 
 message ConnectGateResp {
     bool Success = 1;
-    Player Player = 2;
 }
 
 message RoleEnterReq {

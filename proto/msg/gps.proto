@@ -2,24 +2,15 @@ syntax = "proto3";
 
 option go_package = "INServer/src/proto/msg";
 
-import "data.player.proto";
+import "data.role.proto";
 
-message Thing {
-    bytes Buffer = 1;
-    string ToPlayerUUID = 2;
-    int32 ToWorldID = 3;
-    int32 ToMapUUID = 4;
-    repeated string ToPlayerUUIDList = 5; 
+message UpdateRoleAddressNTF {
+    string RoleUUID = 1;
+    RoleAddress Address = 2;
 }
 
-message UpdatePlayerAddressNTF {
-    string PlayerUUID = 1;
-    string RoleUUID = 2;
-    PlayerAddress Address = 3;
-}
-
-message RemovePlayerAddressNTF {
-    string PlayerUUID = 1;
+message RemoveRoleAddressNTF {
+    string RoleUUID = 1;
 }
 
 message UpdateMapAddressNTF {

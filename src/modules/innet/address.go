@@ -89,7 +89,8 @@ func (a *address) getByCommand(command msg.CMD) *server {
 	case msg.CMD_GET_MAP_ADDRESS_REQ,
 		msg.CMD_GET_STATIC_MAP_UUID_REQ,
 		msg.CMD_UPDATE_MAP_ADDRESS_NTF,
-		msg.CMD_UPDATE_PLAYER_ADDRESS_NTF,
+		msg.CMD_UPDATE_ROLE_ADDRESS_NTF,
+		msg.CMD_REMOVE_ROLE_ADDRESS_NTF,
 		msg.CMD_UPDATE_STATIC_MAP_UUID_NTF:
 		serverID := cluster.RunningGPS()
 		if serverID != global.InvalidServerID {

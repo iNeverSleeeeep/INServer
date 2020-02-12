@@ -23,29 +23,26 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-type Thing struct {
-	Buffer               []byte   `protobuf:"bytes,1,opt,name=Buffer,proto3" json:"Buffer,omitempty"`
-	ToPlayerUUID         string   `protobuf:"bytes,2,opt,name=ToPlayerUUID,proto3" json:"ToPlayerUUID,omitempty"`
-	ToWorldID            int32    `protobuf:"varint,3,opt,name=ToWorldID,proto3" json:"ToWorldID,omitempty"`
-	ToMapUUID            int32    `protobuf:"varint,4,opt,name=ToMapUUID,proto3" json:"ToMapUUID,omitempty"`
-	ToPlayerUUIDList     []string `protobuf:"bytes,5,rep,name=ToPlayerUUIDList,proto3" json:"ToPlayerUUIDList,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+type UpdateRoleAddressNTF struct {
+	RoleUUID             string            `protobuf:"bytes,1,opt,name=RoleUUID,proto3" json:"RoleUUID,omitempty"`
+	Address              *data.RoleAddress `protobuf:"bytes,2,opt,name=Address,proto3" json:"Address,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
 }
 
-func (m *Thing) Reset()         { *m = Thing{} }
-func (m *Thing) String() string { return proto.CompactTextString(m) }
-func (*Thing) ProtoMessage()    {}
-func (*Thing) Descriptor() ([]byte, []int) {
+func (m *UpdateRoleAddressNTF) Reset()         { *m = UpdateRoleAddressNTF{} }
+func (m *UpdateRoleAddressNTF) String() string { return proto.CompactTextString(m) }
+func (*UpdateRoleAddressNTF) ProtoMessage()    {}
+func (*UpdateRoleAddressNTF) Descriptor() ([]byte, []int) {
 	return fileDescriptor_126eb6f1d39e434c, []int{0}
 }
-func (m *Thing) XXX_Unmarshal(b []byte) error {
+func (m *UpdateRoleAddressNTF) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *Thing) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *UpdateRoleAddressNTF) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_Thing.Marshal(b, m, deterministic)
+		return xxx_messageInfo_UpdateRoleAddressNTF.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -55,135 +52,51 @@ func (m *Thing) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *Thing) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Thing.Merge(m, src)
+func (m *UpdateRoleAddressNTF) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateRoleAddressNTF.Merge(m, src)
 }
-func (m *Thing) XXX_Size() int {
+func (m *UpdateRoleAddressNTF) XXX_Size() int {
 	return m.Size()
 }
-func (m *Thing) XXX_DiscardUnknown() {
-	xxx_messageInfo_Thing.DiscardUnknown(m)
+func (m *UpdateRoleAddressNTF) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateRoleAddressNTF.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Thing proto.InternalMessageInfo
+var xxx_messageInfo_UpdateRoleAddressNTF proto.InternalMessageInfo
 
-func (m *Thing) GetBuffer() []byte {
-	if m != nil {
-		return m.Buffer
-	}
-	return nil
-}
-
-func (m *Thing) GetToPlayerUUID() string {
-	if m != nil {
-		return m.ToPlayerUUID
-	}
-	return ""
-}
-
-func (m *Thing) GetToWorldID() int32 {
-	if m != nil {
-		return m.ToWorldID
-	}
-	return 0
-}
-
-func (m *Thing) GetToMapUUID() int32 {
-	if m != nil {
-		return m.ToMapUUID
-	}
-	return 0
-}
-
-func (m *Thing) GetToPlayerUUIDList() []string {
-	if m != nil {
-		return m.ToPlayerUUIDList
-	}
-	return nil
-}
-
-type UpdatePlayerAddressNTF struct {
-	PlayerUUID           string              `protobuf:"bytes,1,opt,name=PlayerUUID,proto3" json:"PlayerUUID,omitempty"`
-	RoleUUID             string              `protobuf:"bytes,2,opt,name=RoleUUID,proto3" json:"RoleUUID,omitempty"`
-	Address              *data.PlayerAddress `protobuf:"bytes,3,opt,name=Address,proto3" json:"Address,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
-	XXX_unrecognized     []byte              `json:"-"`
-	XXX_sizecache        int32               `json:"-"`
-}
-
-func (m *UpdatePlayerAddressNTF) Reset()         { *m = UpdatePlayerAddressNTF{} }
-func (m *UpdatePlayerAddressNTF) String() string { return proto.CompactTextString(m) }
-func (*UpdatePlayerAddressNTF) ProtoMessage()    {}
-func (*UpdatePlayerAddressNTF) Descriptor() ([]byte, []int) {
-	return fileDescriptor_126eb6f1d39e434c, []int{1}
-}
-func (m *UpdatePlayerAddressNTF) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *UpdatePlayerAddressNTF) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_UpdatePlayerAddressNTF.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *UpdatePlayerAddressNTF) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdatePlayerAddressNTF.Merge(m, src)
-}
-func (m *UpdatePlayerAddressNTF) XXX_Size() int {
-	return m.Size()
-}
-func (m *UpdatePlayerAddressNTF) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdatePlayerAddressNTF.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdatePlayerAddressNTF proto.InternalMessageInfo
-
-func (m *UpdatePlayerAddressNTF) GetPlayerUUID() string {
-	if m != nil {
-		return m.PlayerUUID
-	}
-	return ""
-}
-
-func (m *UpdatePlayerAddressNTF) GetRoleUUID() string {
+func (m *UpdateRoleAddressNTF) GetRoleUUID() string {
 	if m != nil {
 		return m.RoleUUID
 	}
 	return ""
 }
 
-func (m *UpdatePlayerAddressNTF) GetAddress() *data.PlayerAddress {
+func (m *UpdateRoleAddressNTF) GetAddress() *data.RoleAddress {
 	if m != nil {
 		return m.Address
 	}
 	return nil
 }
 
-type RemovePlayerAddressNTF struct {
-	PlayerUUID           string   `protobuf:"bytes,1,opt,name=PlayerUUID,proto3" json:"PlayerUUID,omitempty"`
+type RemoveRoleAddressNTF struct {
+	RoleUUID             string   `protobuf:"bytes,1,opt,name=RoleUUID,proto3" json:"RoleUUID,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *RemovePlayerAddressNTF) Reset()         { *m = RemovePlayerAddressNTF{} }
-func (m *RemovePlayerAddressNTF) String() string { return proto.CompactTextString(m) }
-func (*RemovePlayerAddressNTF) ProtoMessage()    {}
-func (*RemovePlayerAddressNTF) Descriptor() ([]byte, []int) {
-	return fileDescriptor_126eb6f1d39e434c, []int{2}
+func (m *RemoveRoleAddressNTF) Reset()         { *m = RemoveRoleAddressNTF{} }
+func (m *RemoveRoleAddressNTF) String() string { return proto.CompactTextString(m) }
+func (*RemoveRoleAddressNTF) ProtoMessage()    {}
+func (*RemoveRoleAddressNTF) Descriptor() ([]byte, []int) {
+	return fileDescriptor_126eb6f1d39e434c, []int{1}
 }
-func (m *RemovePlayerAddressNTF) XXX_Unmarshal(b []byte) error {
+func (m *RemoveRoleAddressNTF) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *RemovePlayerAddressNTF) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *RemoveRoleAddressNTF) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_RemovePlayerAddressNTF.Marshal(b, m, deterministic)
+		return xxx_messageInfo_RemoveRoleAddressNTF.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -193,21 +106,21 @@ func (m *RemovePlayerAddressNTF) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *RemovePlayerAddressNTF) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RemovePlayerAddressNTF.Merge(m, src)
+func (m *RemoveRoleAddressNTF) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RemoveRoleAddressNTF.Merge(m, src)
 }
-func (m *RemovePlayerAddressNTF) XXX_Size() int {
+func (m *RemoveRoleAddressNTF) XXX_Size() int {
 	return m.Size()
 }
-func (m *RemovePlayerAddressNTF) XXX_DiscardUnknown() {
-	xxx_messageInfo_RemovePlayerAddressNTF.DiscardUnknown(m)
+func (m *RemoveRoleAddressNTF) XXX_DiscardUnknown() {
+	xxx_messageInfo_RemoveRoleAddressNTF.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_RemovePlayerAddressNTF proto.InternalMessageInfo
+var xxx_messageInfo_RemoveRoleAddressNTF proto.InternalMessageInfo
 
-func (m *RemovePlayerAddressNTF) GetPlayerUUID() string {
+func (m *RemoveRoleAddressNTF) GetRoleUUID() string {
 	if m != nil {
-		return m.PlayerUUID
+		return m.RoleUUID
 	}
 	return ""
 }
@@ -224,7 +137,7 @@ func (m *UpdateMapAddressNTF) Reset()         { *m = UpdateMapAddressNTF{} }
 func (m *UpdateMapAddressNTF) String() string { return proto.CompactTextString(m) }
 func (*UpdateMapAddressNTF) ProtoMessage()    {}
 func (*UpdateMapAddressNTF) Descriptor() ([]byte, []int) {
-	return fileDescriptor_126eb6f1d39e434c, []int{3}
+	return fileDescriptor_126eb6f1d39e434c, []int{2}
 }
 func (m *UpdateMapAddressNTF) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -278,7 +191,7 @@ func (m *RemoveMapAddressNTF) Reset()         { *m = RemoveMapAddressNTF{} }
 func (m *RemoveMapAddressNTF) String() string { return proto.CompactTextString(m) }
 func (*RemoveMapAddressNTF) ProtoMessage()    {}
 func (*RemoveMapAddressNTF) Descriptor() ([]byte, []int) {
-	return fileDescriptor_126eb6f1d39e434c, []int{4}
+	return fileDescriptor_126eb6f1d39e434c, []int{3}
 }
 func (m *RemoveMapAddressNTF) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -325,7 +238,7 @@ func (m *GetMapAddressReq) Reset()         { *m = GetMapAddressReq{} }
 func (m *GetMapAddressReq) String() string { return proto.CompactTextString(m) }
 func (*GetMapAddressReq) ProtoMessage()    {}
 func (*GetMapAddressReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_126eb6f1d39e434c, []int{5}
+	return fileDescriptor_126eb6f1d39e434c, []int{4}
 }
 func (m *GetMapAddressReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -372,7 +285,7 @@ func (m *GetMapAddressResp) Reset()         { *m = GetMapAddressResp{} }
 func (m *GetMapAddressResp) String() string { return proto.CompactTextString(m) }
 func (*GetMapAddressResp) ProtoMessage()    {}
 func (*GetMapAddressResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_126eb6f1d39e434c, []int{6}
+	return fileDescriptor_126eb6f1d39e434c, []int{5}
 }
 func (m *GetMapAddressResp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -421,7 +334,7 @@ func (m *UpdateStaticMapUUIDNTF) Reset()         { *m = UpdateStaticMapUUIDNTF{}
 func (m *UpdateStaticMapUUIDNTF) String() string { return proto.CompactTextString(m) }
 func (*UpdateStaticMapUUIDNTF) ProtoMessage()    {}
 func (*UpdateStaticMapUUIDNTF) Descriptor() ([]byte, []int) {
-	return fileDescriptor_126eb6f1d39e434c, []int{7}
+	return fileDescriptor_126eb6f1d39e434c, []int{6}
 }
 func (m *UpdateStaticMapUUIDNTF) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -483,7 +396,7 @@ func (m *GetStaticMapUUIDReq) Reset()         { *m = GetStaticMapUUIDReq{} }
 func (m *GetStaticMapUUIDReq) String() string { return proto.CompactTextString(m) }
 func (*GetStaticMapUUIDReq) ProtoMessage()    {}
 func (*GetStaticMapUUIDReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_126eb6f1d39e434c, []int{8}
+	return fileDescriptor_126eb6f1d39e434c, []int{7}
 }
 func (m *GetStaticMapUUIDReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -537,7 +450,7 @@ func (m *GetStaticMapUUIDResp) Reset()         { *m = GetStaticMapUUIDResp{} }
 func (m *GetStaticMapUUIDResp) String() string { return proto.CompactTextString(m) }
 func (*GetStaticMapUUIDResp) ProtoMessage()    {}
 func (*GetStaticMapUUIDResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_126eb6f1d39e434c, []int{9}
+	return fileDescriptor_126eb6f1d39e434c, []int{8}
 }
 func (m *GetStaticMapUUIDResp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -574,9 +487,8 @@ func (m *GetStaticMapUUIDResp) GetStaticMapUUID() string {
 }
 
 func init() {
-	proto.RegisterType((*Thing)(nil), "Thing")
-	proto.RegisterType((*UpdatePlayerAddressNTF)(nil), "UpdatePlayerAddressNTF")
-	proto.RegisterType((*RemovePlayerAddressNTF)(nil), "RemovePlayerAddressNTF")
+	proto.RegisterType((*UpdateRoleAddressNTF)(nil), "UpdateRoleAddressNTF")
+	proto.RegisterType((*RemoveRoleAddressNTF)(nil), "RemoveRoleAddressNTF")
 	proto.RegisterType((*UpdateMapAddressNTF)(nil), "UpdateMapAddressNTF")
 	proto.RegisterType((*RemoveMapAddressNTF)(nil), "RemoveMapAddressNTF")
 	proto.RegisterType((*GetMapAddressReq)(nil), "GetMapAddressReq")
@@ -589,36 +501,30 @@ func init() {
 func init() { proto.RegisterFile("gps.proto", fileDescriptor_126eb6f1d39e434c) }
 
 var fileDescriptor_126eb6f1d39e434c = []byte{
-	// 410 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x93, 0xcf, 0xae, 0xd2, 0x40,
-	0x14, 0xc6, 0x1d, 0xb1, 0x60, 0x0f, 0x68, 0x60, 0x30, 0x4d, 0x43, 0x4c, 0xd3, 0x4c, 0x5c, 0x34,
-	0xc6, 0xd0, 0x44, 0x37, 0x2e, 0xdc, 0x48, 0x88, 0x84, 0x28, 0x68, 0x86, 0x12, 0x13, 0x76, 0x95,
-	0x0e, 0x48, 0x02, 0xcc, 0x38, 0x33, 0x12, 0xdd, 0xf8, 0x1c, 0xbe, 0x83, 0x2f, 0xe2, 0xd2, 0x47,
-	0x30, 0xdc, 0x17, 0xb9, 0xa1, 0xff, 0x68, 0xe1, 0xe6, 0xe6, 0xde, 0xbb, 0xeb, 0xf9, 0xce, 0xf9,
-	0xbe, 0xf9, 0x9d, 0x99, 0x14, 0xcc, 0xa5, 0x50, 0x5d, 0x21, 0xb9, 0xe6, 0x9d, 0x56, 0x14, 0xea,
-	0xb0, 0x2b, 0xd6, 0xe1, 0x4f, 0x26, 0x13, 0x89, 0xfc, 0x41, 0x60, 0x04, 0x5f, 0x57, 0xdb, 0x25,
-	0xb6, 0xa0, 0xda, 0xfb, 0xbe, 0x58, 0x30, 0x69, 0x23, 0x17, 0x79, 0x0d, 0x9a, 0x56, 0x98, 0x40,
-	0x23, 0xe0, 0x9f, 0x62, 0xcf, 0x74, 0x3a, 0xec, 0xdb, 0xf7, 0x5d, 0xe4, 0x99, 0xb4, 0xa4, 0xe1,
-	0xa7, 0x60, 0x06, 0xfc, 0x33, 0x97, 0xeb, 0x68, 0xd8, 0xb7, 0x2b, 0x2e, 0xf2, 0x0c, 0x7a, 0x14,
-	0x92, 0xee, 0x28, 0x14, 0xb1, 0xfd, 0x41, 0xd6, 0x4d, 0x05, 0xfc, 0x1c, 0x9a, 0xc5, 0xac, 0x0f,
-	0x2b, 0xa5, 0x6d, 0xc3, 0xad, 0x78, 0x26, 0x3d, 0xd3, 0xc9, 0x2f, 0xb0, 0xa6, 0x22, 0x0a, 0x35,
-	0x4b, 0xf4, 0xb7, 0x51, 0x24, 0x99, 0x52, 0xe3, 0xe0, 0x1d, 0x76, 0x00, 0x0a, 0x8c, 0x28, 0x66,
-	0x2c, 0x28, 0xb8, 0x03, 0x0f, 0x29, 0x5f, 0xb3, 0xc2, 0x06, 0x79, 0x8d, 0x3d, 0xa8, 0xa5, 0x49,
-	0x31, 0x7b, 0xfd, 0xe5, 0xe3, 0x6e, 0x29, 0x9f, 0x66, 0x6d, 0xf2, 0x1a, 0x2c, 0xca, 0x36, 0x7c,
-	0x77, 0xeb, 0xf3, 0xc9, 0x7b, 0x68, 0x27, 0xe4, 0xa3, 0x50, 0x14, 0x6c, 0x36, 0xd4, 0xb2, 0x8b,
-	0x49, 0x3c, 0x59, 0x79, 0x00, 0x9e, 0x30, 0xb9, 0x63, 0x32, 0x05, 0x36, 0x68, 0x5e, 0x13, 0x1f,
-	0xda, 0x09, 0xc6, 0x0d, 0xc3, 0xc8, 0x0b, 0x68, 0x0e, 0x98, 0x3e, 0x4e, 0x53, 0xf6, 0xed, 0x9a,
-	0x69, 0x1f, 0x5a, 0x27, 0xd3, 0x4a, 0x94, 0x78, 0xd0, 0x09, 0xcf, 0x8f, 0xec, 0x59, 0x26, 0x3a,
-	0xd4, 0xab, 0x79, 0x9a, 0x73, 0x40, 0xb2, 0xa0, 0x3a, 0xe3, 0x5b, 0x96, 0x7b, 0xd2, 0x0a, 0xbb,
-	0x50, 0xcf, 0x67, 0xf3, 0x05, 0x8b, 0x12, 0x7e, 0x06, 0x8f, 0x4a, 0x69, 0xf1, 0xd3, 0x98, 0xb4,
-	0x2c, 0x92, 0x8f, 0xd0, 0x1e, 0x30, 0x5d, 0xd2, 0x0e, 0xbb, 0xdd, 0xf9, 0x58, 0xf2, 0x06, 0x9e,
-	0x9c, 0x07, 0x2a, 0x71, 0x8e, 0x83, 0xae, 0xc0, 0xe9, 0x79, 0x7f, 0xf7, 0x0e, 0xfa, 0xb7, 0x77,
-	0xd0, 0xff, 0xbd, 0x83, 0x7e, 0x5f, 0x38, 0xf7, 0x66, 0xd6, 0x70, 0x9c, 0x5c, 0x93, 0xaf, 0xe4,
-	0xdc, 0x8f, 0xff, 0x39, 0x7f, 0xa3, 0x96, 0x5f, 0xaa, 0xf1, 0xe7, 0xab, 0xcb, 0x00, 0x00, 0x00,
-	0xff, 0xff, 0x8a, 0x19, 0x35, 0xe5, 0x9e, 0x03, 0x00, 0x00,
+	// 314 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x4c, 0x2f, 0x28, 0xd6,
+	0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x97, 0xe2, 0x4f, 0x49, 0x2c, 0x49, 0xd4, 0x2b, 0xca, 0xcf, 0x49,
+	0x85, 0x08, 0x28, 0x45, 0x71, 0x89, 0x84, 0x16, 0xa4, 0x24, 0x96, 0xa4, 0x06, 0xe5, 0xe7, 0xa4,
+	0x3a, 0xa6, 0xa4, 0x14, 0xa5, 0x16, 0x17, 0xfb, 0x85, 0xb8, 0x09, 0x49, 0x71, 0x71, 0x80, 0x44,
+	0x42, 0x43, 0x3d, 0x5d, 0x24, 0x18, 0x15, 0x18, 0x35, 0x38, 0x83, 0xe0, 0x7c, 0x21, 0x35, 0x2e,
+	0x76, 0xa8, 0x4a, 0x09, 0x26, 0x05, 0x46, 0x0d, 0x6e, 0x23, 0x1e, 0x3d, 0x24, 0xdd, 0x41, 0x30,
+	0x49, 0x25, 0x23, 0x2e, 0x91, 0xa0, 0xd4, 0xdc, 0xfc, 0x32, 0x12, 0xcc, 0x56, 0xf2, 0xe6, 0x12,
+	0x86, 0xb8, 0xc7, 0x37, 0xb1, 0x00, 0x49, 0x8b, 0x04, 0x17, 0xbb, 0x6f, 0x62, 0x01, 0x92, 0x0e,
+	0x18, 0x17, 0x64, 0x58, 0x70, 0x6a, 0x51, 0x59, 0x6a, 0x91, 0xa7, 0x0b, 0xd8, 0x35, 0xac, 0x41,
+	0x70, 0xbe, 0x92, 0x3e, 0x97, 0x30, 0xc4, 0x01, 0x44, 0x1a, 0xa6, 0xa4, 0xc3, 0x25, 0xe0, 0x9e,
+	0x5a, 0x82, 0x50, 0x1d, 0x94, 0x5a, 0x88, 0x47, 0xb5, 0x3e, 0x97, 0x20, 0x9a, 0xea, 0xe2, 0x02,
+	0x14, 0xf7, 0x30, 0xa2, 0xb9, 0xa7, 0x82, 0x4b, 0x0c, 0xe2, 0xb9, 0xe0, 0x92, 0xc4, 0x92, 0xcc,
+	0x64, 0xa8, 0x39, 0x20, 0x27, 0x89, 0x71, 0xb1, 0x45, 0xe5, 0xe7, 0xa5, 0xc2, 0xf5, 0x40, 0x79,
+	0x42, 0x0a, 0x5c, 0xdc, 0x70, 0xb5, 0x70, 0x0f, 0x22, 0x0b, 0x09, 0xa9, 0x70, 0xf1, 0xa2, 0x98,
+	0x26, 0xc1, 0x0c, 0x76, 0x24, 0xaa, 0xa0, 0x92, 0x3f, 0x97, 0xb0, 0x7b, 0x6a, 0x09, 0x8a, 0x18,
+	0xc8, 0x6f, 0x64, 0x5b, 0xab, 0x64, 0xc3, 0x25, 0x82, 0x69, 0x60, 0x71, 0x01, 0xa6, 0x73, 0x18,
+	0xb1, 0x38, 0xc7, 0x49, 0xe3, 0xc4, 0x23, 0x39, 0xc6, 0x0b, 0x8f, 0xe4, 0x18, 0x1f, 0x3c, 0x92,
+	0x63, 0x9c, 0xf1, 0x58, 0x8e, 0x21, 0x4a, 0xcc, 0xd3, 0x0f, 0x12, 0x4c, 0xfa, 0xc5, 0x45, 0xc9,
+	0xfa, 0xe0, 0xb4, 0xa9, 0x9f, 0x5b, 0x9c, 0x9e, 0xc4, 0x06, 0x66, 0x1a, 0x03, 0x02, 0x00, 0x00,
+	0xff, 0xff, 0xc6, 0x7c, 0xd9, 0x2f, 0xc4, 0x02, 0x00, 0x00,
 }
 
-func (m *Thing) Marshal() (dAtA []byte, err error) {
+func (m *UpdateRoleAddressNTF) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -628,72 +534,12 @@ func (m *Thing) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *Thing) MarshalTo(dAtA []byte) (int, error) {
+func (m *UpdateRoleAddressNTF) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *Thing) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.XXX_unrecognized != nil {
-		i -= len(m.XXX_unrecognized)
-		copy(dAtA[i:], m.XXX_unrecognized)
-	}
-	if len(m.ToPlayerUUIDList) > 0 {
-		for iNdEx := len(m.ToPlayerUUIDList) - 1; iNdEx >= 0; iNdEx-- {
-			i -= len(m.ToPlayerUUIDList[iNdEx])
-			copy(dAtA[i:], m.ToPlayerUUIDList[iNdEx])
-			i = encodeVarintGps(dAtA, i, uint64(len(m.ToPlayerUUIDList[iNdEx])))
-			i--
-			dAtA[i] = 0x2a
-		}
-	}
-	if m.ToMapUUID != 0 {
-		i = encodeVarintGps(dAtA, i, uint64(m.ToMapUUID))
-		i--
-		dAtA[i] = 0x20
-	}
-	if m.ToWorldID != 0 {
-		i = encodeVarintGps(dAtA, i, uint64(m.ToWorldID))
-		i--
-		dAtA[i] = 0x18
-	}
-	if len(m.ToPlayerUUID) > 0 {
-		i -= len(m.ToPlayerUUID)
-		copy(dAtA[i:], m.ToPlayerUUID)
-		i = encodeVarintGps(dAtA, i, uint64(len(m.ToPlayerUUID)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Buffer) > 0 {
-		i -= len(m.Buffer)
-		copy(dAtA[i:], m.Buffer)
-		i = encodeVarintGps(dAtA, i, uint64(len(m.Buffer)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *UpdatePlayerAddressNTF) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *UpdatePlayerAddressNTF) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *UpdatePlayerAddressNTF) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *UpdateRoleAddressNTF) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -712,26 +558,19 @@ func (m *UpdatePlayerAddressNTF) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 			i = encodeVarintGps(dAtA, i, uint64(size))
 		}
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x12
 	}
 	if len(m.RoleUUID) > 0 {
 		i -= len(m.RoleUUID)
 		copy(dAtA[i:], m.RoleUUID)
 		i = encodeVarintGps(dAtA, i, uint64(len(m.RoleUUID)))
 		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.PlayerUUID) > 0 {
-		i -= len(m.PlayerUUID)
-		copy(dAtA[i:], m.PlayerUUID)
-		i = encodeVarintGps(dAtA, i, uint64(len(m.PlayerUUID)))
-		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *RemovePlayerAddressNTF) Marshal() (dAtA []byte, err error) {
+func (m *RemoveRoleAddressNTF) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -741,12 +580,12 @@ func (m *RemovePlayerAddressNTF) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *RemovePlayerAddressNTF) MarshalTo(dAtA []byte) (int, error) {
+func (m *RemoveRoleAddressNTF) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *RemovePlayerAddressNTF) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *RemoveRoleAddressNTF) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -755,10 +594,10 @@ func (m *RemovePlayerAddressNTF) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 		i -= len(m.XXX_unrecognized)
 		copy(dAtA[i:], m.XXX_unrecognized)
 	}
-	if len(m.PlayerUUID) > 0 {
-		i -= len(m.PlayerUUID)
-		copy(dAtA[i:], m.PlayerUUID)
-		i = encodeVarintGps(dAtA, i, uint64(len(m.PlayerUUID)))
+	if len(m.RoleUUID) > 0 {
+		i -= len(m.RoleUUID)
+		copy(dAtA[i:], m.RoleUUID)
+		i = encodeVarintGps(dAtA, i, uint64(len(m.RoleUUID)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -1030,48 +869,12 @@ func encodeVarintGps(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *Thing) Size() (n int) {
+func (m *UpdateRoleAddressNTF) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.Buffer)
-	if l > 0 {
-		n += 1 + l + sovGps(uint64(l))
-	}
-	l = len(m.ToPlayerUUID)
-	if l > 0 {
-		n += 1 + l + sovGps(uint64(l))
-	}
-	if m.ToWorldID != 0 {
-		n += 1 + sovGps(uint64(m.ToWorldID))
-	}
-	if m.ToMapUUID != 0 {
-		n += 1 + sovGps(uint64(m.ToMapUUID))
-	}
-	if len(m.ToPlayerUUIDList) > 0 {
-		for _, s := range m.ToPlayerUUIDList {
-			l = len(s)
-			n += 1 + l + sovGps(uint64(l))
-		}
-	}
-	if m.XXX_unrecognized != nil {
-		n += len(m.XXX_unrecognized)
-	}
-	return n
-}
-
-func (m *UpdatePlayerAddressNTF) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.PlayerUUID)
-	if l > 0 {
-		n += 1 + l + sovGps(uint64(l))
-	}
 	l = len(m.RoleUUID)
 	if l > 0 {
 		n += 1 + l + sovGps(uint64(l))
@@ -1086,13 +889,13 @@ func (m *UpdatePlayerAddressNTF) Size() (n int) {
 	return n
 }
 
-func (m *RemovePlayerAddressNTF) Size() (n int) {
+func (m *RemoveRoleAddressNTF) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.PlayerUUID)
+	l = len(m.RoleUUID)
 	if l > 0 {
 		n += 1 + l + sovGps(uint64(l))
 	}
@@ -1230,7 +1033,7 @@ func sovGps(x uint64) (n int) {
 func sozGps(x uint64) (n int) {
 	return sovGps(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *Thing) Unmarshal(dAtA []byte) error {
+func (m *UpdateRoleAddressNTF) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1253,235 +1056,13 @@ func (m *Thing) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: Thing: wiretype end group for non-group")
+			return fmt.Errorf("proto: UpdateRoleAddressNTF: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Thing: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: UpdateRoleAddressNTF: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Buffer", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGps
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthGps
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGps
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Buffer = append(m.Buffer[:0], dAtA[iNdEx:postIndex]...)
-			if m.Buffer == nil {
-				m.Buffer = []byte{}
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ToPlayerUUID", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGps
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGps
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGps
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ToPlayerUUID = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ToWorldID", wireType)
-			}
-			m.ToWorldID = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGps
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ToWorldID |= int32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ToMapUUID", wireType)
-			}
-			m.ToMapUUID = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGps
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ToMapUUID |= int32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ToPlayerUUIDList", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGps
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGps
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGps
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ToPlayerUUIDList = append(m.ToPlayerUUIDList, string(dAtA[iNdEx:postIndex]))
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipGps(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthGps
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthGps
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *UpdatePlayerAddressNTF) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowGps
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: UpdatePlayerAddressNTF: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: UpdatePlayerAddressNTF: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PlayerUUID", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGps
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGps
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGps
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.PlayerUUID = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field RoleUUID", wireType)
 			}
@@ -1513,7 +1094,7 @@ func (m *UpdatePlayerAddressNTF) Unmarshal(dAtA []byte) error {
 			}
 			m.RoleUUID = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 			}
@@ -1543,7 +1124,7 @@ func (m *UpdatePlayerAddressNTF) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Address == nil {
-				m.Address = &data.PlayerAddress{}
+				m.Address = &data.RoleAddress{}
 			}
 			if err := m.Address.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -1574,7 +1155,7 @@ func (m *UpdatePlayerAddressNTF) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *RemovePlayerAddressNTF) Unmarshal(dAtA []byte) error {
+func (m *RemoveRoleAddressNTF) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1597,15 +1178,15 @@ func (m *RemovePlayerAddressNTF) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: RemovePlayerAddressNTF: wiretype end group for non-group")
+			return fmt.Errorf("proto: RemoveRoleAddressNTF: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: RemovePlayerAddressNTF: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: RemoveRoleAddressNTF: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PlayerUUID", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field RoleUUID", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1633,7 +1214,7 @@ func (m *RemovePlayerAddressNTF) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.PlayerUUID = string(dAtA[iNdEx:postIndex])
+			m.RoleUUID = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

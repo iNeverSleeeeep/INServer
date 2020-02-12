@@ -1,4 +1,3 @@
-cd ../src
-go build -o ../build/server.exe
+cd ..
+go build -o bin/release/server.exe
 echo "finish"
-sleep 1s

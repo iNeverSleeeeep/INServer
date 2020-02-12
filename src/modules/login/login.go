@@ -11,6 +11,7 @@ import (
 	"INServer/src/modules/cluster"
 	"INServer/src/modules/innet"
 	"INServer/src/modules/node"
+	"INServer/src/proto/data"
 	"INServer/src/proto/db"
 	"INServer/src/proto/msg"
 	"encoding/binary"
@@ -78,6 +79,7 @@ func (l *Login) handleWebConnect(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 	defer protect.CatchPanic()
+	var player **data.Player
 	var buf = make([]byte, 65536)
 	current := 0
 	for {
@@ -107,7 +109,7 @@ func (l *Login) handleWebConnect(w http.ResponseWriter, r *http.Request) {
 			logger.Debug("proto解析失败")
 			return
 		}
-		l.handleWebMessage(c, message)
+		l.handleWebMessage(c, message, player)
 
 		copy(buf[0:], buf[size+2:current])
 		current = current - int(size) - 2
@@ -117,6 +119,7 @@ func (l *Login) handleWebConnect(w http.ResponseWriter, r *http.Request) {
 func (l *Login) handleConnect(conn *net.TCPConn) {
 	defer conn.Close()
 	defer protect.CatchPanic()
+	var player **data.Player
 	var buf = make([]byte, 65536)
 	current := 0
 	for {
@@ -147,7 +150,7 @@ func (l *Login) handleConnect(conn *net.TCPConn) {
 			logger.Debug("proto解析失败")
 			return
 		}
-		l.handleMessage(conn, message)
+		l.handleMessage(conn, message, player)
 
 		copy(buf[0:], buf[size+2:current])
 		current = current - int(size) - 2
@@ -162,7 +165,7 @@ func newAccount(name string, passwordHash string) *db.DBAccount {
 	return account
 }
 
-func (l *Login) handleMessageImpl(message *msg.ClientToLogin, resp *msg.LoginToClient) {
+func (l *Login) handleMessageImpl(message *msg.ClientToLogin, resp *msg.LoginToClient, player **data.Player) {
 	success := false
 	var account *db.DBAccount
 	var err error
@@ -191,6 +194,23 @@ func (l *Login) handleMessageImpl(message *msg.ClientToLogin, resp *msg.LoginToC
 			success = account.PasswordHash == message.Login.PasswordHash
 			if success == false {
 				logger.Info(fmt.Sprintf("密码错误 %s %s", account.PasswordHash, message.Login.PasswordHash))
+			} else {
+				// 推送消息到其他服务器
+				logger.Info("客户端登录成功:" + account.PlayerUUID)
+
+				loadPlayerReq := &msg.LoadPlayerReq{
+					PlayerUUID: account.PlayerUUID,
+				}
+				loadPlayerResp := &msg.LoadPlayerResp{}
+				err := node.Instance.Net.Request(msg.CMD_GD_LOAD_PLAYER_REQ, loadPlayerReq, loadPlayerResp)
+				if err != nil {
+					logger.Info(err)
+					success = false
+				} else if loadPlayerResp.Success == false {
+					success = false
+				} else {
+					*player = loadPlayerResp.Player
+				}
 			}
 		}
 	} else if message.ChangePassword != nil {
@@ -206,44 +226,64 @@ func (l *Login) handleMessageImpl(message *msg.ClientToLogin, resp *msg.LoginToC
 				success = true
 			}
 		}
-	}
-
-	if success {
-		if message.Login != nil {
-			gateID := l.selectGate()
-			if gateID != global.InvalidServerID {
-				cert := &msg.SessionCert{
-					UUID: account.PlayerUUID,
-					Key:  util.GetRandomString(global.CERT_KEY_LEN),
-				}
-				resp.SessionCert = cert
-
-				ip, port, webport := cluster.GetGatePublicAddress(gateID)
-				resp.GateIP, resp.GatePort, resp.GateWebPort = ip, int32(port), int32(webport)
-				message := &msg.LoginToGate{Cert: cert}
-				node.Instance.Net.NotifyServer(msg.CMD_SESSION_CERT_NTF, message, gateID)
-				logger.Debug(fmt.Sprintf("玩家登录成功 UUID:%s Name:%s CertKey:%s", cert.UUID, account.Name, cert.Key))
-			} else {
-				logger.Error("没有找到门服务器")
-				success = false
+	} else if message.CreateRole != nil {
+		if *player != nil {
+			createRoleResp := &msg.CreateRoleResp{}
+			createRoleReq := &msg.CreateRoleReq{}
+			err := node.Instance.Net.Request(msg.CMD_GD_CREATE_ROLE_REQ, createRoleReq, createRoleResp)
+			if err != nil {
+				logger.Info(err)
+			} else if createRoleResp.Success {
+				(*player).RoleList = append((*player).RoleList, createRoleResp.Role)
 			}
 		}
-		resp.Success = success
+	} else if message.EnterGame != nil {
+		if *player != nil {
+			invalidRole := true
+			for _, role := range (*player).RoleList {
+				if role.RoleUUID == message.EnterGame.RoleUUID {
+					invalidRole = false
+					break
+				}
+			}
+			if invalidRole == false {
+				gateID := l.selectGate()
+				if gateID != global.InvalidServerID {
+					cert := &msg.SessionCert{
+						UUID: message.EnterGame.RoleUUID,
+						Key:  util.GetRandomString(global.CERT_KEY_LEN),
+					}
+					resp.SessionCert = cert
+
+					ip, port, webport := cluster.GetGatePublicAddress(gateID)
+					resp.GateIP, resp.GatePort, resp.GateWebPort = ip, int32(port), int32(webport)
+					message := &msg.LoginToGate{Cert: cert}
+					node.Instance.Net.NotifyServer(msg.CMD_SESSION_CERT_NTF, message, gateID)
+					logger.Info(fmt.Sprintf("玩家登录成功 UUID:%s Name:%s CertKey:%s", cert.UUID, account.Name, cert.Key))
+				} else {
+					logger.Error("没有找到门服务器")
+					success = false
+				}
+			}
+		}
 	}
+
+	resp.Player = *player
+	resp.Success = success
 }
 
-func (l *Login) handleWebMessage(conn *websocket.Conn, message *msg.ClientToLogin) {
+func (l *Login) handleWebMessage(conn *websocket.Conn, message *msg.ClientToLogin, player **data.Player) {
 	resp := &msg.LoginToClient{}
 	defer l.sendWebResponce(conn, resp)
 	defer protect.CatchPanic()
-	l.handleMessageImpl(message, resp)
+	l.handleMessageImpl(message, resp, player)
 }
 
-func (l *Login) handleMessage(conn *net.TCPConn, message *msg.ClientToLogin) {
+func (l *Login) handleMessage(conn *net.TCPConn, message *msg.ClientToLogin, player **data.Player) {
 	resp := &msg.LoginToClient{}
 	defer l.sendResponce(conn, resp)
 	defer protect.CatchPanic()
-	l.handleMessageImpl(message, resp)
+	l.handleMessageImpl(message, resp, player)
 }
 
 func (l *Login) sendWebResponce(conn *websocket.Conn, message *msg.LoginToClient) {
