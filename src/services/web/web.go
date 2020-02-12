@@ -3,9 +3,9 @@ package web
 import (
 	"INServer/src/common/global"
 	"INServer/src/common/logger"
-	"INServer/src/modules/etcmgr"
-	"INServer/src/modules/node"
 	"INServer/src/proto/msg"
+	"INServer/src/services/etcmgr"
+	"INServer/src/services/node"
 	"encoding/json"
 	"io"
 	"net/http"

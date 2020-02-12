@@ -1,8 +1,8 @@
 package chat
 
 import (
-	"INServer/src/modules/node"
 	"INServer/src/proto/msg"
+	"INServer/src/services/node"
 )
 
 type (

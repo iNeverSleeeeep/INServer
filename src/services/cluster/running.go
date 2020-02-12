@@ -2,9 +2,9 @@ package cluster
 
 import (
 	"INServer/src/common/global"
-	"INServer/src/modules/etcmgr"
 	"INServer/src/proto/etc"
 	"INServer/src/proto/msg"
+	"INServer/src/services/etcmgr"
 )
 
 var (

@@ -3,8 +3,8 @@ package finalize
 import (
 	"INServer/src/common/global"
 	"INServer/src/common/util"
-	"INServer/src/modules/cluster"
-	"INServer/src/modules/world"
+	"INServer/src/services/cluster"
+	"INServer/src/services/world"
 	"os"
 	"os/signal"
 	"syscall"

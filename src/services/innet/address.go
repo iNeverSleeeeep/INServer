@@ -3,8 +3,8 @@ package innet
 import (
 	"INServer/src/common/global"
 	"INServer/src/common/logger"
-	"INServer/src/modules/cluster"
 	"INServer/src/proto/msg"
+	"INServer/src/services/cluster"
 	"fmt"
 	"net"
 	"strconv"

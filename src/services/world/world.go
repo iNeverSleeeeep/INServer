@@ -6,9 +6,9 @@ import (
 	"INServer/src/common/uuid"
 	"INServer/src/gameplay/ecs"
 	"INServer/src/gameplay/gamemap"
-	"INServer/src/modules/node"
 	"INServer/src/proto/data"
 	"INServer/src/proto/msg"
+	"INServer/src/services/node"
 	"fmt"
 	"time"
 

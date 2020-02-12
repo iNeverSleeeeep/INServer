@@ -1,8 +1,8 @@
 package cluster
 
 import (
-	"INServer/src/modules/etcmgr"
 	"INServer/src/proto/msg"
+	"INServer/src/services/etcmgr"
 )
 
 var (

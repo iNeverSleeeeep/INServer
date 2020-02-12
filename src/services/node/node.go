@@ -3,10 +3,10 @@ package node
 import (
 	"INServer/src/common/global"
 	"INServer/src/common/logger"
-	"INServer/src/modules/cluster"
-	"INServer/src/modules/etcmgr"
-	"INServer/src/modules/innet"
 	"INServer/src/proto/msg"
+	"INServer/src/services/cluster"
+	"INServer/src/services/etcmgr"
+	"INServer/src/services/innet"
 	"time"
 
 	"github.com/golang/protobuf/proto"

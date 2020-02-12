@@ -3,9 +3,9 @@ package balcony
 import (
 	"INServer/src/common/global"
 	"INServer/src/common/logger"
-	"INServer/src/modules/node"
 	"INServer/src/proto/data"
 	"INServer/src/proto/msg"
+	"INServer/src/services/node"
 	"fmt"
 
 	"github.com/gogo/protobuf/proto"

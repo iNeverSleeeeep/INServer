@@ -7,10 +7,10 @@ import (
 	"INServer/src/common/uuid"
 	"INServer/src/dao"
 	"INServer/src/gameplay/ecs"
-	"INServer/src/modules/node"
 	"INServer/src/proto/data"
 	"INServer/src/proto/db"
 	"INServer/src/proto/msg"
+	"INServer/src/services/node"
 	"fmt"
 
 	"github.com/gogo/protobuf/proto"

@@ -1,9 +1,9 @@
 package gate
 
 import (
-	"INServer/src/modules/node"
 	"INServer/src/proto/data"
 	"INServer/src/proto/msg"
+	"INServer/src/services/node"
 
 	"github.com/golang/protobuf/proto"
 )
