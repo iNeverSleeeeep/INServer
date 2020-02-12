@@ -2,6 +2,7 @@ language: go
 go:
   - 1.12.9
 script:
+  - export GO111MODULE="on"
   - go build main.go
 notifications:
   email:
