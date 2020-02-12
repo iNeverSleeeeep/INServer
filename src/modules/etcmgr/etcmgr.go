@@ -125,6 +125,10 @@ func (e *ETC) checkServers([]*etc.Server) bool {
 }
 
 func (e *ETC) loadDatabase(path string) *etc.Database {
+	lf, err := os.Open(path + "/local.database.json")
+	if err != nil {
+		defer lf.Close()
+	}
 	f, err := os.Open(path + "/database.json")
 	if err != nil {
 		logger.Fatal(err)
@@ -140,6 +144,20 @@ func (e *ETC) loadDatabase(path string) *etc.Database {
 	if err != nil {
 		logger.Fatal(err)
 	}
+	if lf != nil {
+		lbuf, err := ioutil.ReadAll(lf)
+		if err != nil {
+			logger.Fatal(err)
+		}
+		ldatabase := &etc.Database{}
+		err = json.Unmarshal(lbuf, ldatabase)
+		if err != nil {
+			logger.Fatal(err)
+		}
+		proto.Merge(database, ldatabase)
+	}
+	logger.Info(database.Password)
+	logger.Info(database.UserName)
 	return database
 }
 
