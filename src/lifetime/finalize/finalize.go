@@ -2,7 +2,6 @@ package finalize
 
 import (
 	"INServer/src/common/global"
-	"INServer/src/common/logger"
 	"INServer/src/common/util"
 	"INServer/src/modules/cluster"
 	"INServer/src/modules/world"
@@ -51,7 +50,6 @@ func stopServer() {
 		break
 	case global.CenterServer:
 		util.Wait(func() bool {
-			logger.Info(cluster.RunningCount())
 			return cluster.RunningCount() == 1
 		}, "等待其他服务器关服完成...", time.Second)
 		break
