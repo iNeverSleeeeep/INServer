@@ -86,6 +86,18 @@ func InitComponents(entityType data.EntityType) []*data.Component {
 				HP:    100,
 			},
 		}
+		components[data.ComponentType_Move] = &data.Component{
+			Type: data.ComponentType_Move,
+			Move: &data.MoveComponent{
+				Destination: &engine.Vector3{},
+			},
+		}
+		components[data.ComponentType_Controller] = &data.Component{
+			Type: data.ComponentType_Controller,
+			Controller: &data.ControllerComponent{
+				ControllerType: data.ControllerType_PlayerController,
+			},
+		}
 		break
 	}
 	return components

@@ -6,4 +6,5 @@ import "data.role.proto";
 
 message Player {
     repeated RoleSummaryData RoleList = 1;
+    string UUID = 2;
 }

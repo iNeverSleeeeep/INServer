@@ -45,7 +45,7 @@ func (d *Database) Start() {
 	node.Instance.Net.Listen(msg.CMD_LD_CREATE_PLAYER_REQ, d.onCreatePlayerReq)
 	node.Instance.Net.Listen(msg.CMD_GD_LOAD_PLAYER_REQ, d.onLoadPlayerReq)
 	node.Instance.Net.Listen(msg.CMD_GD_RELEASE_PLAYER_NTF, d.onReleasePlayerNtf)
-	node.Instance.Net.Listen(msg.CMD_GD_CREATE_ROLE_REQ, d.onCreateRoleReq)
+	node.Instance.Net.Listen(msg.CMD_GD_CREATE_ROLE_REQ, d.HANDLE_GD_CREATE_ROLE_REQ)
 	node.Instance.Net.Listen(msg.CMD_GD_LOAD_ROLE_REQ, d.onLoadRoleReq)
 	node.Instance.Net.Listen(msg.CMD_LOAD_STATIC_MAP_REQ, d.onLoadStaticMapReq)
 	node.Instance.Net.Listen(msg.CMD_SAVE_STATIC_MAP_REQ, d.onSaveStaticMapReq)
@@ -120,7 +120,7 @@ func (d *Database) onReleasePlayerNtf(header *msg.MessageHeader, buffer []byte) 
 	}
 }
 
-func (d *Database) onCreateRoleReq(header *msg.MessageHeader, buffer []byte) {
+func (d *Database) HANDLE_GD_CREATE_ROLE_REQ(header *msg.MessageHeader, buffer []byte) {
 	resp := &msg.CreateRoleResp{}
 	defer node.Instance.Net.Responce(header, resp)
 	message := &msg.CreateRoleReq{}
@@ -208,9 +208,9 @@ func (d *Database) onCreateRoleReq(header *msg.MessageHeader, buffer []byte) {
 		d.roleSummary[roleUUID] = roleSummaryData
 		resp.Success = true
 		resp.Role = roleSummaryData
-		logger.Info("创建角色成功 Name:" + message.RoleName)
+		logger.Info(fmt.Sprintf("创建角色成功 Name:%s Player:%s", message.RoleName, message.PlayerUUID))
 	} else {
-		logger.Debug("Must Create Player Before Create Role!")
+		logger.Info("创建角色之前必须先创建账号!", message.PlayerUUID)
 	}
 }
 

@@ -156,8 +156,6 @@ func (e *ETC) loadDatabase(path string) *etc.Database {
 		}
 		proto.Merge(database, ldatabase)
 	}
-	logger.Info(database.Password)
-	logger.Info(database.UserName)
 	return database
 }
 

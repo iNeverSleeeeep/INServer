@@ -79,7 +79,7 @@ func (l *Login) handleWebConnect(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 	defer protect.CatchPanic()
-	var player **data.Player
+	var player *data.Player
 	var buf = make([]byte, 65536)
 	current := 0
 	for {
@@ -109,7 +109,7 @@ func (l *Login) handleWebConnect(w http.ResponseWriter, r *http.Request) {
 			logger.Debug("proto解析失败")
 			return
 		}
-		l.handleWebMessage(c, message, player)
+		l.handleWebMessage(c, message, &player)
 
 		copy(buf[0:], buf[size+2:current])
 		current = current - int(size) - 2
@@ -119,7 +119,7 @@ func (l *Login) handleWebConnect(w http.ResponseWriter, r *http.Request) {
 func (l *Login) handleConnect(conn *net.TCPConn) {
 	defer conn.Close()
 	defer protect.CatchPanic()
-	var player **data.Player
+	var player *data.Player
 	var buf = make([]byte, 65536)
 	current := 0
 	for {
@@ -150,7 +150,7 @@ func (l *Login) handleConnect(conn *net.TCPConn) {
 			logger.Debug("proto解析失败")
 			return
 		}
-		l.handleMessage(conn, message, player)
+		l.handleMessage(conn, message, &player)
 
 		copy(buf[0:], buf[size+2:current])
 		current = current - int(size) - 2
@@ -210,6 +210,7 @@ func (l *Login) handleMessageImpl(message *msg.ClientToLogin, resp *msg.LoginToC
 					success = false
 				} else {
 					*player = loadPlayerResp.Player
+					(*player).UUID = account.PlayerUUID
 				}
 			}
 		}
@@ -229,11 +230,16 @@ func (l *Login) handleMessageImpl(message *msg.ClientToLogin, resp *msg.LoginToC
 	} else if message.CreateRole != nil {
 		if *player != nil {
 			createRoleResp := &msg.CreateRoleResp{}
-			createRoleReq := &msg.CreateRoleReq{}
+			createRoleReq := &msg.CreateRoleReq{
+				PlayerUUID: (*player).UUID,
+				RoleName:   message.CreateRole.RoleName,
+				Zone:       message.CreateRole.Zone,
+			}
 			err := node.Instance.Net.Request(msg.CMD_GD_CREATE_ROLE_REQ, createRoleReq, createRoleResp)
 			if err != nil {
 				logger.Info(err)
 			} else if createRoleResp.Success {
+				success = true
 				(*player).RoleList = append((*player).RoleList, createRoleResp.Role)
 			}
 		}
@@ -259,10 +265,10 @@ func (l *Login) handleMessageImpl(message *msg.ClientToLogin, resp *msg.LoginToC
 					resp.GateIP, resp.GatePort, resp.GateWebPort = ip, int32(port), int32(webport)
 					message := &msg.LoginToGate{Cert: cert}
 					node.Instance.Net.NotifyServer(msg.CMD_SESSION_CERT_NTF, message, gateID)
-					logger.Info(fmt.Sprintf("玩家登录成功 UUID:%s Name:%s CertKey:%s", cert.UUID, account.Name, cert.Key))
+					logger.Info(fmt.Sprintf("玩家登录成功 UUID:%s CertKey:%s", cert.UUID, cert.Key))
+					success = true
 				} else {
 					logger.Error("没有找到门服务器")
-					success = false
 				}
 			}
 		}
