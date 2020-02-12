@@ -84,6 +84,12 @@
             "ServerType": "GPS",
             "ServerConfig": {
             }
+        },
+        {
+            "ServerID": 9,
+            "ServerType": "Balcony",
+            "ServerConfig": {
+            }
         }
     ]
 }

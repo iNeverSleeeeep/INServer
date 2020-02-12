@@ -220,10 +220,6 @@ func (e *ETC) GetServerConfig(serverID int32) *etc.ServerConfig {
 	if len(e.servers) >= int(serverID) {
 		server := e.servers[int(serverID)]
 		switch server.ServerType {
-		case global.CenterServer:
-			return server.ServerConfig
-		case global.GateServer:
-			return server.ServerConfig
 		case global.LoginServer:
 			if server.ServerConfig.LoginConfig.Database == nil {
 				server.ServerConfig.LoginConfig.Database = e.database
@@ -234,15 +230,8 @@ func (e *ETC) GetServerConfig(serverID int32) *etc.ServerConfig {
 				server.ServerConfig.DatabaseConfig.Database = e.database
 			}
 			return server.ServerConfig
-		case global.WebServer:
-			return server.ServerConfig
-		case global.WorldServer:
-			return server.ServerConfig
-		case global.GPSServer:
-			return server.ServerConfig
 		default:
-			logger.Debug("没有实现这种服务器类型:" + server.ServerType)
-			return nil
+			return server.ServerConfig
 		}
 	}
 	return nil

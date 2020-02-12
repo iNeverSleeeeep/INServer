@@ -25,6 +25,8 @@ const (
 	DatabaseServer string = "Database"
 	// WebServer Web服务器
 	WebServer string = "Web"
+	// BalconyServer 月台服务器
+	BalconyServer string = "Balcony"
 
 	// ZoneStateOpen 游戏区开启
 	ZoneStateOpen string = "Open"

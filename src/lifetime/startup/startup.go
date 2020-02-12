@@ -4,6 +4,7 @@ import (
 	"INServer/src/common/global"
 	"INServer/src/common/logger"
 	"INServer/src/common/util"
+	"INServer/src/modules/balcony"
 	"INServer/src/modules/center"
 	"INServer/src/modules/cluster"
 	"INServer/src/modules/database"
@@ -82,6 +83,9 @@ func startServer() {
 	case global.GPSServer:
 		gps.Instance = gps.New()
 		gps.Instance.Start()
+	case global.BalconyServer:
+		balcony.Instance = balcony.New()
+		balcony.Instance.Start()
 	default:
 		logger.Fatal("不支持的服务器类型:" + global.CurrentServerType)
 	}

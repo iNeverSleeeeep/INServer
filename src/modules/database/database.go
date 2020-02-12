@@ -42,16 +42,16 @@ func New() *Database {
 }
 
 func (d *Database) Start() {
-	node.Instance.Net.Listen(msg.CMD_LD_CREATE_PLAYER_REQ, d.onCreatePlayerReq)
-	node.Instance.Net.Listen(msg.CMD_GD_LOAD_PLAYER_REQ, d.onLoadPlayerReq)
-	node.Instance.Net.Listen(msg.CMD_GD_RELEASE_PLAYER_NTF, d.onReleasePlayerNtf)
+	node.Instance.Net.Listen(msg.CMD_LD_CREATE_PLAYER_REQ, d.HANDLE_LD_CREATE_PLAYER_REQ)
+	node.Instance.Net.Listen(msg.CMD_GD_LOAD_PLAYER_REQ, d.HANDLE_GD_LOAD_PLAYER_REQ)
+	node.Instance.Net.Listen(msg.CMD_GD_RELEASE_PLAYER_NTF, d.HANDLE_GD_RELEASE_PLAYER_NTF)
 	node.Instance.Net.Listen(msg.CMD_GD_CREATE_ROLE_REQ, d.HANDLE_GD_CREATE_ROLE_REQ)
-	node.Instance.Net.Listen(msg.CMD_GD_LOAD_ROLE_REQ, d.onLoadRoleReq)
-	node.Instance.Net.Listen(msg.CMD_LOAD_STATIC_MAP_REQ, d.onLoadStaticMapReq)
-	node.Instance.Net.Listen(msg.CMD_SAVE_STATIC_MAP_REQ, d.onSaveStaticMapReq)
+	node.Instance.Net.Listen(msg.CMD_GD_LOAD_ROLE_REQ, d.HANDLE_GD_LOAD_ROLE_REQ)
+	node.Instance.Net.Listen(msg.CMD_LOAD_STATIC_MAP_REQ, d.HANDLE_LOAD_STATIC_MAP_REQ)
+	node.Instance.Net.Listen(msg.CMD_SAVE_STATIC_MAP_REQ, d.HANDLE_SAVE_STATIC_MAP_REQ)
 }
 
-func (d *Database) onCreatePlayerReq(header *msg.MessageHeader, buffer []byte) {
+func (d *Database) HANDLE_LD_CREATE_PLAYER_REQ(header *msg.MessageHeader, buffer []byte) {
 	resp := &msg.CreatePlayerResp{}
 	defer node.Instance.Net.Responce(header, resp)
 	message := &msg.CreatePlayerReq{}
@@ -78,7 +78,7 @@ func (d *Database) onCreatePlayerReq(header *msg.MessageHeader, buffer []byte) {
 	resp.Success = true
 }
 
-func (d *Database) onLoadPlayerReq(header *msg.MessageHeader, buffer []byte) {
+func (d *Database) HANDLE_GD_LOAD_PLAYER_REQ(header *msg.MessageHeader, buffer []byte) {
 	resp := &msg.LoadPlayerResp{}
 	defer node.Instance.Net.Responce(header, resp)
 	message := &msg.LoadPlayerReq{}
@@ -108,7 +108,7 @@ func (d *Database) onLoadPlayerReq(header *msg.MessageHeader, buffer []byte) {
 		d.players[message.PlayerUUID] = player
 	}
 }
-func (d *Database) onReleasePlayerNtf(header *msg.MessageHeader, buffer []byte) {
+func (d *Database) HANDLE_GD_RELEASE_PLAYER_NTF(header *msg.MessageHeader, buffer []byte) {
 	message := &msg.ReleasePlayerNtf{}
 	err := proto.Unmarshal(buffer, message)
 	if err != nil {
@@ -214,7 +214,7 @@ func (d *Database) HANDLE_GD_CREATE_ROLE_REQ(header *msg.MessageHeader, buffer [
 	}
 }
 
-func (d *Database) onLoadRoleReq(header *msg.MessageHeader, buffer []byte) {
+func (d *Database) HANDLE_GD_LOAD_ROLE_REQ(header *msg.MessageHeader, buffer []byte) {
 	resp := &msg.LoadRoleResp{}
 	defer node.Instance.Net.Responce(header, resp)
 	message := &msg.LoadRoleReq{}
@@ -271,7 +271,7 @@ func (d *Database) onLoadRoleReq(header *msg.MessageHeader, buffer []byte) {
 	}
 }
 
-func (d *Database) onLoadStaticMapReq(header *msg.MessageHeader, buffer []byte) {
+func (d *Database) HANDLE_LOAD_STATIC_MAP_REQ(header *msg.MessageHeader, buffer []byte) {
 	resp := &msg.LoadStaticMapResp{}
 	defer node.Instance.Net.Responce(header, resp)
 	message := &msg.LoadStaticMapReq{}
@@ -319,7 +319,7 @@ func (d *Database) onLoadStaticMapReq(header *msg.MessageHeader, buffer []byte) 
 	}
 }
 
-func (d *Database) onSaveStaticMapReq(header *msg.MessageHeader, buffer []byte) {
+func (d *Database) HANDLE_SAVE_STATIC_MAP_REQ(header *msg.MessageHeader, buffer []byte) {
 	resp := &msg.SaveStaticMapResp{}
 	defer node.Instance.Net.Responce(header, resp)
 	req := &msg.SaveStaticMapReq{}

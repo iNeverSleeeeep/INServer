@@ -91,7 +91,7 @@ func (w *World) Stop() {
 
 func (w *World) initMessageHandler() {
 	node.Instance.Net.Listen(msg.CMD_ROLE_ENTER, w.onRoleEnterNTF)
-	node.Instance.Net.Listen(msg.CMD_GET_MAP_ID, w.onGetMapIDReq)
+	node.Instance.Net.Listen(msg.CMD_GET_MAP_ID, w.HANDLE_GET_MAP_ID)
 	node.Instance.Net.Listen(msg.CMD_MOVE_INF, w.onRoleMoveINF)
 }
 
@@ -120,8 +120,8 @@ func (w *World) onRoleEnterNTF(header *msg.MessageHeader, buffer []byte) {
 		ntf := &msg.UpdateRoleAddressNTF{
 			RoleUUID: role.SummaryData.RoleUUID,
 			Address: &data.RoleAddress{
-				Gate:   global.InvalidServerID,
-				Entity: global.CurrentServerID,
+				Gate:  global.InvalidServerID,
+				World: global.CurrentServerID,
 			},
 		}
 		node.Instance.Net.Notify(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, ntf)
@@ -130,7 +130,7 @@ func (w *World) onRoleEnterNTF(header *msg.MessageHeader, buffer []byte) {
 	}
 }
 
-func (w *World) onGetMapIDReq(header *msg.MessageHeader, buffer []byte) {
+func (w *World) HANDLE_GET_MAP_ID(header *msg.MessageHeader, buffer []byte) {
 	req := &msg.GetMapIDReq{}
 	resp := &msg.GetMapIDResp{}
 	defer node.Instance.Net.Responce(header, resp)

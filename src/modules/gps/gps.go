@@ -61,8 +61,8 @@ func (g *GPS) HANDLE_UPDATE_ROLE_ADDRESS_NTF(header *msg.MessageHeader, buffer [
 	if len(ntf.RoleUUID) > 0 {
 		if _, ok := g.roles[ntf.RoleUUID]; ok == false {
 			address := &data.RoleAddress{
-				Gate:   global.InvalidServerID,
-				Entity: global.InvalidServerID,
+				Gate:  global.InvalidServerID,
+				World: global.InvalidServerID,
 			}
 			g.roles[ntf.RoleUUID] = &role{
 				address: address,
@@ -72,8 +72,8 @@ func (g *GPS) HANDLE_UPDATE_ROLE_ADDRESS_NTF(header *msg.MessageHeader, buffer [
 		if ntf.Address.Gate != global.InvalidServerID {
 			g.roles[ntf.RoleUUID].address.Gate = ntf.Address.Gate
 		}
-		if ntf.Address.Entity != global.InvalidServerID {
-			g.roles[ntf.RoleUUID].address.Entity = ntf.Address.Entity
+		if ntf.Address.World != global.InvalidServerID {
+			g.roles[ntf.RoleUUID].address.World = ntf.Address.World
 		}
 	} else {
 		logger.Error("Empty RoleUUID")

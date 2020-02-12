@@ -27,8 +27,8 @@ func newSession(conn *net.TCPConn, uuid string) *session {
 		info: &data.RoleSessionInfo{
 			RoleUUID: uuid,
 			Address: &data.RoleAddress{
-				Gate:   global.CurrentServerID,
-				Entity: -1,
+				Gate:  global.CurrentServerID,
+				World: global.InvalidServerID,
 			},
 			State: data.SessionState_Connected,
 		},

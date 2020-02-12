@@ -16,7 +16,7 @@ message RoleSummaryData {
 
 message RoleAddress {
     int32 Gate = 1;
-    int32 Entity = 2;
+    int32 World = 2;
 }
 
 // 在线数据

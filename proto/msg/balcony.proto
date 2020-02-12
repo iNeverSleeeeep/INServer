@@ -1,0 +1,17 @@
+
+syntax = "proto3";
+
+option go_package = "INServer/src/proto/msg";
+
+import "data.role.proto";
+
+message RoleEnterReq {
+    string RoleUUID = 1;
+}
+
+message RoleEnterResp {
+    bool Success = 1;
+    int32 MapID = 2;
+    Role Role = 3;
+    int32 WorldID = 4;
+}

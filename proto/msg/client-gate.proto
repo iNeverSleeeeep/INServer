@@ -16,14 +16,6 @@ message ConnectGateReq {
 
 message ConnectGateResp {
     bool Success = 1;
-}
-
-message RoleEnterReq {
-    string RoleUUID = 1;
-}
-
-message RoleEnterResp {
-    bool Success = 1;
     int32 MapID = 2;
     Role Role = 3;
 }

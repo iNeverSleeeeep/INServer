@@ -81,8 +81,8 @@ func (g *Gate) HANDLE_UPDATE_ROLE_ADDRESS_NTF(header *msg.MessageHeader, buffer 
 	}
 
 	if session, ok := g.roles[ntf.RoleUUID]; ok {
-		if ntf.Address.Entity != global.InvalidServerID {
-			session.info.Address.Entity = ntf.Address.Entity
+		if ntf.Address.World != global.InvalidServerID {
+			session.info.Address.World = ntf.Address.World
 		}
 	}
 }
@@ -292,66 +292,32 @@ func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, webconn *we
 		role.info.State = data.SessionState_Online
 		role.info.RoleUUID = *uuid
 		role.info.Address = &data.RoleAddress{
-			Gate:   global.CurrentServerID,
-			Entity: global.InvalidServerID,
+			Gate:  global.CurrentServerID,
+			World: global.InvalidServerID,
 		}
 		ntf := &msg.UpdateRoleAddressNTF{
 			RoleUUID: *uuid,
 			Address:  role.info.Address,
 		}
 		node.Instance.Net.Notify(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, ntf)
-		connectResp.Success = true
+
+		roleEnterReq := &msg.RoleEnterReq{
+			RoleUUID: *uuid,
+		}
+		roleEnterResp := &msg.RoleEnterResp{}
+		if err := node.Instance.Net.Request(msg.CMD_ROLE_ENTER, roleEnterReq, roleEnterResp); err == nil {
+			connectResp.Success = true
+			connectResp.MapID = roleEnterResp.MapID
+			connectResp.Role = roleEnterResp.Role
+			role.info.Address.World = roleEnterResp.WorldID
+		}
 	}
 	resp.Buffer, _ = proto.Marshal(connectResp)
 }
 
 func (g *Gate) handleMessage(role *session, message *msg.ClientToGate) {
-	if message.Command == msg.CMD_ROLE_ENTER {
-		roleEnterResp := &msg.RoleEnterResp{}
-		resp := &msg.GateToClient{}
-		resp.Command = msg.CMD_RESP
-		resp.Sequence = message.Sequence
-		defer g.sendSessionResp(role, resp)
-		roleEnterReq := &msg.RoleEnterReq{}
-		if err := proto.Unmarshal(message.Request, roleEnterReq); err != nil {
-			logger.Info(err)
-			return
-		}
-		loadRoleReq := &msg.LoadRoleReq{
-			RoleUUID: roleEnterReq.RoleUUID,
-		}
-		loadRoleResp := &msg.LoadRoleResp{}
-		if err := node.Instance.Net.Request(msg.CMD_GD_LOAD_ROLE_REQ, loadRoleReq, loadRoleResp); err != nil {
-			logger.Info(err)
-			return
-		}
-		roleEnterResp.Success = loadRoleResp.Success
-		roleEnterResp.Role = loadRoleResp.Role
-		if loadRoleResp.Success {
-			getMapIDReq := &msg.GetMapIDReq{
-				MapUUID: loadRoleResp.MapUUID,
-			}
-			getMapIDResp := &msg.GetMapIDResp{}
-			err := node.Instance.Net.RequestServer(msg.CMD_GET_MAP_ID, getMapIDReq, getMapIDResp, loadRoleResp.WorldID)
-			if err != nil {
-				logger.Info(err)
-				return
-			}
-			roleEnterResp.MapID = getMapIDResp.MapID
-		}
-		resp.Buffer, _ = proto.Marshal(roleEnterResp)
-		if loadRoleResp.Success == false {
-			logger.Info("Role Enter Fail! UUID:" + role.info.RoleUUID)
-		} else {
-			role.info.Address.Entity = loadRoleResp.WorldID
-			ntf := &msg.UpdateRoleAddressNTF{
-				RoleUUID: roleEnterReq.RoleUUID,
-				Address:  role.info.Address,
-			}
-			node.Instance.Net.Notify(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, ntf)
-		}
-	} else if message.Request != nil {
-		buffer, err := node.Instance.Net.RequestClientBytesToServer(message.Command, role.info.RoleUUID, message.Request, role.info.Address.Entity)
+	if message.Request != nil {
+		buffer, err := node.Instance.Net.RequestClientBytesToServer(message.Command, role.info.RoleUUID, message.Request, role.info.Address.World)
 		if err != nil {
 			logger.Debug(err)
 		} else {
@@ -371,7 +337,7 @@ func (g *Gate) handleMessage(role *session, message *msg.ClientToGate) {
 			}
 		}
 	} else if message.Notify != nil {
-		err := node.Instance.Net.NotifyClientBytesToServer(message.Command, role.info.RoleUUID, message.Notify, role.info.Address.Entity)
+		err := node.Instance.Net.NotifyClientBytesToServer(message.Command, role.info.RoleUUID, message.Notify, role.info.Address.World)
 		if err != nil {
 			logger.Debug(err)
 		}

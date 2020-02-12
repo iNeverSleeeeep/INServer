@@ -12,6 +12,7 @@ var (
 	gates    []int32
 	database int32
 	gps      int32
+	balcony  int32
 	zones    []*etc.Zone
 )
 
@@ -30,12 +31,18 @@ func RunningGPS() int32 {
 	return gps
 }
 
+// RunningBalcony 处于Runing状态下的月台服务器
+func RunningBalcony() int32 {
+	return balcony
+}
+
 // RefreshRunning 刷新活跃中的服务器
 func RefreshRunning() {
 	running = make([]int32, 0)
 	gates = make([]int32, 0)
 	database = global.InvalidServerID
 	gps = global.InvalidServerID
+	balcony = global.InvalidServerID
 	for serverID, info := range nodes {
 		serverType := etcmgr.Instance.GetServerType(int32(serverID))
 		if info.NodeState == msg.NodeState_Running {
@@ -46,6 +53,8 @@ func RefreshRunning() {
 				database = int32(serverID)
 			} else if serverType == global.GPSServer {
 				gps = int32(serverID)
+			} else if serverType == global.BalconyServer {
+				balcony = int32(serverID)
 			}
 		}
 	}
@@ -82,5 +91,6 @@ func init() {
 	gates = make([]int32, 0)
 	database = global.InvalidServerID
 	gps = global.InvalidServerID
+	balcony = global.InvalidServerID
 	zones = make([]*etc.Zone, 0)
 }

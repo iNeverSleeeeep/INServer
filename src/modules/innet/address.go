@@ -101,6 +101,13 @@ func (a *address) getByCommand(command msg.CMD) *server {
 		logger.Error(fmt.Sprintf("没有找到GPS服务器"))
 		break
 	case msg.CMD_ROLE_ENTER:
+		serverID := cluster.RunningBalcony()
+		if serverID != global.InvalidServerID {
+			if svr, ok := a.servers[serverID]; ok {
+				return svr
+			}
+		}
+		logger.Error(fmt.Sprintf("没有找到月台服务器"))
 		break
 	}
 	return nil
