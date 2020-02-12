@@ -4,7 +4,9 @@ go:
 script:
   - go build main.go
 notifications:
-email:
-  recipients:
-    - 362761534@qq.com
-  on_success: always
+  email:
+    recipients:
+      - 362761534@qq.com
+    on_success: always
+git:
+    submodules: false
