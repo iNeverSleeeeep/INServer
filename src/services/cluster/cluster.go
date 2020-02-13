@@ -30,6 +30,7 @@ func SetNode(serverID int32, node *msg.Node) {
 		// 因为消息乱序处理的问题，有可能先处理runining后处理ready 这个时候状态不要切换错了
 		return
 	}
+	nodes[serverID].NodeState = node.NodeState
 }
 
 // GetNode 取得单个节点信息
