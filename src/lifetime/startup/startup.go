@@ -53,7 +53,7 @@ func startNode() {
 
 	global.CurrentServerType = etcmgr.Instance.GetServerType(global.CurrentServerID)
 	global.CurrentServerConfig = etcmgr.Instance.GetServerConfig(global.CurrentServerID)
-	util.SetProcessName(fmt.Sprintf("%s@%d", global.CurrentServerType, global.CurrentServerID))
+	util.SetProcessName(fmt.Sprintf("%s@inserver-%d", strings.ToLower(global.CurrentServerType), global.CurrentServerID))
 	node.Instance.Prepare()
 	startServer()
 	node.Instance.Start()
