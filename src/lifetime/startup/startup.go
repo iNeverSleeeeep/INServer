@@ -16,6 +16,7 @@ import (
 	"INServer/src/services/web"
 	"INServer/src/services/world"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -30,7 +31,7 @@ func Run() {
 
 func startCenter() {
 	global.CurrentServerType = global.CenterServer
-	util.SetProcessName(fmt.Sprintf("%s@%d", global.CurrentServerType, global.CurrentServerID))
+	util.SetProcessName(fmt.Sprintf("%s@inserver-%d", strings.ToLower(global.CurrentServerType), global.CurrentServerID))
 	etcmgr.Instance = etcmgr.New()
 	global.CurrentServerConfig = etcmgr.Instance.GetServerConfig(global.CurrentServerID)
 	center.Instance = center.New()
