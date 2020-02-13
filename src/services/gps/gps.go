@@ -78,6 +78,7 @@ func (g *GPS) HANDLE_UPDATE_ROLE_ADDRESS_NTF(header *msg.MessageHeader, buffer [
 	} else {
 		logger.Error("Empty RoleUUID")
 	}
+	node.Net.NotifyServer(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, ntf, g.roles[ntf.RoleUUID].address.Gate)
 }
 
 func (g *GPS) HANDLE_REMOVE_ROLE_ADDRESS_NTF(header *msg.MessageHeader, buffer []byte) {

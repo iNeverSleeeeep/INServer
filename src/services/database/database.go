@@ -376,6 +376,7 @@ func (d *Database) HANDLE_SAVE_ROLE_REQ(header *msg.MessageHeader, buffer []byte
 			OnlineData:  onlineData,
 		}
 		roles = append(roles, dbrole)
+		logger.Info(fmt.Sprintf("角色保存 UUID:%s Name:%s", role.SummaryData.RoleUUID, role.SummaryData.Name))
 	}
 
 	err = dao.BulkRoleUpdate(d.DB, roles)

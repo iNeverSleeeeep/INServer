@@ -18,6 +18,7 @@ import (
 var Instance *World
 
 type (
+	// World 是世界服务 管理角色在游戏中的主要逻辑
 	World struct {
 		gameMaps map[string]*gamemap.Map
 		roles    map[string]*data.Role
@@ -129,6 +130,7 @@ func (w *World) HANDLE_ROLE_ENTER(header *msg.MessageHeader, buffer []byte) {
 	w.roleGate[role.SummaryData.GetRoleUUID()] = roleEnterNTF.Gate
 
 	if gameMap, ok := w.gameMaps[role.SummaryData.GetMapUUID()]; ok {
+		w.roles[role.SummaryData.RoleUUID] = role
 		entity := ecs.NewEntity(role.OnlineData.EntityData, data.EntityType_RoleEntity)
 		gameMap.EntityEnter(role.SummaryData.RoleUUID, entity)
 
@@ -162,6 +164,8 @@ func (w *World) HANDLE_ROLE_LEAVE_REQ(header *msg.MessageHeader, buffer []byte) 
 			if gameMap, ok2 := w.gameMaps[role.SummaryData.GetMapUUID()]; ok2 {
 				gameMap.EntityLeave(uuid)
 			}
+		} else {
+			logger.Error("角色不在当前服务器 %s", uuid)
 		}
 		ntf := &msg.RemoveRoleAddressNTF{
 			RoleUUID: uuid,

@@ -76,6 +76,7 @@ func (a *address) getByCommand(command msg.CMD) *server {
 		msg.CMD_GD_RELEASE_PLAYER_NTF,
 		msg.CMD_GD_CREATE_ROLE_REQ,
 		msg.CMD_GD_LOAD_ROLE_REQ,
+		msg.CMD_SAVE_ROLE_REQ,
 		msg.CMD_LOAD_STATIC_MAP_REQ,
 		msg.CMD_SAVE_STATIC_MAP_REQ:
 		serverID := cluster.RunningDatabase()

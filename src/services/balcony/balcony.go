@@ -74,15 +74,20 @@ func (b *Balcony) HANDLE_ROLE_ENTER(header *msg.MessageHeader, buffer []byte) {
 		}
 		roleEnterResp.MapID = getMapIDResp.MapID
 		roleEnterResp.WorldID = loadRoleResp.WorldID
-		logger.Info(fmt.Sprintf("地图ID %d", getMapIDResp.MapID))
 
-		ntf := &msg.UpdateRoleAddressNTF{
+		updateRoleAddressNTF := &msg.UpdateRoleAddressNTF{
 			RoleUUID: roleEnterReq.RoleUUID,
 			Address: &data.RoleAddress{
 				Gate:  global.InvalidServerID,
 				World: loadRoleResp.WorldID,
 			},
 		}
-		node.Net.Notify(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, ntf)
+		node.Net.Notify(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, updateRoleAddressNTF)
+
+		roleEnterNTF := &msg.RoleEnterNTF{
+			Gate: header.From,
+			Role: loadRoleResp.Role,
+		}
+		node.Net.NotifyServer(msg.CMD_ROLE_ENTER, roleEnterNTF, loadRoleResp.WorldID)
 	}
 }

@@ -54,9 +54,14 @@ func BulkRoleUpdate(DB *dbobj.DBObject, roles []*db.DBRole) error {
 		logger.Error(err)
 		return err
 	}
-	stmt, err := tx.Prepare(`UPDATE roles set SummaryData=? OnlineData=? where UUID=?`)
+	//stmt, err := tx.Prepare(`UPDATE roles set SummaryData=? OnlineData=? where UUID=?`)
+	stmt, err := tx.Prepare(`REPLACE into roles (UUID, SummaryData, OnlineData) values(?,?,?)`)
+	if err != nil {
+		logger.Error(err)
+		return err
+	}
 	for _, role := range roles {
-		_, err := stmt.Exec(role.SummaryData, role.OnlineData, role.UUID)
+		_, err := stmt.Exec(role.UUID, role.SummaryData, role.OnlineData)
 		if err != nil {
 			logger.Error(err)
 			return err

@@ -45,6 +45,10 @@ func BulkStaticMapUpdate(DB *dbobj.DBObject, staticMaps []*db.DBStaticMap) error
 		return err
 	}
 	stmt, err := tx.Prepare(`UPDATE staticmaps set SerializedData=? where UUID=?`)
+	if err != nil {
+		logger.Error(err)
+		return err
+	}
 	for _, staticMap := range staticMaps {
 		_, err := stmt.Exec(staticMap.SerializedData, staticMap.UUID)
 		if err != nil {

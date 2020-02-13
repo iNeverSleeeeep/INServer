@@ -24,6 +24,7 @@ var Instance *Gate
 var upgrader = websocket.Upgrader{}
 
 type (
+	// Gate 是网关服务 客户端和逻辑之间的消息通过门服务器中转
 	Gate struct {
 		listener *net.TCPListener
 		roles    map[string]*session
@@ -36,6 +37,8 @@ func New() *Gate {
 	g.roles = make(map[string]*session)
 	g.serv = newServices()
 	g.serv.start()
+	g.tickOutOfContact()
+	g.initMessageHandler()
 	return g
 }
 
@@ -94,7 +97,7 @@ func (g *Gate) handleWebConnect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var uuid *string = nil
-	defer g.closeConnection(uuid, nil, c)
+	defer g.closeConnection(&uuid, nil, c)
 	defer c.Close()
 	defer protect.CatchPanic()
 	var buf = make([]byte, 65536)
@@ -159,7 +162,7 @@ func (g *Gate) handleWebConnect(w http.ResponseWriter, r *http.Request) {
 
 func (g *Gate) handleConnect(conn *net.TCPConn) {
 	var uuid *string = nil
-	defer g.closeConnection(uuid, conn, nil)
+	defer g.closeConnection(&uuid, conn, nil)
 	defer protect.CatchPanic()
 	var buf = make([]byte, 65536)
 	current := 0
@@ -221,15 +224,15 @@ func (g *Gate) handleConnect(conn *net.TCPConn) {
 	}
 }
 
-func (g *Gate) closeConnection(uuid *string, conn *net.TCPConn, webconn *websocket.Conn) {
+func (g *Gate) closeConnection(uuid **string, conn *net.TCPConn, webconn *websocket.Conn) {
 	if conn != nil {
 		conn.Close()
 	}
 	if webconn != nil {
 		webconn.Close()
 	}
-	if uuid != nil {
-		if role, ok := g.roles[*uuid]; ok {
+	if *uuid != nil {
+		if role, ok := g.roles[**uuid]; ok {
 			role.conn = nil
 			role.webconn = nil
 			role.info.State = data.SessionState_OutOfContact

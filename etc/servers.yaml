@@ -8,7 +8,7 @@ servers:
     servertype: Gate
     serverconfig:
       gateconfig:
-        address: 47.108.192.203
+        address: 127.0.0.1
         port: 10999
         outofdatatimeout: 10
         webport: 10998
@@ -17,7 +17,7 @@ servers:
     servertype: Login
     serverconfig:
       loginconfig:
-        port: 10080
+        port: 10800
         webport: 10801
   -
     serverid: 3
@@ -30,7 +30,7 @@ servers:
     servertype: Web
     serverconfig:
       webconfig:
-        port: 10070
+        port: 10700
   -
     serverid: 5
     servertype: World
