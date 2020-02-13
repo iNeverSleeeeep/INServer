@@ -82,7 +82,7 @@ func (r *receiver) handlePackage(pkg *msg.Package) {
 	if pkg.UniqueID == 0 {
 		msg := &msg.Message{}
 		proto.Unmarshal(pkg.Buffer, msg)
-		r.innet.handleMessage(msg)
+		r.innet.pushToMessageChan(msg)
 	} else if pkg.UniqueID >= packages.currentUniqueID {
 		if _, ok := packages.packages[pkg.UniqueID]; ok == false {
 			packages.packages[pkg.UniqueID] = make(map[int32]*msg.Package)
@@ -127,5 +127,5 @@ func (r *receiver) onPackagesReceiveFinished(packages map[int32]*msg.Package) {
 	}
 	msg := &msg.Message{}
 	proto.Unmarshal(buffer, msg)
-	r.innet.handleMessage(msg)
+	r.innet.pushToMessageChan(msg)
 }

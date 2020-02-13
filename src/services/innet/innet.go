@@ -33,6 +33,11 @@ type (
 		receiver  *receiver
 		conn      *net.UDPConn
 		IP        []byte
+
+		// 下面三个chan是保证消息处理顺序不乱序的
+		roleMessageChans   map[string]chan *msg.Message
+		roleStopChanFlags  map[string]chan bool
+		serverMessageChans map[int32]chan *msg.Message
 	}
 )
 
@@ -50,6 +55,10 @@ func New() *INNet {
 	innet.conn = conn
 	innet.responces = make(map[uint64]*responce)
 	innet.listeners = make(map[msg.CMD]chan *msg.Message)
+	innet.roleMessageChans = make(map[string]chan *msg.Message)
+	innet.roleStopChanFlags = make(map[string]chan bool)
+	innet.serverMessageChans = make(map[int32]chan *msg.Message)
+
 	innet.address = newAddress(innet)
 	innet.retry = newRetry(innet)
 	innet.receiver = newReceiver(innet)
@@ -275,4 +284,49 @@ func (n *INNet) startTickRequestTimeout() {
 			time.Sleep(time.Second)
 		}
 	}()
+}
+
+func (n *INNet) pushToMessageChan(message *msg.Message) {
+	var messageChan chan *msg.Message
+	if len(message.Header.RoleUUID) > 0 {
+		if c, ok := n.roleMessageChans[message.Header.RoleUUID]; ok {
+			messageChan = c
+		} else {
+			messageChan = make(chan *msg.Message, 10)
+			stopChan := make(chan bool)
+			n.roleMessageChans[message.Header.RoleUUID] = messageChan
+			if c2, ok2 := n.roleStopChanFlags[message.Header.RoleUUID]; ok2 {
+				c2 <- true
+			}
+			n.roleStopChanFlags[message.Header.RoleUUID] = stopChan
+			go func() {
+				for {
+					select {
+					case next := <-messageChan:
+						n.handleMessage(next)
+						break
+					case <-stopChan:
+						return
+					}
+				}
+			}()
+		}
+	} else {
+		if c, ok := n.serverMessageChans[message.Header.From]; ok {
+			messageChan = c
+		} else {
+			messageChan = make(chan *msg.Message, 10)
+			n.serverMessageChans[message.Header.From] = messageChan
+			go func() {
+				for {
+					select {
+					case next := <-messageChan:
+						n.handleMessage(next)
+						break
+					}
+				}
+			}()
+		}
+	}
+	messageChan <- message
 }
