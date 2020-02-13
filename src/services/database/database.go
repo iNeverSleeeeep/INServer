@@ -42,18 +42,19 @@ func New() *Database {
 }
 
 func (d *Database) Start() {
-	node.Instance.Net.Listen(msg.CMD_LD_CREATE_PLAYER_REQ, d.HANDLE_LD_CREATE_PLAYER_REQ)
-	node.Instance.Net.Listen(msg.CMD_GD_LOAD_PLAYER_REQ, d.HANDLE_GD_LOAD_PLAYER_REQ)
-	node.Instance.Net.Listen(msg.CMD_GD_RELEASE_PLAYER_NTF, d.HANDLE_GD_RELEASE_PLAYER_NTF)
-	node.Instance.Net.Listen(msg.CMD_GD_CREATE_ROLE_REQ, d.HANDLE_GD_CREATE_ROLE_REQ)
-	node.Instance.Net.Listen(msg.CMD_GD_LOAD_ROLE_REQ, d.HANDLE_GD_LOAD_ROLE_REQ)
-	node.Instance.Net.Listen(msg.CMD_LOAD_STATIC_MAP_REQ, d.HANDLE_LOAD_STATIC_MAP_REQ)
-	node.Instance.Net.Listen(msg.CMD_SAVE_STATIC_MAP_REQ, d.HANDLE_SAVE_STATIC_MAP_REQ)
+	node.Net.Listen(msg.CMD_LD_CREATE_PLAYER_REQ, d.HANDLE_LD_CREATE_PLAYER_REQ)
+	node.Net.Listen(msg.CMD_GD_LOAD_PLAYER_REQ, d.HANDLE_GD_LOAD_PLAYER_REQ)
+	node.Net.Listen(msg.CMD_GD_RELEASE_PLAYER_NTF, d.HANDLE_GD_RELEASE_PLAYER_NTF)
+	node.Net.Listen(msg.CMD_GD_CREATE_ROLE_REQ, d.HANDLE_GD_CREATE_ROLE_REQ)
+	node.Net.Listen(msg.CMD_GD_LOAD_ROLE_REQ, d.HANDLE_GD_LOAD_ROLE_REQ)
+	node.Net.Listen(msg.CMD_LOAD_STATIC_MAP_REQ, d.HANDLE_LOAD_STATIC_MAP_REQ)
+	node.Net.Listen(msg.CMD_SAVE_STATIC_MAP_REQ, d.HANDLE_SAVE_STATIC_MAP_REQ)
+	node.Net.Listen(msg.CMD_SAVE_ROLE_REQ, d.HANDLE_SAVE_ROLE_REQ)
 }
 
 func (d *Database) HANDLE_LD_CREATE_PLAYER_REQ(header *msg.MessageHeader, buffer []byte) {
 	resp := &msg.CreatePlayerResp{}
-	defer node.Instance.Net.Responce(header, resp)
+	defer node.Net.Responce(header, resp)
 	message := &msg.CreatePlayerReq{}
 	err := proto.Unmarshal(buffer, message)
 	if err != nil {
@@ -80,7 +81,7 @@ func (d *Database) HANDLE_LD_CREATE_PLAYER_REQ(header *msg.MessageHeader, buffer
 
 func (d *Database) HANDLE_GD_LOAD_PLAYER_REQ(header *msg.MessageHeader, buffer []byte) {
 	resp := &msg.LoadPlayerResp{}
-	defer node.Instance.Net.Responce(header, resp)
+	defer node.Net.Responce(header, resp)
 	message := &msg.LoadPlayerReq{}
 	err := proto.Unmarshal(buffer, message)
 	if err != nil {
@@ -122,7 +123,7 @@ func (d *Database) HANDLE_GD_RELEASE_PLAYER_NTF(header *msg.MessageHeader, buffe
 
 func (d *Database) HANDLE_GD_CREATE_ROLE_REQ(header *msg.MessageHeader, buffer []byte) {
 	resp := &msg.CreateRoleResp{}
-	defer node.Instance.Net.Responce(header, resp)
+	defer node.Net.Responce(header, resp)
 	message := &msg.CreateRoleReq{}
 	err := proto.Unmarshal(buffer, message)
 	if err != nil {
@@ -148,7 +149,7 @@ func (d *Database) HANDLE_GD_CREATE_ROLE_REQ(header *msg.MessageHeader, buffer [
 			StaticMapID: 1,
 		}
 		getStaticMapUUIDResp := &msg.GetStaticMapUUIDResp{}
-		err := node.Instance.Net.Request(msg.CMD_GET_STATIC_MAP_UUID_REQ, getStaticMapUUIDReq, getStaticMapUUIDResp)
+		err := node.Net.Request(msg.CMD_GET_STATIC_MAP_UUID_REQ, getStaticMapUUIDReq, getStaticMapUUIDResp)
 		if err != nil {
 			logger.Error(err)
 			return
@@ -216,7 +217,7 @@ func (d *Database) HANDLE_GD_CREATE_ROLE_REQ(header *msg.MessageHeader, buffer [
 
 func (d *Database) HANDLE_GD_LOAD_ROLE_REQ(header *msg.MessageHeader, buffer []byte) {
 	resp := &msg.LoadRoleResp{}
-	defer node.Instance.Net.Responce(header, resp)
+	defer node.Net.Responce(header, resp)
 	message := &msg.LoadRoleReq{}
 	err := proto.Unmarshal(buffer, message)
 	if err != nil {
@@ -228,7 +229,7 @@ func (d *Database) HANDLE_GD_LOAD_ROLE_REQ(header *msg.MessageHeader, buffer []b
 
 		mapAddressReq := &msg.GetMapAddressReq{MapUUID: roleSummary.MapUUID}
 		mapAddressResp := &msg.GetMapAddressResp{}
-		err := node.Instance.Net.Request(msg.CMD_GET_MAP_ADDRESS_REQ, mapAddressReq, mapAddressResp)
+		err := node.Net.Request(msg.CMD_GET_MAP_ADDRESS_REQ, mapAddressReq, mapAddressResp)
 		if err != nil {
 			logger.Error(err)
 			return
@@ -265,7 +266,7 @@ func (d *Database) HANDLE_GD_LOAD_ROLE_REQ(header *msg.MessageHeader, buffer []b
 			Role: role,
 		}
 
-		node.Instance.Net.NotifyServer(msg.CMD_ROLE_ENTER, roleEnterNTF, mapAddressResp.ServerID)
+		node.Net.NotifyServer(msg.CMD_ROLE_ENTER, roleEnterNTF, mapAddressResp.ServerID)
 	} else {
 		logger.Error("角色不存在 UUID:" + message.RoleUUID)
 	}
@@ -273,7 +274,7 @@ func (d *Database) HANDLE_GD_LOAD_ROLE_REQ(header *msg.MessageHeader, buffer []b
 
 func (d *Database) HANDLE_LOAD_STATIC_MAP_REQ(header *msg.MessageHeader, buffer []byte) {
 	resp := &msg.LoadStaticMapResp{}
-	defer node.Instance.Net.Responce(header, resp)
+	defer node.Net.Responce(header, resp)
 	message := &msg.LoadStaticMapReq{}
 	err := proto.Unmarshal(buffer, message)
 	if err != nil {
@@ -321,7 +322,7 @@ func (d *Database) HANDLE_LOAD_STATIC_MAP_REQ(header *msg.MessageHeader, buffer 
 
 func (d *Database) HANDLE_SAVE_STATIC_MAP_REQ(header *msg.MessageHeader, buffer []byte) {
 	resp := &msg.SaveStaticMapResp{}
-	defer node.Instance.Net.Responce(header, resp)
+	defer node.Net.Responce(header, resp)
 	req := &msg.SaveStaticMapReq{}
 	err := proto.Unmarshal(buffer, req)
 	if err != nil {
@@ -345,6 +346,10 @@ func (d *Database) HANDLE_SAVE_STATIC_MAP_REQ(header *msg.MessageHeader, buffer 
 	if err == nil {
 		resp.Success = true
 	}
+}
+
+func (d *Database) HANDLE_SAVE_ROLE_REQ(header *msg.MessageHeader, buffer []byte) {
+
 }
 
 func (d *Database) loadAllRoleSummaryData() {

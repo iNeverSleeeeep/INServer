@@ -43,7 +43,7 @@ func (w *World) Start() {
 			req.StaticMapID = gameMapID
 			resp.Reset()
 			var mapData *data.MapData
-			err := node.Instance.Net.Request(msg.CMD_LOAD_STATIC_MAP_REQ, req, resp)
+			err := node.Net.Request(msg.CMD_LOAD_STATIC_MAP_REQ, req, resp)
 			if err != nil {
 				logger.Error(err)
 			} else if resp.Map == nil {
@@ -62,13 +62,13 @@ func (w *World) Start() {
 					MapUUID:  mapData.MapUUID,
 					ServerID: global.CurrentServerID,
 				}
-				node.Instance.Net.Notify(msg.CMD_UPDATE_MAP_ADDRESS_NTF, updateMapAddress)
+				node.Net.Notify(msg.CMD_UPDATE_MAP_ADDRESS_NTF, updateMapAddress)
 				udpateStatcMapUUID := &msg.UpdateStaticMapUUIDNTF{
 					ZoneID:        zoneConfig.ZoneID,
 					StaticMapID:   gameMapID,
 					StaticMapUUID: mapData.MapUUID,
 				}
-				node.Instance.Net.Notify(msg.CMD_UPDATE_STATIC_MAP_UUID_NTF, udpateStatcMapUUID)
+				node.Net.Notify(msg.CMD_UPDATE_STATIC_MAP_UUID_NTF, udpateStatcMapUUID)
 			}
 		}
 	}
@@ -79,20 +79,34 @@ func (w *World) Stop() {
 	for _, gamemap := range w.gameMaps {
 		staticMaps = append(staticMaps, gamemap.MapData())
 	}
-	req := &msg.SaveStaticMapReq{
+	saveStaticMapReq := &msg.SaveStaticMapReq{
 		StaticMaps: staticMaps,
 	}
-	resp := &msg.SaveStaticMapResp{}
-	err := node.Instance.Net.Request(msg.CMD_SAVE_STATIC_MAP_REQ, req, resp)
+	saveStaticMapResp := &msg.SaveStaticMapResp{}
+	err := node.Net.Request(msg.CMD_SAVE_STATIC_MAP_REQ, saveStaticMapReq, saveStaticMapResp)
+	if err != nil {
+		logger.Error(err)
+	}
+
+	roles := make([]*data.Role, 0)
+	for _, role := range w.roles {
+		roles = append(roles, role)
+	}
+
+	saveRoleReq := &msg.SaveRoleReq{
+		Roles: roles,
+	}
+	saveRoleResp := &msg.SaveRoleResp{}
+	err = node.Net.Request(msg.CMD_SAVE_ROLE_REQ, saveRoleReq, saveRoleResp)
 	if err != nil {
 		logger.Error(err)
 	}
 }
 
 func (w *World) initMessageHandler() {
-	node.Instance.Net.Listen(msg.CMD_ROLE_ENTER, w.onRoleEnterNTF)
-	node.Instance.Net.Listen(msg.CMD_GET_MAP_ID, w.HANDLE_GET_MAP_ID)
-	node.Instance.Net.Listen(msg.CMD_MOVE_INF, w.onRoleMoveINF)
+	node.Net.Listen(msg.CMD_ROLE_ENTER, w.onRoleEnterNTF)
+	node.Net.Listen(msg.CMD_GET_MAP_ID, w.HANDLE_GET_MAP_ID)
+	node.Net.Listen(msg.CMD_MOVE_INF, w.onRoleMoveINF)
 }
 
 // GetMap 根据UUID返回Map实例
@@ -124,7 +138,7 @@ func (w *World) onRoleEnterNTF(header *msg.MessageHeader, buffer []byte) {
 				World: global.CurrentServerID,
 			},
 		}
-		node.Instance.Net.Notify(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, ntf)
+		node.Net.Notify(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, ntf)
 	} else {
 		logger.Error(fmt.Sprintf("角色进入失败，地图不存在 role:%s map:%s", role.SummaryData.RoleUUID, role.SummaryData.MapUUID))
 	}
@@ -133,7 +147,7 @@ func (w *World) onRoleEnterNTF(header *msg.MessageHeader, buffer []byte) {
 func (w *World) HANDLE_GET_MAP_ID(header *msg.MessageHeader, buffer []byte) {
 	req := &msg.GetMapIDReq{}
 	resp := &msg.GetMapIDResp{}
-	defer node.Instance.Net.Responce(header, resp)
+	defer node.Net.Responce(header, resp)
 	err := proto.Unmarshal(buffer, req)
 	if err != nil {
 		logger.Error(err)

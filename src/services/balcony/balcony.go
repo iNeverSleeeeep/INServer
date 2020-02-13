@@ -38,12 +38,12 @@ func (b *Balcony) Stop() {
 }
 
 func (b *Balcony) initMessageHandler() {
-	node.Instance.Net.Listen(msg.CMD_ROLE_ENTER, b.HANDLE_ROLE_ENTER)
+	node.Net.Listen(msg.CMD_ROLE_ENTER, b.HANDLE_ROLE_ENTER)
 }
 
 func (b *Balcony) HANDLE_ROLE_ENTER(header *msg.MessageHeader, buffer []byte) {
 	roleEnterResp := &msg.RoleEnterResp{}
-	defer node.Instance.Net.Responce(header, roleEnterResp)
+	defer node.Net.Responce(header, roleEnterResp)
 	roleEnterReq := &msg.RoleEnterReq{}
 	err := proto.Unmarshal(buffer, roleEnterReq)
 	if err != nil {
@@ -55,7 +55,7 @@ func (b *Balcony) HANDLE_ROLE_ENTER(header *msg.MessageHeader, buffer []byte) {
 		RoleUUID: roleEnterReq.RoleUUID,
 	}
 	loadRoleResp := &msg.LoadRoleResp{}
-	if err := node.Instance.Net.Request(msg.CMD_GD_LOAD_ROLE_REQ, loadRoleReq, loadRoleResp); err != nil {
+	if err := node.Net.Request(msg.CMD_GD_LOAD_ROLE_REQ, loadRoleReq, loadRoleResp); err != nil {
 		logger.Info(err)
 		return
 	}
@@ -67,7 +67,7 @@ func (b *Balcony) HANDLE_ROLE_ENTER(header *msg.MessageHeader, buffer []byte) {
 			MapUUID: loadRoleResp.MapUUID,
 		}
 		getMapIDResp := &msg.GetMapIDResp{}
-		err := node.Instance.Net.RequestServer(msg.CMD_GET_MAP_ID, getMapIDReq, getMapIDResp, loadRoleResp.WorldID)
+		err := node.Net.RequestServer(msg.CMD_GET_MAP_ID, getMapIDReq, getMapIDResp, loadRoleResp.WorldID)
 		if err != nil {
 			logger.Info(err)
 			return
@@ -83,6 +83,6 @@ func (b *Balcony) HANDLE_ROLE_ENTER(header *msg.MessageHeader, buffer []byte) {
 				World: loadRoleResp.WorldID,
 			},
 		}
-		node.Instance.Net.Notify(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, ntf)
+		node.Net.Notify(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, ntf)
 	}
 }

@@ -42,13 +42,13 @@ func (g *GPS) Start() {
 }
 
 func (g *GPS) initMessageHandler() {
-	node.Instance.Net.Listen(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, g.HANDLE_UPDATE_ROLE_ADDRESS_NTF)
-	node.Instance.Net.Listen(msg.CMD_REMOVE_ROLE_ADDRESS_NTF, g.HANDLE_REMOVE_ROLE_ADDRESS_NTF)
-	node.Instance.Net.Listen(msg.CMD_UPDATE_MAP_ADDRESS_NTF, g.onUpdateMapAddressNTF)
-	node.Instance.Net.Listen(msg.CMD_REMOVE_MAP_ADDRESS_NTF, g.onRemoveMapAddressNTF)
-	node.Instance.Net.Listen(msg.CMD_GET_MAP_ADDRESS_REQ, g.onGetMapLocationReq)
-	node.Instance.Net.Listen(msg.CMD_UPDATE_STATIC_MAP_UUID_NTF, g.onUpdateStaticMapUUIDNTF)
-	node.Instance.Net.Listen(msg.CMD_GET_STATIC_MAP_UUID_REQ, g.onGetStaticMapUUIDReq)
+	node.Net.Listen(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, g.HANDLE_UPDATE_ROLE_ADDRESS_NTF)
+	node.Net.Listen(msg.CMD_REMOVE_ROLE_ADDRESS_NTF, g.HANDLE_REMOVE_ROLE_ADDRESS_NTF)
+	node.Net.Listen(msg.CMD_UPDATE_MAP_ADDRESS_NTF, g.onUpdateMapAddressNTF)
+	node.Net.Listen(msg.CMD_REMOVE_MAP_ADDRESS_NTF, g.onRemoveMapAddressNTF)
+	node.Net.Listen(msg.CMD_GET_MAP_ADDRESS_REQ, g.onGetMapLocationReq)
+	node.Net.Listen(msg.CMD_UPDATE_STATIC_MAP_UUID_NTF, g.onUpdateStaticMapUUIDNTF)
+	node.Net.Listen(msg.CMD_GET_STATIC_MAP_UUID_REQ, g.onGetStaticMapUUIDReq)
 }
 
 func (g *GPS) HANDLE_UPDATE_ROLE_ADDRESS_NTF(header *msg.MessageHeader, buffer []byte) {
@@ -117,7 +117,7 @@ func (g *GPS) onUpdateStaticMapUUIDNTF(header *msg.MessageHeader, buffer []byte)
 
 func (g *GPS) onGetStaticMapUUIDReq(header *msg.MessageHeader, buffer []byte) {
 	resp := &msg.GetStaticMapUUIDResp{}
-	defer node.Instance.Net.Responce(header, resp)
+	defer node.Net.Responce(header, resp)
 	req := &msg.GetStaticMapUUIDReq{}
 	err := proto.Unmarshal(buffer, req)
 	if err != nil {
@@ -141,7 +141,7 @@ func (g *GPS) onGetMapLocationReq(header *msg.MessageHeader, buffer []byte) {
 	resp := &msg.GetMapAddressResp{
 		ServerID: global.InvalidServerID,
 	}
-	defer node.Instance.Net.Responce(header, resp)
+	defer node.Net.Responce(header, resp)
 	req := &msg.GetMapAddressReq{}
 	err := proto.Unmarshal(buffer, req)
 	if err != nil {

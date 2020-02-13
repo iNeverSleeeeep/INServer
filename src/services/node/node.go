@@ -14,19 +14,19 @@ import (
 
 var (
 	Instance *Node
+	Net      *innet.INNet
 )
 
 type (
 	Node struct {
-		Net *innet.INNet
 	}
 )
 
 func New() *Node {
 	n := new(Node)
-	n.Net = innet.New()
+	Net = innet.New()
 	n.registerListeners()
-	n.Net.Start()
+	Net.Start()
 	return n
 }
 
@@ -42,9 +42,9 @@ func (n *Node) Prepare() {
 	}
 	ntf.Nodes[global.CurrentServerID] = &msg.Node{
 		NodeState:   msg.NodeState_Ready,
-		NodeAddress: n.Net.IP,
+		NodeAddress: Net.IP,
 	}
-	n.Net.NotifyServer(msg.CMD_NODES_INFO_NTF, ntf, global.CenterID)
+	Net.NotifyServer(msg.CMD_NODES_INFO_NTF, ntf, global.CenterID)
 }
 
 // Start 节点进入Running状态 工作状态
@@ -59,16 +59,16 @@ func (n *Node) Start() {
 	}
 	ntf.Nodes[global.CurrentServerID] = &msg.Node{
 		NodeState:   msg.NodeState_Running,
-		NodeAddress: n.Net.IP,
+		NodeAddress: Net.IP,
 	}
-	n.Net.NotifyServer(msg.CMD_NODES_INFO_NTF, ntf, global.CenterID)
+	Net.NotifyServer(msg.CMD_NODES_INFO_NTF, ntf, global.CenterID)
 	n.keepAlive()
 }
 
 func (n *Node) registerListeners() {
-	n.Net.Listen(msg.CMD_NODES_INFO_NTF, n.HANDLE_NODES_INFO_NTF)
-	n.Net.Listen(msg.CMD_ETC_SYNC_NTF, etcmgr.Instance.HANDLE_ETC_SYNC_NTF)
-	n.Net.Listen(msg.CMD_RESET_CONNECTION_NTF, n.HANDLE_RESET_CONNECTION_NTF)
+	Net.Listen(msg.CMD_NODES_INFO_NTF, n.HANDLE_NODES_INFO_NTF)
+	Net.Listen(msg.CMD_ETC_SYNC_NTF, etcmgr.Instance.HANDLE_ETC_SYNC_NTF)
+	Net.Listen(msg.CMD_RESET_CONNECTION_NTF, n.HANDLE_RESET_CONNECTION_NTF)
 }
 
 func (n *Node) HANDLE_NODES_INFO_NTF(header *msg.MessageHeader, buffer []byte) {
@@ -79,7 +79,7 @@ func (n *Node) HANDLE_NODES_INFO_NTF(header *msg.MessageHeader, buffer []byte) {
 		return
 	}
 	cluster.SetNodes(ntf.Nodes)
-	n.Net.RefreshNodesAddress()
+	Net.RefreshNodesAddress()
 }
 
 func (n *Node) HANDLE_RESET_CONNECTION_NTF(header *msg.MessageHeader, buffer []byte) {
@@ -89,7 +89,7 @@ func (n *Node) HANDLE_RESET_CONNECTION_NTF(header *msg.MessageHeader, buffer []b
 		logger.Error(err)
 		return
 	}
-	n.Net.ResetServer(ntf.ServerID)
+	Net.ResetServer(ntf.ServerID)
 }
 
 func (n *Node) keepAlive() {
@@ -98,7 +98,7 @@ func (n *Node) keepAlive() {
 			info := &msg.KeepAlive{
 				ServerID: global.CurrentServerID,
 			}
-			n.Net.NotifyServer(msg.CMD_KEEP_ALIVE, info, 0)
+			Net.NotifyServer(msg.CMD_KEEP_ALIVE, info, 0)
 			time.Sleep(time.Second)
 		}
 	}()

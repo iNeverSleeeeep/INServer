@@ -175,7 +175,7 @@ func (l *Login) handleMessageImpl(message *msg.ClientToLogin, resp *msg.LoginToC
 			PlayerUUID: account.PlayerUUID,
 		}
 		createPlayerResp := &msg.CreatePlayerResp{}
-		err = node.Instance.Net.Request(msg.CMD_LD_CREATE_PLAYER_REQ, createPlayerReq, createPlayerResp)
+		err = node.Net.Request(msg.CMD_LD_CREATE_PLAYER_REQ, createPlayerReq, createPlayerResp)
 		if err != nil {
 			logger.Debug(err)
 		} else if createPlayerResp.Success {
@@ -202,7 +202,7 @@ func (l *Login) handleMessageImpl(message *msg.ClientToLogin, resp *msg.LoginToC
 					PlayerUUID: account.PlayerUUID,
 				}
 				loadPlayerResp := &msg.LoadPlayerResp{}
-				err := node.Instance.Net.Request(msg.CMD_GD_LOAD_PLAYER_REQ, loadPlayerReq, loadPlayerResp)
+				err := node.Net.Request(msg.CMD_GD_LOAD_PLAYER_REQ, loadPlayerReq, loadPlayerResp)
 				if err != nil {
 					logger.Info(err)
 					success = false
@@ -235,7 +235,7 @@ func (l *Login) handleMessageImpl(message *msg.ClientToLogin, resp *msg.LoginToC
 				RoleName:   message.CreateRole.RoleName,
 				Zone:       message.CreateRole.Zone,
 			}
-			err := node.Instance.Net.Request(msg.CMD_GD_CREATE_ROLE_REQ, createRoleReq, createRoleResp)
+			err := node.Net.Request(msg.CMD_GD_CREATE_ROLE_REQ, createRoleReq, createRoleResp)
 			if err != nil {
 				logger.Info(err)
 			} else if createRoleResp.Success {
@@ -264,7 +264,7 @@ func (l *Login) handleMessageImpl(message *msg.ClientToLogin, resp *msg.LoginToC
 					ip, port, webport := cluster.GetGatePublicAddress(gateID)
 					resp.GateIP, resp.GatePort, resp.GateWebPort = ip, int32(port), int32(webport)
 					message := &msg.LoginToGate{Cert: cert}
-					node.Instance.Net.NotifyServer(msg.CMD_SESSION_CERT_NTF, message, gateID)
+					node.Net.NotifyServer(msg.CMD_SESSION_CERT_NTF, message, gateID)
 					logger.Info(fmt.Sprintf("玩家登录成功 UUID:%s CertKey:%s", cert.UUID, cert.Key))
 					success = true
 				} else {

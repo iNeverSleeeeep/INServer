@@ -17,7 +17,7 @@ func New() *Chat {
 }
 
 func (c *Chat) Start() {
-	node.Instance.Net.Listen(msg.CMD_CCHAT_CHAT, c.onClientChatMessage)
+	node.Net.Listen(msg.CMD_CCHAT_CHAT, c.onClientChatMessage)
 }
 
 func (c *Chat) onClientChatMessage(eader *msg.MessageHeader, buffer []byte) {

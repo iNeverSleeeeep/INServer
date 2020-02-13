@@ -40,7 +40,7 @@ func (w *Web) zones(writer http.ResponseWriter, req *http.Request) {
 }
 
 func (w *Web) reloadetc(writer http.ResponseWriter, req *http.Request) {
-	_, err := node.Instance.Net.RequestBytes(msg.CMD_RELOAD_ETC_REQ, make([]byte, 1))
+	_, err := node.Net.RequestBytes(msg.CMD_RELOAD_ETC_REQ, make([]byte, 1))
 	if err != nil {
 		io.WriteString(writer, err.Error())
 	} else {

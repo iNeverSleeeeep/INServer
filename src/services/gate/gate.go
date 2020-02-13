@@ -69,7 +69,7 @@ func (g *Gate) Start() {
 }
 
 func (g *Gate) initMessageHandler() {
-	node.Instance.Net.Listen(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, g.HANDLE_UPDATE_ROLE_ADDRESS_NTF)
+	node.Net.Listen(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, g.HANDLE_UPDATE_ROLE_ADDRESS_NTF)
 }
 
 func (g *Gate) HANDLE_UPDATE_ROLE_ADDRESS_NTF(header *msg.MessageHeader, buffer []byte) {
@@ -299,13 +299,13 @@ func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, webconn *we
 			RoleUUID: *uuid,
 			Address:  role.info.Address,
 		}
-		node.Instance.Net.Notify(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, ntf)
+		node.Net.Notify(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, ntf)
 
 		roleEnterReq := &msg.RoleEnterReq{
 			RoleUUID: *uuid,
 		}
 		roleEnterResp := &msg.RoleEnterResp{}
-		if err := node.Instance.Net.Request(msg.CMD_ROLE_ENTER, roleEnterReq, roleEnterResp); err == nil {
+		if err := node.Net.Request(msg.CMD_ROLE_ENTER, roleEnterReq, roleEnterResp); err == nil {
 			connectResp.Success = true
 			connectResp.MapID = roleEnterResp.MapID
 			connectResp.Role = roleEnterResp.Role
@@ -317,7 +317,7 @@ func (g *Gate) handleConnectMessage(uuid *string, conn *net.TCPConn, webconn *we
 
 func (g *Gate) handleMessage(role *session, message *msg.ClientToGate) {
 	if message.Request != nil {
-		buffer, err := node.Instance.Net.RequestClientBytesToServer(message.Command, role.info.RoleUUID, message.Request, role.info.Address.World)
+		buffer, err := node.Net.RequestClientBytesToServer(message.Command, role.info.RoleUUID, message.Request, role.info.Address.World)
 		if err != nil {
 			logger.Debug(err)
 		} else {
@@ -337,7 +337,7 @@ func (g *Gate) handleMessage(role *session, message *msg.ClientToGate) {
 			}
 		}
 	} else if message.Notify != nil {
-		err := node.Instance.Net.NotifyClientBytesToServer(message.Command, role.info.RoleUUID, message.Notify, role.info.Address.World)
+		err := node.Net.NotifyClientBytesToServer(message.Command, role.info.RoleUUID, message.Notify, role.info.Address.World)
 		if err != nil {
 			logger.Debug(err)
 		}

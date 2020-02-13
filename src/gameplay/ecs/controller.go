@@ -55,6 +55,6 @@ func (c *PlayerController) sendMessage(command msg.CMD, message proto.Message) {
 	//	if buffer, err := proto.Marshal(message); err == nil {
 	//		forward := &msg.ForwardPlayerMessage{}
 	//	}
-	//	node.Instance.Net.NotifyServer(msg.CMD_MOVE_NTF, message, gate)
+	//	node.Net.NotifyServer(msg.CMD_MOVE_NTF, message, gate)
 	//}
 }

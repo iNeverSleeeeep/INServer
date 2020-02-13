@@ -19,7 +19,7 @@ func newServices() *services {
 }
 
 func (s *services) start() {
-	node.Instance.Net.Listen(msg.CMD_SESSION_CERT_NTF, s.onSessionCert)
+	node.Net.Listen(msg.CMD_SESSION_CERT_NTF, s.onSessionCert)
 }
 
 func (s *services) onSessionCert(header *msg.MessageHeader, buffer []byte) {

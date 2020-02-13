@@ -45,7 +45,7 @@ func startNode() {
 		if etcmgr.Instance.OK() {
 			break
 		} else {
-			node.Instance.Net.SendNodeStartNTF()
+			node.Net.SendNodeStartNTF()
 			logger.Info("等待中心服启动完成...")
 			time.Sleep(time.Second)
 		}
