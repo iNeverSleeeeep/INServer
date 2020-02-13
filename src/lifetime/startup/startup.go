@@ -31,7 +31,7 @@ func Run() {
 
 func startCenter() {
 	global.CurrentServerType = global.CenterServer
-	util.SetProcessName(fmt.Sprintf("%s@inserver-%d", strings.ToLower(global.CurrentServerType), global.CurrentServerID))
+	util.SetProcessName(fmt.Sprintf("%s@in-%d         ", strings.ToLower(global.CurrentServerType), global.CurrentServerID))
 	etcmgr.Instance = etcmgr.New()
 	global.CurrentServerConfig = etcmgr.Instance.GetServerConfig(global.CurrentServerID)
 	center.Instance = center.New()
@@ -53,7 +53,7 @@ func startNode() {
 
 	global.CurrentServerType = etcmgr.Instance.GetServerType(global.CurrentServerID)
 	global.CurrentServerConfig = etcmgr.Instance.GetServerConfig(global.CurrentServerID)
-	util.SetProcessName(fmt.Sprintf("%s@inserver-%d", strings.ToLower(global.CurrentServerType), global.CurrentServerID))
+	util.SetProcessName(fmt.Sprintf("%s@in-%d          ", strings.ToLower(global.CurrentServerType), global.CurrentServerID))
 	node.Instance.Prepare()
 	startServer()
 	node.Instance.Start()
