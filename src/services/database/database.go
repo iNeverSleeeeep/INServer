@@ -334,12 +334,12 @@ func (d *Database) HANDLE_SAVE_STATIC_MAP_REQ(header *msg.MessageHeader, buffer 
 		serializedData, err := proto.Marshal(staticMap)
 		if err != nil {
 			logger.Error(err)
-		} else {
-			dbStaticMap := &db.DBStaticMap{}
-			dbStaticMap.UUID = staticMap.MapUUID
-			dbStaticMap.SerializedData = serializedData
-			staticMaps = append(staticMaps, dbStaticMap)
+			continue
 		}
+		dbStaticMap := &db.DBStaticMap{}
+		dbStaticMap.UUID = staticMap.MapUUID
+		dbStaticMap.SerializedData = serializedData
+		staticMaps = append(staticMaps, dbStaticMap)
 	}
 
 	err = dao.BulkStaticMapUpdate(d.DB, staticMaps)
@@ -349,7 +349,39 @@ func (d *Database) HANDLE_SAVE_STATIC_MAP_REQ(header *msg.MessageHeader, buffer 
 }
 
 func (d *Database) HANDLE_SAVE_ROLE_REQ(header *msg.MessageHeader, buffer []byte) {
+	resp := &msg.SaveRoleResp{}
+	defer node.Net.Responce(header, resp)
+	req := &msg.SaveRoleReq{}
+	err := proto.Unmarshal(buffer, req)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
 
+	roles := make([]*db.DBRole, 0)
+	for _, role := range req.Roles {
+		summaryData, err := proto.Marshal(role.SummaryData)
+		if err != nil {
+			logger.Error(err)
+			continue
+		}
+		onlineData, err := proto.Marshal(role.OnlineData)
+		if err != nil {
+			logger.Error(err)
+			continue
+		}
+		dbrole := &db.DBRole{
+			UUID:        role.SummaryData.RoleUUID,
+			SummaryData: summaryData,
+			OnlineData:  onlineData,
+		}
+		roles = append(roles, dbrole)
+	}
+
+	err = dao.BulkRoleUpdate(d.DB, roles)
+	if err == nil {
+		resp.Success = true
+	}
 }
 
 func (d *Database) loadAllRoleSummaryData() {

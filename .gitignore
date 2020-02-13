@@ -19,4 +19,9 @@ __debug_bin
 
 clientproto
 
+# 本地配置
 etc/local*
+
+# go build 产生的文件
+INServer
+main
