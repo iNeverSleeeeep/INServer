@@ -26,6 +26,9 @@ func SetNode(serverID int32, node *msg.Node) {
 	nodes[serverID].NodeAddress = node.NodeAddress
 	if node.NodeState == msg.NodeState_Unset {
 		return
+	} else if node.NodeState == msg.NodeState_Ready && nodes[serverID].NodeState == msg.NodeState_Running {
+		// 因为消息乱序处理的问题，有可能先处理runining后处理ready 这个时候状态不要切换错了
+		return
 	}
 	nodes[serverID].NodeState = node.NodeState
 }
