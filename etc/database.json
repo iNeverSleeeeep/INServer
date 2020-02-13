@@ -1,6 +1,0 @@
-{
-    "IP": "127.0.0.1",
-    "UserName": "root",
-    "Password" : "123456",
-    "ConnMaxLifetime": 5
-}
