@@ -69,7 +69,7 @@ func (a *address) resetServer(serverID int32) {
 
 func (a *address) getByCommand(command msg.CMD) *server {
 	switch command {
-	case msg.CMD_SERVER_STATE, msg.CMD_KEEP_ALIVE, msg.CMD_RELOAD_ETC_REQ:
+	case msg.CMD_KEEP_ALIVE, msg.CMD_RELOAD_ETC_REQ:
 		return a.center
 	case msg.CMD_LD_CREATE_PLAYER_REQ,
 		msg.CMD_GD_LOAD_PLAYER_REQ,

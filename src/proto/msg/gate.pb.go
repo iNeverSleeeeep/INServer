@@ -77,23 +77,114 @@ func (m *ForwardPlayerMessage) GetBuffer() []byte {
 	return nil
 }
 
+type RoleLeaveReq struct {
+	Roles                []string `protobuf:"bytes,1,rep,name=Roles,proto3" json:"Roles,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RoleLeaveReq) Reset()         { *m = RoleLeaveReq{} }
+func (m *RoleLeaveReq) String() string { return proto.CompactTextString(m) }
+func (*RoleLeaveReq) ProtoMessage()    {}
+func (*RoleLeaveReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_743bb58a714d8b7d, []int{1}
+}
+func (m *RoleLeaveReq) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *RoleLeaveReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_RoleLeaveReq.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *RoleLeaveReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RoleLeaveReq.Merge(m, src)
+}
+func (m *RoleLeaveReq) XXX_Size() int {
+	return m.Size()
+}
+func (m *RoleLeaveReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_RoleLeaveReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RoleLeaveReq proto.InternalMessageInfo
+
+func (m *RoleLeaveReq) GetRoles() []string {
+	if m != nil {
+		return m.Roles
+	}
+	return nil
+}
+
+type RoleLeaveResp struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RoleLeaveResp) Reset()         { *m = RoleLeaveResp{} }
+func (m *RoleLeaveResp) String() string { return proto.CompactTextString(m) }
+func (*RoleLeaveResp) ProtoMessage()    {}
+func (*RoleLeaveResp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_743bb58a714d8b7d, []int{2}
+}
+func (m *RoleLeaveResp) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *RoleLeaveResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_RoleLeaveResp.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *RoleLeaveResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RoleLeaveResp.Merge(m, src)
+}
+func (m *RoleLeaveResp) XXX_Size() int {
+	return m.Size()
+}
+func (m *RoleLeaveResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_RoleLeaveResp.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RoleLeaveResp proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*ForwardPlayerMessage)(nil), "ForwardPlayerMessage")
+	proto.RegisterType((*RoleLeaveReq)(nil), "RoleLeaveReq")
+	proto.RegisterType((*RoleLeaveResp)(nil), "RoleLeaveResp")
 }
 
 func init() { proto.RegisterFile("gate.proto", fileDescriptor_743bb58a714d8b7d) }
 
 var fileDescriptor_743bb58a714d8b7d = []byte{
-	// 143 bytes of a gzipped FileDescriptorProto
+	// 182 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x4a, 0x4f, 0x2c, 0x49,
 	0xd5, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x57, 0xf2, 0xe3, 0x12, 0x71, 0xcb, 0x2f, 0x2a, 0x4f, 0x2c,
 	0x4a, 0x09, 0xc8, 0x49, 0xac, 0x4c, 0x2d, 0xf2, 0x4d, 0x2d, 0x2e, 0x4e, 0x4c, 0x4f, 0x15, 0x92,
 	0xe3, 0xe2, 0x82, 0x08, 0x84, 0x86, 0x7a, 0xba, 0x48, 0x30, 0x2a, 0x30, 0x6a, 0x70, 0x06, 0x21,
 	0x89, 0x08, 0x89, 0x71, 0xb1, 0x39, 0x95, 0xa6, 0xa5, 0xa5, 0x16, 0x49, 0x30, 0x29, 0x30, 0x6a,
-	0xf0, 0x04, 0x41, 0x79, 0x4e, 0x1a, 0x27, 0x1e, 0xc9, 0x31, 0x5e, 0x78, 0x24, 0xc7, 0xf8, 0xe0,
-	0x91, 0x1c, 0xe3, 0x8c, 0xc7, 0x72, 0x0c, 0x51, 0x62, 0x9e, 0x7e, 0xc1, 0xa9, 0x45, 0x65, 0xa9,
-	0x45, 0xfa, 0xc5, 0x45, 0xc9, 0xfa, 0x60, 0x5b, 0xf5, 0x73, 0x8b, 0xd3, 0x93, 0xd8, 0xc0, 0x4c,
-	0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0x54, 0x39, 0xf8, 0xb7, 0x8e, 0x00, 0x00, 0x00,
+	0xf0, 0x04, 0x41, 0x79, 0x4a, 0x2a, 0x5c, 0x3c, 0x41, 0xf9, 0x39, 0xa9, 0x3e, 0xa9, 0x89, 0x65,
+	0xa9, 0x41, 0xa9, 0x85, 0x42, 0x22, 0x5c, 0xac, 0x20, 0x7e, 0xb1, 0x04, 0xa3, 0x02, 0xb3, 0x06,
+	0x67, 0x10, 0x84, 0xa3, 0xc4, 0xcf, 0xc5, 0x8b, 0xa4, 0xaa, 0xb8, 0xc0, 0x49, 0xe3, 0xc4, 0x23,
+	0x39, 0xc6, 0x0b, 0x8f, 0xe4, 0x18, 0x1f, 0x3c, 0x92, 0x63, 0x9c, 0xf1, 0x58, 0x8e, 0x21, 0x4a,
+	0xcc, 0xd3, 0x2f, 0x38, 0xb5, 0xa8, 0x2c, 0xb5, 0x48, 0xbf, 0xb8, 0x28, 0x59, 0x1f, 0xec, 0x58,
+	0xfd, 0xdc, 0xe2, 0xf4, 0x24, 0x36, 0x30, 0xd3, 0x18, 0x10, 0x00, 0x00, 0xff, 0xff, 0x84, 0x13,
+	0x3a, 0x08, 0xc5, 0x00, 0x00, 0x00,
 }
 
 func (m *ForwardPlayerMessage) Marshal() (dAtA []byte, err error) {
@@ -137,6 +228,69 @@ func (m *ForwardPlayerMessage) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *RoleLeaveReq) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *RoleLeaveReq) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *RoleLeaveReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i -= len(m.XXX_unrecognized)
+		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	if len(m.Roles) > 0 {
+		for iNdEx := len(m.Roles) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Roles[iNdEx])
+			copy(dAtA[i:], m.Roles[iNdEx])
+			i = encodeVarintGate(dAtA, i, uint64(len(m.Roles[iNdEx])))
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *RoleLeaveResp) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *RoleLeaveResp) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *RoleLeaveResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i -= len(m.XXX_unrecognized)
+		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintGate(dAtA []byte, offset int, v uint64) int {
 	offset -= sovGate(v)
 	base := offset
@@ -162,6 +316,36 @@ func (m *ForwardPlayerMessage) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovGate(uint64(l))
 	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
+func (m *RoleLeaveReq) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Roles) > 0 {
+		for _, s := range m.Roles {
+			l = len(s)
+			n += 1 + l + sovGate(uint64(l))
+		}
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
+func (m *RoleLeaveResp) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
 	}
@@ -269,6 +453,146 @@ func (m *ForwardPlayerMessage) Unmarshal(dAtA []byte) error {
 				m.Buffer = []byte{}
 			}
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGate(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthGate
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthGate
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *RoleLeaveReq) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGate
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RoleLeaveReq: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RoleLeaveReq: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Roles", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGate
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGate
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGate
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Roles = append(m.Roles, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGate(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthGate
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthGate
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *RoleLeaveResp) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGate
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RoleLeaveResp: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RoleLeaveResp: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
 		default:
 			iNdEx = preIndex
 			skippy, err := skipGate(dAtA[iNdEx:])

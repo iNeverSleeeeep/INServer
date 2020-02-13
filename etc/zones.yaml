@@ -1,0 +1,5 @@
+zones:
+  - {zoneid: 0, name: 沙漠之鹰, state: open}
+  - {zoneid: 1, name: 加特林, state: open}
+  - {zoneid: 2, name: AK47, state: open}
+  - {zoneid: 3, name: M4A1, state: open}

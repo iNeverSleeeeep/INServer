@@ -6,3 +6,10 @@ message ForwardPlayerMessage {
     string PlayerUUID = 1;
     bytes Buffer = 2;
 }
+
+message RoleLeaveReq {
+    repeated string Roles = 1;
+}
+
+message RoleLeaveResp {
+}

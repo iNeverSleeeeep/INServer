@@ -6,9 +6,6 @@ enum CMD {
     KEEP_ALIVE = 0; // any -> center
     RESP = 1;
     GATE = 2; // client -> gate -> any
-    SERVER_STATE = 3; // any -> center
-    SERVER_LIST_CHANGED = 4; // center -> any
-    SERVER_RESET = 5; // center -> any
     CONNECT_GATE_REQ = 6; // client -> gate
     SESSION_CERT_NTF = 7; // gate -> client
     CCHAT_CHAT = 8; // client -> chat
@@ -19,7 +16,6 @@ enum CMD {
     GD_CREATE_ROLE_REQ = 13; // gate -> database
     GD_LOAD_ROLE_REQ = 14; // gate -> database
     RELOAD_ETC_REQ = 15; // web -> center
-    UPDATE_ETC_NTF = 16; // center -> any
     MOVE_NTF = 17; // world -> client
     NEAR_ENTITIES_NTF = 18; // world -> client
     ENTITY_DATA_REQ = 19; // client -> world
@@ -44,4 +40,5 @@ enum CMD {
     ETC_SYNC_NTF = 1001; // center -> any
     NODES_INFO_NTF = 1002; // any <-> center
     RESET_CONNECTION_NTF = 1003; // center -> any
+    ROLE_LEAVE_REQ = 1004; // gate -> any
 }

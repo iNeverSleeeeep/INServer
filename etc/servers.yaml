@@ -1,0 +1,65 @@
+servers:
+  -
+    serverid: 0
+    servertype: Center
+    serverconfig:
+  -
+    serverid: 1
+    servertype: Gate
+    serverconfig:
+      gateconfig:
+        address: 47.108.192.203
+        port: 10999
+        outofdatatimeout: 10
+        webport: 10998
+  -
+    serverid: 2
+    servertype: Login
+    serverconfig:
+      loginconfig:
+        port: 10080
+        webport: 10801
+  -
+    serverid: 3
+    servertype: Database
+    serverconfig:
+      databaseconfig:
+        database:
+  -
+    serverid: 4
+    servertype: Web
+    serverconfig:
+      webconfig:
+        port: 10070
+  -
+    serverid: 5
+    servertype: World
+    serverconfig:
+      worldconfig:
+        zones:
+          - {zoneid: 0, staticmaps: [1]}
+          - {zoneid: 1, staticmaps: [1]}
+  -
+    serverid: 6
+    servertype: World
+    serverconfig:
+      worldconfig:
+        zones:
+          - {zoneid: 1, staticmaps: [2]}
+          - {zoneid: 2, staticmaps: [1,2]}
+  -
+    serverid: 7
+    servertype: World
+    serverconfig:
+      worldconfig:
+        zones:
+          - {zoneid: 3, staticmaps: [1,2]}
+          - {zoneid: 4, staticmaps: [1,2]}
+  -
+    serverid: 8
+    servertype: GPS
+    serverconfig:
+  -
+    serverid: 9
+    servertype: Balcony
+    serverconfig:

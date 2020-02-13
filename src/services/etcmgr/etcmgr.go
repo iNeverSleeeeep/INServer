@@ -6,10 +6,12 @@ import (
 	"INServer/src/proto/etc"
 	"INServer/src/proto/msg"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 
 	"github.com/gogo/protobuf/proto"
+	"gopkg.in/yaml.v3"
 )
 
 var Instance *ETC
@@ -100,23 +102,8 @@ func (e *ETC) makeConfig() {
 }
 
 func (e *ETC) loadServers(path string) []*etc.Server {
-	f, err := os.Open(path + "/servers.json")
-	if err != nil {
-		logger.Debug(err)
-		return nil
-	}
-	defer f.Close()
-
-	buf, err := ioutil.ReadAll(f)
-	if err != nil {
-		logger.Debug(err)
-		return nil
-	}
 	servers := &etc.ServerList{}
-	err = json.Unmarshal(buf, servers)
-	if err != nil {
-		logger.Debug(err)
-	}
+	e.load(path, "servers", servers)
 	return servers.Servers
 }
 
@@ -125,37 +112,8 @@ func (e *ETC) checkServers([]*etc.Server) bool {
 }
 
 func (e *ETC) loadDatabase(path string) *etc.Database {
-	lf, err := os.Open(path + "/local.database.json")
-	if err != nil {
-		defer lf.Close()
-	}
-	f, err := os.Open(path + "/database.json")
-	if err != nil {
-		logger.Fatal(err)
-	}
-	defer f.Close()
-
-	buf, err := ioutil.ReadAll(f)
-	if err != nil {
-		logger.Fatal(err)
-	}
 	database := &etc.Database{}
-	err = json.Unmarshal(buf, database)
-	if err != nil {
-		logger.Fatal(err)
-	}
-	if lf != nil {
-		lbuf, err := ioutil.ReadAll(lf)
-		if err != nil {
-			logger.Fatal(err)
-		}
-		ldatabase := &etc.Database{}
-		err = json.Unmarshal(lbuf, ldatabase)
-		if err != nil {
-			logger.Fatal(err)
-		}
-		proto.Merge(database, ldatabase)
-	}
+	e.load(path, "database", database)
 	return database
 }
 
@@ -163,22 +121,65 @@ func (e *ETC) checkDatabase(*etc.Database) bool {
 	return true
 }
 
-func (e *ETC) loadBasic(path string) *etc.BasicConfig {
-	f, err := os.Open(path + "/basic.json")
-	if err != nil {
-		logger.Fatal(err)
-	}
-	defer f.Close()
+func (e *ETC) load(path string, name string, config proto.Message) {
+	lconfig := proto.Clone(config)
+	f, err := os.Open(fmt.Sprintf("%s/%s.yaml", path, name))
+	if err == nil {
+		buf, err := ioutil.ReadAll(f)
+		if err != nil {
+			logger.Fatal(err)
+		}
+		err = yaml.Unmarshal(buf, config)
+		if err != nil {
+			logger.Fatal(err)
+		}
 
-	buf, err := ioutil.ReadAll(f)
-	if err != nil {
-		logger.Fatal(err)
+		lf, err := os.Open(fmt.Sprintf("%s/local.%s.yaml", path, name))
+		if err == nil {
+			defer lf.Close()
+			lbuf, err := ioutil.ReadAll(lf)
+			if err != nil {
+				logger.Fatal(err)
+			}
+			err = yaml.Unmarshal(lbuf, lconfig)
+			if err != nil {
+				logger.Fatal(err)
+			}
+			proto.Merge(config, lconfig)
+		}
+	} else {
+		f, err := os.Open(fmt.Sprintf("%s/%s.json", path, name))
+		if err != nil {
+			logger.Fatal(err)
+		}
+		buf, err := ioutil.ReadAll(f)
+		if err != nil {
+			logger.Fatal(err)
+		}
+		err = json.Unmarshal(buf, config)
+		if err != nil {
+			logger.Fatal(err)
+		}
+
+		lf, err := os.Open(fmt.Sprintf("%s/local.%s.json", path, name))
+		if err == nil {
+			defer lf.Close()
+			lbuf, err := ioutil.ReadAll(lf)
+			if err != nil {
+				logger.Fatal(err)
+			}
+			err = json.Unmarshal(lbuf, lconfig)
+			if err != nil {
+				logger.Fatal(err)
+			}
+			proto.Merge(config, lconfig)
+		}
 	}
+}
+
+func (e *ETC) loadBasic(path string) *etc.BasicConfig {
 	basic := &etc.BasicConfig{}
-	err = json.Unmarshal(buf, basic)
-	if err != nil {
-		logger.Fatal(err)
-	}
+	e.load(path, "basic", basic)
 	return basic
 }
 
@@ -187,21 +188,8 @@ func (e *ETC) checkBasic(*etc.BasicConfig) bool {
 }
 
 func (e *ETC) loadZones(path string) []*etc.Zone {
-	f, err := os.Open(path + "/zones.json")
-	if err != nil {
-		logger.Fatal(err)
-	}
-	defer f.Close()
-
-	buf, err := ioutil.ReadAll(f)
-	if err != nil {
-		logger.Fatal(err)
-	}
 	zones := &etc.ZoneList{}
-	err = json.Unmarshal(buf, zones)
-	if err != nil {
-		logger.Fatal(err)
-	}
+	e.load(path, "zones", zones)
 	return zones.Zones
 }
 

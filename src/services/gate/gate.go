@@ -243,15 +243,33 @@ func (g *Gate) tickOutOfContact() {
 		for {
 			time.Sleep(time.Second)
 			now := time.Now().Unix()
-			var outOfDateRoles []string
+			offlineRoles := make(map[int32][]string)
 			for uuid, role := range g.roles {
 				if role.info.State == data.SessionState_OutOfContact && role.cert.OutOfDateTime < now {
-					outOfDateRoles = append(outOfDateRoles, uuid)
+					if _, ok := offlineRoles[role.info.Address.World]; ok == false {
+						offlineRoles[role.info.Address.World] = make([]string, 0)
+					}
+					offlineRoles[role.info.Address.World] = append(offlineRoles[role.info.Address.World], uuid)
 				}
 			}
-			for _, uuid := range outOfDateRoles {
-				delete(g.roles, uuid)
+			for _, list := range offlineRoles {
+				for _, uuid := range list {
+					delete(g.roles, uuid)
+				}
 			}
+
+			for serverID, list := range offlineRoles {
+				roleLeaveReq := &msg.RoleLeaveReq{Roles: list}
+				roleLeaveResp := &msg.RoleLeaveResp{}
+				innerServerID := serverID
+				go func() {
+					err := node.Net.RequestServer(msg.CMD_ROLE_LEAVE_REQ, roleLeaveReq, roleLeaveResp, int32(innerServerID))
+					if err != nil {
+						logger.Error(err)
+					}
+				}()
+			}
+
 		}
 	}()
 }

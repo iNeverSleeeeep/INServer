@@ -29,7 +29,7 @@ echo "--------- msg ---------"
 for file in `ls msg`
 do
 echo $file
-protoc --gofast_out=../../ --proto_path=./msg --proto_path=./data --proto_path=./etc --proto_path=./engine $file
+protoc --gofast_out=../../ --proto_path=./msg --proto_path=./data --proto_path=./etc --proto_path=./engine  --proto_path=./gogoproto --proto_path=./protobuf $file
 done
 
 # etc
@@ -37,7 +37,7 @@ echo "--------- etc ---------"
 for file in `ls etc`
 do
 echo $file
-protoc --gofast_out=../../  --go-json_out=../src/proto/etc --proto_path=./etc $file
+protoc --gofast_out=../../  --go-json_out=../src/proto/etc --proto_path=./etc --proto_path=./gogoproto --proto_path=./protobuf $file
 done
 
 # db

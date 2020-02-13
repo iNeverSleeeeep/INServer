@@ -4,7 +4,6 @@ option go_package = "INServer/src/proto/etc";
 
 // 一些基本配置
 
-
 message BasicConfig {
     string GameName = 1; // 游戏名称
 }
