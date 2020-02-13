@@ -70,6 +70,8 @@ func (c *Center) HANDLE_NODE_START_NTF(header *msg.MessageHeader, buffer []byte)
 		NodeState:   msg.NodeState_Unset,
 		NodeAddress: ntf.Address,
 	})
+	cluster.RefreshRunning()
+	cluster.RefreshRunningZones()
 	c.Net.RefreshNodesAddress()
 	c.Net.ResetServer(header.From)
 	c.broadcastResetConnectionNTF(header.From)

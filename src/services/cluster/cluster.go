@@ -11,12 +11,8 @@ var (
 
 // SetNodes 设置集群信息
 func SetNodes(nodesArray []*msg.Node) {
-	for i, node := range nodesArray {
-		if len(nodes) < i+1 {
-			nodes = append(nodes, node)
-		} else if node.NodeState != msg.NodeState_Unset {
-			nodes[i] = node
-		}
+	for serverID, node := range nodesArray {
+		SetNode(int32(serverID), node)
 	}
 	RefreshRunning()
 	RefreshRunningZones()
@@ -27,9 +23,13 @@ func SetNode(serverID int32, node *msg.Node) {
 	for len(nodes) < int(serverID+1) {
 		nodes = append(nodes, &msg.Node{})
 	}
-	nodes[serverID] = node
-	RefreshRunning()
-	RefreshRunningZones()
+	nodes[serverID].NodeAddress = node.NodeAddress
+	if node.NodeState == msg.NodeState_Unset {
+		return
+	} else if node.NodeState == msg.NodeState_Ready && nodes[serverID].NodeState == msg.NodeState_Running {
+		// 因为消息乱序处理的问题，有可能先处理runining后处理ready 这个时候状态不要切换错了
+		return
+	}
 }
 
 // GetNode 取得单个节点信息
