@@ -78,6 +78,9 @@ func startServer() {
 		util.Wait(func() bool {
 			return cluster.RunningDatabase() != global.InvalidServerID
 		}, "等待数据库服务器启动完成...", time.Second)
+		util.Wait(func() bool {
+			return cluster.RunningGPS() != global.InvalidServerID
+		}, "等待定位服务器启动完成...", time.Second)
 		world.Instance = world.New()
 		world.Instance.Start()
 	case global.GPSServer:
