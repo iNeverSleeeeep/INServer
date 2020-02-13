@@ -98,7 +98,7 @@ func (a *address) getByCommand(command msg.CMD) *server {
 				return svr
 			}
 		}
-		logger.Error(fmt.Sprintf("没有找到GPS服务器"))
+		logger.Error(fmt.Sprintf("没有找到GPS服务器 %d", serverID))
 		break
 	case msg.CMD_ROLE_ENTER:
 		serverID := cluster.RunningBalcony()
@@ -107,7 +107,7 @@ func (a *address) getByCommand(command msg.CMD) *server {
 				return svr
 			}
 		}
-		logger.Error(fmt.Sprintf("没有找到月台服务器"))
+		logger.Error(fmt.Sprintf("没有找到月台服务器 %d", serverID))
 		break
 	}
 	return nil
