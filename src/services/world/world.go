@@ -104,9 +104,10 @@ func (w *World) Stop() {
 }
 
 func (w *World) initMessageHandler() {
-	node.Net.Listen(msg.CMD_ROLE_ENTER, w.onRoleEnterNTF)
+	node.Net.Listen(msg.CMD_ROLE_ENTER, w.HANDLE_ROLE_ENTER)
 	node.Net.Listen(msg.CMD_GET_MAP_ID, w.HANDLE_GET_MAP_ID)
-	node.Net.Listen(msg.CMD_MOVE_INF, w.onRoleMoveINF)
+	node.Net.Listen(msg.CMD_MOVE_INF, w.HANDLE_MOVE_INF)
+	node.Net.Listen(msg.CMD_ROLE_LEAVE_REQ, w.HANDLE_ROLE_LEAVE_REQ)
 }
 
 // GetMap 根据UUID返回Map实例
@@ -117,7 +118,7 @@ func (w *World) GetMap(uuid string) *gamemap.Map {
 	return nil
 }
 
-func (w *World) onRoleEnterNTF(header *msg.MessageHeader, buffer []byte) {
+func (w *World) HANDLE_ROLE_ENTER(header *msg.MessageHeader, buffer []byte) {
 	roleEnterNTF := &msg.RoleEnterNTF{}
 	err := proto.Unmarshal(buffer, roleEnterNTF)
 	if err != nil {
@@ -144,6 +145,44 @@ func (w *World) onRoleEnterNTF(header *msg.MessageHeader, buffer []byte) {
 	}
 }
 
+func (w *World) HANDLE_ROLE_LEAVE_REQ(header *msg.MessageHeader, buffer []byte) {
+	req := &msg.RoleLeaveReq{}
+	resp := &msg.RoleLeaveResp{}
+	defer node.Net.Responce(header, resp)
+	err := proto.Unmarshal(buffer, req)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+
+	roles := make([]*data.Role, 0)
+	for _, uuid := range req.Roles {
+		if role, ok := w.roles[uuid]; ok {
+			roles = append(roles, role)
+			if gameMap, ok2 := w.gameMaps[role.SummaryData.GetMapUUID()]; ok2 {
+				gameMap.EntityLeave(uuid)
+			}
+		}
+		ntf := &msg.RemoveRoleAddressNTF{
+			RoleUUID: uuid,
+		}
+		node.Net.Notify(msg.CMD_REMOVE_ROLE_ADDRESS_NTF, ntf)
+	}
+
+	saveRoleReq := &msg.SaveRoleReq{
+		Roles: roles,
+	}
+	saveRoleResp := &msg.SaveRoleResp{}
+	err = node.Net.Request(msg.CMD_SAVE_ROLE_REQ, saveRoleReq, saveRoleResp)
+	if err != nil {
+		logger.Error(err)
+	} else {
+		for _, uuid := range req.Roles {
+			delete(w.roles, uuid)
+		}
+	}
+}
+
 func (w *World) HANDLE_GET_MAP_ID(header *msg.MessageHeader, buffer []byte) {
 	req := &msg.GetMapIDReq{}
 	resp := &msg.GetMapIDResp{}
@@ -161,7 +200,7 @@ func (w *World) HANDLE_GET_MAP_ID(header *msg.MessageHeader, buffer []byte) {
 	}
 }
 
-func (w *World) onRoleMoveINF(header *msg.MessageHeader, buffer []byte) {
+func (w *World) HANDLE_MOVE_INF(header *msg.MessageHeader, buffer []byte) {
 	inf := &msg.MoveINF{}
 	err := proto.Unmarshal(buffer, inf)
 	if err != nil {
