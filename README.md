@@ -3,7 +3,7 @@
 # INServer
 
 #### 介绍
-Golang Game Server
+基于Golang的分布式MMO游戏服务器，目标是只在逻辑上区分游戏区，单游戏区没有承载上限。
 
 ### 初始化
 protobuf环境初始化
@@ -17,9 +17,8 @@ go get github.com/mitchellh/protoc-gen-go-json
 go get github.com/divan/expvarmon
 ```
 
-protoc 3.11.2
-
-[一些原始想法](https://github.com/iNeverSleeeeep/INServer/blob/master/MIND.md)
+[一些原始想法](/MIND.md)
+[一些路程图](/doc/README.md)
 
 目前版本存在几个核心问题没有解决，这些问题直接影响了服务器的可用性和易用性。
 1. 服务器如何支持乱序启动，如何支持服务器宕机重开后恢复各个服务器的状态，服务器的关机流程。
