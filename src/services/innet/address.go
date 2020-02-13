@@ -119,5 +119,6 @@ func (a *address) getByServerID(serverID int32) *server {
 	} else if info, ok := a.servers[serverID]; ok {
 		return info
 	}
+	
 	return nil
 }
