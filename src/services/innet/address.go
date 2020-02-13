@@ -84,7 +84,7 @@ func (a *address) getByCommand(command msg.CMD) *server {
 				return svr
 			}
 		}
-		logger.Error(fmt.Sprintf("没有找到Database服务器"))
+		logger.Error(fmt.Sprintf("没有找到Database服务器 %d", serverID))
 		break
 	case msg.CMD_GET_MAP_ADDRESS_REQ,
 		msg.CMD_GET_STATIC_MAP_UUID_REQ,
@@ -119,6 +119,6 @@ func (a *address) getByServerID(serverID int32) *server {
 	} else if info, ok := a.servers[serverID]; ok {
 		return info
 	}
-	
+
 	return nil
 }
