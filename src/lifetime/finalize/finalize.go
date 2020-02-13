@@ -39,7 +39,7 @@ func stopNode() {
 }
 
 // 关服流程
-// step1 登录服务器 网关服务器 等
+// step1 登录服务器 门服务器 等
 // step2 世界服务器
 // step3 数据库服务器
 // step4 中心服务器
@@ -48,7 +48,7 @@ func stopServer() {
 	case global.WorldServer:
 		util.Wait(func() bool {
 			return len(cluster.RunningGates()) == 0
-		}, "等待网关服务器关服完成...", time.Second)
+		}, "等待门服务器关服完成...", time.Second)
 		world.Instance.Stop()
 		break
 	case global.DatabaseServer:
