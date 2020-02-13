@@ -1,10 +1,12 @@
-./0-center.bat &
-./3-database.bat &
-./1-gate.bat &
-./2-login.bat &
-./4-web.bat &
-./5-world.bat &
-./6-world.bat &
-./7-world.bat &
-./8-gps.bat &
-./9-balcony.bat &
+go build -o ../../inserver-temp.exe ../../main.go
+cd ../..
+./inserver-temp.exe -id 0 &
+./inserver-temp.exe -id 1 &
+./inserver-temp.exe -id 2 &
+./inserver-temp.exe -id 3 &
+./inserver-temp.exe -id 4 &
+./inserver-temp.exe -id 5 &
+./inserver-temp.exe -id 6 &
+./inserver-temp.exe -id 7 &
+./inserver-temp.exe -id 8 &
+./inserver-temp.exe -id 9 &
