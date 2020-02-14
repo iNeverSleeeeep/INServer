@@ -41,6 +41,7 @@ func New() *ETC {
 }
 
 func (e *ETC) Load(path string) {
+	var ok bool
 	basic := e.loadBasic(path)
 	if e.checkBasic(basic) == false {
 		logger.Debug("ETC:加载basic失败")
@@ -52,12 +53,12 @@ func (e *ETC) Load(path string) {
 		return
 	}
 	zones := e.loadZones(path)
-	if e.checkZones(zones) == false {
+	if zones, ok = e.checkZones(zones); ok == false {
 		logger.Debug("ETC:加载zones失败")
 		return
 	}
 	servers := e.loadServers(path)
-	if e.checkServers(servers) == false {
+	if servers, ok = e.checkServers(servers); ok == false {
 		logger.Debug("ETC:加载servers失败")
 		return
 	}
@@ -107,8 +108,18 @@ func (e *ETC) loadServers(path string) []*etc.Server {
 	return servers.Servers
 }
 
-func (e *ETC) checkServers([]*etc.Server) bool {
-	return true
+func (e *ETC) checkServers(servers []*etc.Server) ([]*etc.Server, bool) {
+	var maxServerID int32
+	maxServerID = -1
+	for index, server := range servers {
+		if index != int(server.ServerID) {
+			proto.Merge(servers[server.ServerID], server)
+		}
+		if server.ServerID > maxServerID {
+			maxServerID = server.ServerID
+		}
+	}
+	return servers[:maxServerID], true
 }
 
 func (e *ETC) loadDatabase(path string) *etc.Database {
@@ -193,8 +204,18 @@ func (e *ETC) loadZones(path string) []*etc.Zone {
 	return zones.Zones
 }
 
-func (e *ETC) checkZones([]*etc.Zone) bool {
-	return true
+func (e *ETC) checkZones(zones []*etc.Zone) ([]*etc.Zone, bool) {
+	var maxZoneID int32
+	maxZoneID = -1
+	for index, zone := range zones {
+		if index != int(zone.ZoneID) {
+			proto.Merge(zones[zone.ZoneID], zone)
+		}
+		if zone.ZoneID > maxZoneID {
+			maxZoneID = zone.ZoneID
+		}
+	}
+	return zones[:maxZoneID], true
 }
 
 func (e *ETC) GetServerType(serverID int32) string {
