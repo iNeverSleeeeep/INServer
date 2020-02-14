@@ -119,7 +119,7 @@ func (e *ETC) checkServers(servers []*etc.Server) ([]*etc.Server, bool) {
 			maxServerID = server.ServerID
 		}
 	}
-	return servers[:maxServerID], true
+	return servers[:maxServerID+1], true
 }
 
 func (e *ETC) loadDatabase(path string) *etc.Database {
@@ -215,7 +215,7 @@ func (e *ETC) checkZones(zones []*etc.Zone) ([]*etc.Zone, bool) {
 			maxZoneID = zone.ZoneID
 		}
 	}
-	return zones[:maxZoneID], true
+	return zones[:maxZoneID+1], true
 }
 
 func (e *ETC) GetServerType(serverID int32) string {
