@@ -1,3 +1,4 @@
+cd "$(dirname "$0")"
 go build -o ../../inserver-temp.exe ../../main.go
 cd ../..
 ./inserver-temp.exe -id 0 &

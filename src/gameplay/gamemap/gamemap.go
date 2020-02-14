@@ -119,3 +119,11 @@ func (m *Map) OnRoleMoveINF(role *data.Role, inf *msg.MoveINF) {
 		m.firstScene.onEntityMoveINF(entity, inf)
 	}
 }
+
+// OnRoleStopMoveINF 响应角色停止移动
+func (m *Map) OnRoleStopMoveINF(role *data.Role, inf *msg.StopMoveINF) {
+	entity := m.GetEntity(role.SummaryData.RoleUUID)
+	if entity != nil {
+		m.firstScene.onEntityStopMoveINF(entity, inf)
+	}
+}

@@ -68,3 +68,19 @@ func (s *Scene) onEntityMoveINF(entity *ecs.Entity, inf *msg.MoveINF) {
 		}
 	}
 }
+
+func (s *Scene) onEntityStopMoveINF(entity *ecs.Entity, inf *msg.StopMoveINF) {
+	transform := entity.GetComponent(data.ComponentType_Transofrm).Transform
+	if transform != nil {
+		s.search.Move(entity.UUID(), transform.Position, inf.Position)
+		transform.Position = inf.Position
+		physics := entity.GetComponent(data.ComponentType_Physics).Physics
+		if physics != nil {
+			physics.RawSpeed = &engine.Vector3{}
+		}
+		move := entity.GetComponent(data.ComponentType_Move).Move
+		if move != nil {
+			move.Destination = inf.Position
+		}
+	}
+}

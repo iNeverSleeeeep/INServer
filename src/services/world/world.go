@@ -108,6 +108,7 @@ func (w *World) initMessageHandler() {
 	node.Net.Listen(msg.CMD_ROLE_ENTER, w.HANDLE_ROLE_ENTER)
 	node.Net.Listen(msg.CMD_GET_MAP_ID, w.HANDLE_GET_MAP_ID)
 	node.Net.Listen(msg.CMD_MOVE_INF, w.HANDLE_MOVE_INF)
+	node.Net.Listen(msg.CMD_STOP_MOVE_INF, w.HANDLE_STOP_MOVE_INF)
 	node.Net.Listen(msg.CMD_ROLE_LEAVE_REQ, w.HANDLE_ROLE_LEAVE_REQ)
 }
 
@@ -214,6 +215,20 @@ func (w *World) HANDLE_MOVE_INF(header *msg.MessageHeader, buffer []byte) {
 	if role, ok := w.roles[header.RoleUUID]; ok {
 		if gameMap, ok2 := w.gameMaps[role.SummaryData.GetMapUUID()]; ok2 {
 			gameMap.OnRoleMoveINF(role, inf)
+		}
+	}
+}
+
+func (w *World) HANDLE_STOP_MOVE_INF(header *msg.MessageHeader, buffer []byte) {
+	inf := &msg.StopMoveINF{}
+	err := proto.Unmarshal(buffer, inf)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+	if role, ok := w.roles[header.RoleUUID]; ok {
+		if gameMap, ok2 := w.gameMaps[role.SummaryData.GetMapUUID()]; ok2 {
+			gameMap.OnRoleStopMoveINF(role, inf)
 		}
 	}
 }

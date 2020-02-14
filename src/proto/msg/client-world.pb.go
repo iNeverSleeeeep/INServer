@@ -79,6 +79,53 @@ func (m *MoveINF) GetTo() *engine.Vector3 {
 	return nil
 }
 
+type StopMoveINF struct {
+	Position             *engine.Vector3 `protobuf:"bytes,1,opt,name=Position,proto3" json:"Position,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
+}
+
+func (m *StopMoveINF) Reset()         { *m = StopMoveINF{} }
+func (m *StopMoveINF) String() string { return proto.CompactTextString(m) }
+func (*StopMoveINF) ProtoMessage()    {}
+func (*StopMoveINF) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f612274364f891ed, []int{1}
+}
+func (m *StopMoveINF) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *StopMoveINF) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_StopMoveINF.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *StopMoveINF) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StopMoveINF.Merge(m, src)
+}
+func (m *StopMoveINF) XXX_Size() int {
+	return m.Size()
+}
+func (m *StopMoveINF) XXX_DiscardUnknown() {
+	xxx_messageInfo_StopMoveINF.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_StopMoveINF proto.InternalMessageInfo
+
+func (m *StopMoveINF) GetPosition() *engine.Vector3 {
+	if m != nil {
+		return m.Position
+	}
+	return nil
+}
+
 type MoveNTF struct {
 	EntityUUID           string          `protobuf:"bytes,1,opt,name=EntityUUID,proto3" json:"EntityUUID,omitempty"`
 	To                   *engine.Vector3 `protobuf:"bytes,2,opt,name=To,proto3" json:"To,omitempty"`
@@ -91,7 +138,7 @@ func (m *MoveNTF) Reset()         { *m = MoveNTF{} }
 func (m *MoveNTF) String() string { return proto.CompactTextString(m) }
 func (*MoveNTF) ProtoMessage()    {}
 func (*MoveNTF) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f612274364f891ed, []int{1}
+	return fileDescriptor_f612274364f891ed, []int{2}
 }
 func (m *MoveNTF) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -146,7 +193,7 @@ func (m *NearEntity) Reset()         { *m = NearEntity{} }
 func (m *NearEntity) String() string { return proto.CompactTextString(m) }
 func (*NearEntity) ProtoMessage()    {}
 func (*NearEntity) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f612274364f891ed, []int{2}
+	return fileDescriptor_f612274364f891ed, []int{3}
 }
 func (m *NearEntity) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -200,7 +247,7 @@ func (m *NearEntitiesNTF) Reset()         { *m = NearEntitiesNTF{} }
 func (m *NearEntitiesNTF) String() string { return proto.CompactTextString(m) }
 func (*NearEntitiesNTF) ProtoMessage()    {}
 func (*NearEntitiesNTF) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f612274364f891ed, []int{3}
+	return fileDescriptor_f612274364f891ed, []int{4}
 }
 func (m *NearEntitiesNTF) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -247,7 +294,7 @@ func (m *EntityDataReq) Reset()         { *m = EntityDataReq{} }
 func (m *EntityDataReq) String() string { return proto.CompactTextString(m) }
 func (*EntityDataReq) ProtoMessage()    {}
 func (*EntityDataReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f612274364f891ed, []int{4}
+	return fileDescriptor_f612274364f891ed, []int{5}
 }
 func (m *EntityDataReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -294,7 +341,7 @@ func (m *EntityDataRes) Reset()         { *m = EntityDataRes{} }
 func (m *EntityDataRes) String() string { return proto.CompactTextString(m) }
 func (*EntityDataRes) ProtoMessage()    {}
 func (*EntityDataRes) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f612274364f891ed, []int{5}
+	return fileDescriptor_f612274364f891ed, []int{6}
 }
 func (m *EntityDataRes) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -332,6 +379,7 @@ func (m *EntityDataRes) GetEntities() []*data.EntityData {
 
 func init() {
 	proto.RegisterType((*MoveINF)(nil), "MoveINF")
+	proto.RegisterType((*StopMoveINF)(nil), "StopMoveINF")
 	proto.RegisterType((*MoveNTF)(nil), "MoveNTF")
 	proto.RegisterType((*NearEntity)(nil), "NearEntity")
 	proto.RegisterType((*NearEntitiesNTF)(nil), "NearEntitiesNTF")
@@ -342,25 +390,25 @@ func init() {
 func init() { proto.RegisterFile("client-world.proto", fileDescriptor_f612274364f891ed) }
 
 var fileDescriptor_f612274364f891ed = []byte{
-	// 276 bytes of a gzipped FileDescriptorProto
+	// 286 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0x4a, 0xce, 0xc9, 0x4c,
 	0xcd, 0x2b, 0xd1, 0x2d, 0xcf, 0x2f, 0xca, 0x49, 0xd1, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x97, 0xe2,
 	0xca, 0x4d, 0x2c, 0xc9, 0x80, 0xb2, 0x05, 0x53, 0x12, 0x4b, 0x12, 0xf5, 0x52, 0xf3, 0x4a, 0x32,
 	0x4b, 0x2a, 0x21, 0x42, 0x4a, 0x9e, 0x5c, 0xec, 0xbe, 0xf9, 0x65, 0xa9, 0x9e, 0x7e, 0x6e, 0x42,
 	0x2a, 0x5c, 0x1c, 0x01, 0xf9, 0xc5, 0x99, 0x25, 0x99, 0xf9, 0x79, 0x12, 0x8c, 0x0a, 0x8c, 0x1a,
 	0xdc, 0x46, 0x1c, 0x7a, 0x61, 0xa9, 0xc9, 0x25, 0xf9, 0x45, 0xc6, 0x41, 0x70, 0x19, 0x21, 0x09,
-	0x2e, 0xa6, 0x90, 0x7c, 0x09, 0x26, 0x34, 0x79, 0xa6, 0x90, 0x7c, 0x25, 0x67, 0x88, 0x51, 0x7e,
-	0x21, 0x6e, 0x42, 0x72, 0x5c, 0x5c, 0xae, 0x60, 0x5b, 0x42, 0x43, 0x3d, 0x5d, 0xc0, 0x86, 0x71,
-	0x06, 0x21, 0x89, 0xe0, 0x31, 0x24, 0x88, 0x8b, 0xcb, 0x2f, 0x35, 0xb1, 0x08, 0xa2, 0x96, 0xa0,
-	0x39, 0xc8, 0x4e, 0x66, 0xc2, 0xe5, 0x64, 0x25, 0x2b, 0x2e, 0x7e, 0xb8, 0x99, 0x99, 0xa9, 0xc5,
-	0x20, 0x07, 0xaa, 0x73, 0x71, 0xc0, 0xb8, 0x12, 0x8c, 0x0a, 0xcc, 0x1a, 0xdc, 0x46, 0xdc, 0x7a,
-	0x08, 0x7b, 0x83, 0xe0, 0x92, 0x4a, 0x86, 0x5c, 0xbc, 0x10, 0x31, 0x97, 0xc4, 0x92, 0xc4, 0xa0,
-	0xd4, 0x42, 0x21, 0x05, 0x2e, 0x6e, 0x84, 0x03, 0x20, 0x9a, 0x39, 0x83, 0x90, 0x85, 0x94, 0x2c,
-	0x50, 0xb5, 0x14, 0x63, 0xb5, 0x0c, 0x49, 0x05, 0x5c, 0xd2, 0x49, 0xe3, 0xc4, 0x23, 0x39, 0xc6,
-	0x0b, 0x8f, 0xe4, 0x18, 0x1f, 0x3c, 0x92, 0x63, 0x9c, 0xf1, 0x58, 0x8e, 0x21, 0x4a, 0xcc, 0xd3,
-	0x2f, 0x38, 0xb5, 0xa8, 0x2c, 0xb5, 0x48, 0xbf, 0xb8, 0x28, 0x59, 0x1f, 0x1c, 0x65, 0xfa, 0xb9,
-	0xc5, 0xe9, 0x49, 0x6c, 0x60, 0xa6, 0x31, 0x20, 0x00, 0x00, 0xff, 0xff, 0xea, 0xba, 0x14, 0x07,
-	0xf2, 0x01, 0x00, 0x00,
+	0x2e, 0xa6, 0x90, 0x7c, 0x09, 0x26, 0x34, 0x79, 0xa6, 0x90, 0x7c, 0x25, 0x63, 0x2e, 0xee, 0xe0,
+	0x92, 0xfc, 0x02, 0x92, 0x8c, 0x53, 0x72, 0x86, 0xd8, 0xef, 0x17, 0xe2, 0x26, 0x24, 0xc7, 0xc5,
+	0xe5, 0x0a, 0x76, 0x5a, 0x68, 0xa8, 0xa7, 0x0b, 0x58, 0x0b, 0x67, 0x10, 0x92, 0x08, 0x1e, 0x9b,
+	0x83, 0xb8, 0xb8, 0xfc, 0x52, 0x13, 0x8b, 0x20, 0x6a, 0x09, 0x9a, 0x83, 0xec, 0x30, 0x26, 0x9c,
+	0x0e, 0xb3, 0xe2, 0xe2, 0x87, 0x9b, 0x99, 0x99, 0x5a, 0x0c, 0x72, 0xa0, 0x3a, 0x17, 0x07, 0x8c,
+	0x2b, 0xc1, 0xa8, 0xc0, 0xac, 0xc1, 0x6d, 0xc4, 0xad, 0x87, 0xb0, 0x37, 0x08, 0x2e, 0xa9, 0x64,
+	0xc8, 0xc5, 0x0b, 0x11, 0x73, 0x49, 0x2c, 0x49, 0x0c, 0x4a, 0x2d, 0x14, 0x52, 0xe0, 0xe2, 0x46,
+	0x38, 0x00, 0xa2, 0x99, 0x33, 0x08, 0x59, 0x48, 0xc9, 0x02, 0x55, 0x4b, 0x31, 0x56, 0xcb, 0x90,
+	0x54, 0xc0, 0x25, 0x9d, 0x34, 0x4e, 0x3c, 0x92, 0x63, 0xbc, 0xf0, 0x48, 0x8e, 0xf1, 0xc1, 0x23,
+	0x39, 0xc6, 0x19, 0x8f, 0xe5, 0x18, 0xa2, 0xc4, 0x3c, 0xfd, 0x82, 0x53, 0x8b, 0xca, 0x52, 0x8b,
+	0xf4, 0x8b, 0x8b, 0x92, 0xf5, 0xc1, 0xf1, 0xac, 0x9f, 0x5b, 0x9c, 0x9e, 0xc4, 0x06, 0x66, 0x1a,
+	0x03, 0x02, 0x00, 0x00, 0xff, 0xff, 0x7c, 0x6b, 0x4a, 0xdb, 0x27, 0x02, 0x00, 0x00,
 }
 
 func (m *MoveINF) Marshal() (dAtA []byte, err error) {
@@ -398,6 +446,45 @@ func (m *MoveINF) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		}
 		i--
 		dAtA[i] = 0x12
+	}
+	if m.Position != nil {
+		{
+			size, err := m.Position.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintClientWorld(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *StopMoveINF) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *StopMoveINF) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *StopMoveINF) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i -= len(m.XXX_unrecognized)
+		copy(dAtA[i:], m.XXX_unrecognized)
 	}
 	if m.Position != nil {
 		{
@@ -655,6 +742,22 @@ func (m *MoveINF) Size() (n int) {
 	return n
 }
 
+func (m *StopMoveINF) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Position != nil {
+		l = m.Position.Size()
+		n += 1 + l + sovClientWorld(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
 func (m *MoveNTF) Size() (n int) {
 	if m == nil {
 		return 0
@@ -853,6 +956,96 @@ func (m *MoveINF) Unmarshal(dAtA []byte) error {
 				m.To = &engine.Vector3{}
 			}
 			if err := m.To.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipClientWorld(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthClientWorld
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthClientWorld
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *StopMoveINF) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowClientWorld
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: StopMoveINF: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: StopMoveINF: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Position", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowClientWorld
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthClientWorld
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthClientWorld
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Position == nil {
+				m.Position = &engine.Vector3{}
+			}
+			if err := m.Position.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

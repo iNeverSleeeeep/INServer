@@ -10,6 +10,10 @@ message MoveINF {
     Vector3 To = 2;
 }
 
+message StopMoveINF {
+    Vector3 Position = 1;
+}
+
 message MoveNTF {
     string EntityUUID = 1;
     Vector3 To = 2;
