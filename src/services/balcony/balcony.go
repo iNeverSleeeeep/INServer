@@ -14,11 +14,9 @@ import (
 // Instance 月台单例
 var Instance *Balcony
 
-type (
-	// Balcony 月台 负责角色进入游戏世界之前的一些逻辑
-	Balcony struct {
-	}
-)
+// Balcony 月台 负责角色进入游戏世界之前的一些逻辑
+type Balcony struct {
+}
 
 // New 构造月台实例
 func New() *Balcony {

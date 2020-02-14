@@ -82,7 +82,7 @@ func (g *Grid) GetNearItems(center *engine.Vector3) []*Item {
 }
 
 func (g *Grid) getGirdIndex(x int32, z int32) int32 {
-	return z*g.width + x
+	return (z+g.height/2)*g.width + (x + g.width/2)
 }
 
 func (g *Grid) getGridItems(x int32, z int32) []*Item {
