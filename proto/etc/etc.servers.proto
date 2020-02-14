@@ -29,6 +29,8 @@ message DatabaseConfig {
 
 message WebConfig {
     int32 Port = 1; // 监听Http请求的端口
+    string Account = 2; // 账号
+    string Password = 3; // 密码
 }
 
 message ZoneWorld {
