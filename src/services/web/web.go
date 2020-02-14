@@ -35,6 +35,13 @@ func (w *Web) Start() {
 	http.HandleFunc("/", w.root)
 	http.HandleFunc("/zones", w.zones)
 	http.HandleFunc("/reloadetc", w.reloadetc)
+	dir, err := os.Getwd()
+	if err != nil {
+		logger.Fatal(err)
+	}
+	certFile := fmt.Sprintf("%s/web/server.crt", dir)
+	keyFile := fmt.Sprintf("%s/web/server.key", dir)
+	go http.ListenAndServeTLS(":"+strconv.Itoa(int(global.CurrentServerConfig.WebConfig.Port)), certFile, keyFile, nil)
 	go http.ListenAndServe(":"+strconv.Itoa(int(global.CurrentServerConfig.WebConfig.Port)), nil)
 }
 
