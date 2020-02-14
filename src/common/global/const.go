@@ -27,6 +27,10 @@ const (
 	WebServer string = "Web"
 	// BalconyServer 月台服务器
 	BalconyServer string = "Balcony"
+	// AIServer AI服务器
+	AIServer string = "AI"
+	// RobotServer 机器人服务器（压测）
+	RobotServer string = "Robot"
 
 	// ZoneStateOpen 游戏区开启
 	ZoneStateOpen string = "Open"
@@ -40,4 +44,6 @@ const (
 	SERVER_ID_MAX int32 = 999
 	// CERT_KEY_LEN 客户端登录秘钥长度
 	CERT_KEY_LEN int = 10
+
+	NANO_PER_SECONE int64 = 1E9
 )

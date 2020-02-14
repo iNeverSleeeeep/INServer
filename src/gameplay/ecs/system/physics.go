@@ -5,10 +5,8 @@ import (
 	"INServer/src/proto/data"
 )
 
-type (
-	physics struct {
-	}
-)
+type physics struct {
+}
 
 func (m *physics) Tick(dt float64, entities map[string]*ecs.Entity) {
 	for _, entity := range entities {

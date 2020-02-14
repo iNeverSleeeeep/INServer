@@ -1,6 +1,7 @@
 package gamemap
 
 import (
+	"INServer/src/common/global"
 	"INServer/src/common/logger"
 	"INServer/src/engine/extensions/vector3"
 	"INServer/src/engine/grid"
@@ -9,20 +10,34 @@ import (
 	"INServer/src/proto/data"
 	"INServer/src/proto/engine"
 	"INServer/src/proto/msg"
+	"time"
 )
 
 type (
 	Scene struct {
 		masterMap *Map
 		search    *grid.Grid
+		Width     int32
+		Height    int32
+
+		syncTime int64
 	}
 )
 
 func NewScene(masterMap *Map, sceneConfig *config.Scene) *Scene {
 	s := new(Scene)
 	s.masterMap = masterMap
-	s.search = grid.New(10, 1000, 1000)
+	s.Width = 1000
+	s.Height = 1000
+	s.search = grid.New(10, s.Width, s.Height)
 	return s
+}
+
+func (s *Scene) Tick() {
+	now := time.Now().UnixNano()
+	if s.syncTime+global.NANO_PER_SECONE < now {
+
+	}
 }
 
 func (s *Scene) EntityEnter(uuid string, entity *ecs.Entity) {

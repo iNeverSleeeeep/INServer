@@ -42,6 +42,14 @@ message WorldConfig {
     repeated ZoneWorld Zones = 1; // 游戏区配置
 }
 
+message AIConfig {
+
+}
+
+message RobotConfig {
+    
+}
+
 message ServerConfig {
     GateConfig GateConfig = 1; // 门服务器配置
     LoginConfig LoginConfig = 2; // 登录服务器
@@ -49,6 +57,8 @@ message ServerConfig {
     DatabaseConfig DatabaseConfig = 4; // 数据库服务器
     WebConfig WebConfig = 5; // Http服务器
     WorldConfig WorldConfig = 6; // 世界服务器
+    AIConfig AIConfig = 7; // AI服务器
+    RobotConfig RobotConfig = 8; // 机器人服务器
 }
 
 message Server {

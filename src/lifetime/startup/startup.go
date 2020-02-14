@@ -4,6 +4,7 @@ import (
 	"INServer/src/common/global"
 	"INServer/src/common/logger"
 	"INServer/src/common/util"
+	"INServer/src/services/ai"
 	"INServer/src/services/balcony"
 	"INServer/src/services/center"
 	"INServer/src/services/cluster"
@@ -13,6 +14,7 @@ import (
 	"INServer/src/services/gps"
 	"INServer/src/services/login"
 	"INServer/src/services/node"
+	"INServer/src/services/robot"
 	"INServer/src/services/web"
 	"INServer/src/services/world"
 	"fmt"
@@ -90,6 +92,12 @@ func startServer() {
 	case global.BalconyServer:
 		balcony.Instance = balcony.New()
 		balcony.Instance.Start()
+	case global.AIServer:
+		ai.Instance = ai.New()
+		ai.Instance.Start()
+	case global.RobotServer:
+		robot.Instance = robot.New()
+		robot.Instance.Start()
 	default:
 		logger.Fatal("不支持的服务器类型:" + global.CurrentServerType)
 	}

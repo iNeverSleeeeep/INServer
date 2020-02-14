@@ -6,6 +6,7 @@ import (
 	"INServer/src/common/uuid"
 	"INServer/src/gameplay/ecs"
 	"INServer/src/gameplay/gamemap"
+	"INServer/src/gameplay/matrix"
 	"INServer/src/proto/data"
 	"INServer/src/proto/msg"
 	"INServer/src/services/node"
@@ -23,6 +24,7 @@ type (
 		gameMaps map[string]*gamemap.Map
 		roles    map[string]*data.Role
 		roleGate map[string]int32
+		matrix   *matrix.Matrix
 	}
 )
 
@@ -31,6 +33,7 @@ func New() *World {
 	w.gameMaps = make(map[string]*gamemap.Map)
 	w.roles = make(map[string]*data.Role)
 	w.roleGate = make(map[string]int32)
+	w.matrix = matrix.New()
 	w.initMessageHandler()
 	return w
 }
@@ -59,6 +62,7 @@ func (w *World) Start() {
 			if mapData != nil {
 				staticMap := gamemap.NewMap(nil, mapData)
 				w.gameMaps[mapData.MapUUID] = staticMap
+				w.matrix.OnGamemapCreate(staticMap)
 				updateMapAddress := &msg.UpdateMapAddressNTF{
 					MapUUID:  mapData.MapUUID,
 					ServerID: global.CurrentServerID,

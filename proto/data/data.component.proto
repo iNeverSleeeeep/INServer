@@ -11,11 +11,18 @@ enum ComponentType {
     Attribute = 3;
     Move = 4;
     Controller = 5;
+    Reborn = 6;
 }
 
 enum ControllerType {
     PlayerController = 0;
     AIController = 1;
+}
+
+enum RebornType {
+    None = 0;
+    Auto = 1;
+    Manual = 2;
 }
 
 message TransformComponent {
@@ -32,6 +39,7 @@ message PhysicsComponent {
 message AttributeComponent {
     float Speed = 1;
     float HP = 2;
+    float MaxHP = 3;
 }
 
 message MoveComponent {
@@ -42,6 +50,12 @@ message ControllerComponent {
     ControllerType ControllerType = 1;
 }
 
+message RebornComponent {
+    int64 RebornTime = 1;
+    RebornType RebornType = 2;
+    Vector3 Position = 3;
+}
+
 message Component {
     ComponentType Type = 1;
     TransformComponent Transform = 2;
@@ -49,4 +63,5 @@ message Component {
     AttributeComponent Attribute = 4;
     MoveComponent Move = 5;
     ControllerComponent Controller = 6;
+    RebornComponent Reborn = 7;
 }

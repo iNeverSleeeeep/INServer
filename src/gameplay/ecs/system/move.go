@@ -7,10 +7,8 @@ import (
 	"INServer/src/proto/engine"
 )
 
-type (
-	move struct {
-	}
-)
+type move struct {
+}
 
 func (m *move) Tick(dt float64, entities map[string]*ecs.Entity) {
 	for _, entity := range entities {

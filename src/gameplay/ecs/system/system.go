@@ -7,11 +7,9 @@ var (
 	PhysicsSystem = &physics{}
 )
 
-type (
-	ISystem interface {
-		Tick(dt float64, entities map[string]*ecs.Entity)
-	}
-)
+type ISystem interface {
+	Tick(dt float64, entities map[string]*ecs.Entity)
+}
 
 func Tick(dt float64, entities map[string]*ecs.Entity) {
 	MoveSystem.Tick(dt, entities)

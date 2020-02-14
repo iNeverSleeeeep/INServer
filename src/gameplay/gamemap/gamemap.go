@@ -16,8 +16,9 @@ type (
 	}
 
 	Map struct {
-		mapData *data.MapData
-		scenes  []*Scene
+		mapData   *data.MapData
+		mapConfig *config.Map
+		scenes    []*Scene
 
 		firstScene  *Scene
 		entitiesMap map[string]*ecs.Entity
@@ -29,7 +30,9 @@ func NewMap(mapConfig *config.Map, mapData *data.MapData) *Map {
 	m := new(Map)
 	m.scenes = make([]*Scene, 0)
 	m.firstScene = NewScene(m, nil)
+	m.scenes = append(m.scenes, m.firstScene)
 	m.mapData = mapData
+	m.mapConfig = mapConfig
 	m.entitiesMap = make(map[string]*ecs.Entity)
 	if m.mapData == nil {
 		m.mapData = &data.MapData{
@@ -43,6 +46,14 @@ func NewMap(mapConfig *config.Map, mapData *data.MapData) *Map {
 
 func (m *Map) MapData() *data.MapData {
 	return m.mapData
+}
+
+func (m *Map) MapConfig() *config.Map {
+	return m.mapConfig
+}
+
+func (m *Map) Scenes() []*Scene {
+	return m.scenes
 }
 
 func (m *Map) GetEntity(uuid string) *ecs.Entity {
@@ -90,7 +101,9 @@ func (m *Map) EntityLeave(uuid string) {
 }
 
 func (m *Map) Tick() {
-
+	for _, scene := range m.scenes {
+		scene.Tick()
+	}
 }
 
 func (m *Map) tickSystems(dt float64) {

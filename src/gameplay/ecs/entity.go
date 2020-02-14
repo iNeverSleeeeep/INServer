@@ -59,45 +59,65 @@ func (e *Entity) UUID() string {
 // InitComponents 根据实体类型初始化组件
 func InitComponents(entityType data.EntityType) []*data.Component {
 	components := make([]*data.Component, len(data.ComponentType_name))
+	for index := 0; index < len(data.ComponentType_name); index++ {
+		components[index] = &data.Component{
+			Type: data.ComponentType(index),
+		}
+	}
 	switch entityType {
+	case data.EntityType_MonsterEntity:
+		components[data.ComponentType_Transofrm].Transform = &data.TransformComponent{
+			Position: &engine.Vector3{},
+			Rotation: &engine.Quaternion{},
+		}
+		components[data.ComponentType_Physics].Physics = &data.PhysicsComponent{
+			Mass:         100,
+			RawSpeed:     &engine.Vector3{},
+			PassiveSpeed: &engine.Vector3{},
+		}
+		components[data.ComponentType_Attribute].Attribute = &data.AttributeComponent{
+			Speed: 10,
+			HP:    100,
+			MaxHP: 100,
+		}
+		components[data.ComponentType_Move].Move = &data.MoveComponent{
+			Destination: &engine.Vector3{},
+		}
+		components[data.ComponentType_Controller].Controller = &data.ControllerComponent{
+			ControllerType: data.ControllerType_PlayerController,
+		}
+		components[data.ComponentType_Reborn].Reborn = &data.RebornComponent{
+			RebornTime: 0,
+			RebornType: data.RebornType_Auto,
+		}
+		break
+	case data.EntityType_RoleEntity:
+		components[data.ComponentType_Transofrm].Transform = &data.TransformComponent{
+			Position: &engine.Vector3{},
+			Rotation: &engine.Quaternion{},
+		}
+		components[data.ComponentType_Physics].Physics = &data.PhysicsComponent{
+			Mass:         100,
+			RawSpeed:     &engine.Vector3{},
+			PassiveSpeed: &engine.Vector3{},
+		}
+		components[data.ComponentType_Attribute].Attribute = &data.AttributeComponent{
+			Speed: 10,
+			HP:    100,
+			MaxHP: 100,
+		}
+		components[data.ComponentType_Move].Move = &data.MoveComponent{
+			Destination: &engine.Vector3{},
+		}
+		components[data.ComponentType_Controller].Controller = &data.ControllerComponent{
+			ControllerType: data.ControllerType_PlayerController,
+		}
+		components[data.ComponentType_Reborn].Reborn = &data.RebornComponent{
+			RebornTime: 0,
+			RebornType: data.RebornType_Auto,
+		}
+		break
 	default:
-		components[data.ComponentType_Invalid] = &data.Component{
-			Type: data.ComponentType_Invalid,
-		}
-		components[data.ComponentType_Transofrm] = &data.Component{
-			Type: data.ComponentType_Transofrm,
-			Transform: &data.TransformComponent{
-				Position: &engine.Vector3{},
-				Rotation: &engine.Quaternion{},
-			},
-		}
-		components[data.ComponentType_Physics] = &data.Component{
-			Type: data.ComponentType_Physics,
-			Physics: &data.PhysicsComponent{
-				Mass:         100,
-				RawSpeed:     &engine.Vector3{},
-				PassiveSpeed: &engine.Vector3{},
-			},
-		}
-		components[data.ComponentType_Attribute] = &data.Component{
-			Type: data.ComponentType_Attribute,
-			Attribute: &data.AttributeComponent{
-				Speed: 10,
-				HP:    100,
-			},
-		}
-		components[data.ComponentType_Move] = &data.Component{
-			Type: data.ComponentType_Move,
-			Move: &data.MoveComponent{
-				Destination: &engine.Vector3{},
-			},
-		}
-		components[data.ComponentType_Controller] = &data.Component{
-			Type: data.ComponentType_Controller,
-			Controller: &data.ControllerComponent{
-				ControllerType: data.ControllerType_PlayerController,
-			},
-		}
 		break
 	}
 	return components
