@@ -79,6 +79,13 @@ func (w *World) Start() {
 			}
 		}
 	}
+
+	go func() {
+		for global.PendingExit == false {
+			w.tick()
+			time.Sleep(time.Millisecond * time.Duration(1000/int(global.CurrentServerConfig.WorldConfig.FPS)))
+		}
+	}()
 }
 
 func (w *World) Stop() {
@@ -108,6 +115,10 @@ func (w *World) Stop() {
 	if err != nil {
 		logger.Error(err)
 	}
+}
+
+func (w *World) tick() {
+
 }
 
 func (w *World) initMessageHandler() {

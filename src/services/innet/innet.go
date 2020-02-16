@@ -171,9 +171,28 @@ func (n *INNet) SendNodeStartNTF() {
 	}
 }
 
+// NotifyServer 向指定Server发送消息
 func (n *INNet) NotifyServer(command msg.CMD, message proto.Message, serverID int32) error {
 	sequence++
 	return n.sendMessage(command, sequence, message, serverID)
+}
+
+// NotifyClient 向客户端发送消息
+func (n *INNet) NotifyClient(command msg.CMD, message proto.Message, uuid string) error {
+	gate := global.RoleGateGetter.GetRoleGate(uuid)
+	if gate == global.InvalidServerID {
+		return fmt.Errorf("找不到玩家所在Gate UUID:%s", uuid)
+	}
+	sequence++
+	buffer, err := n.pack(command, sequence, message)
+	if err != nil {
+		return err
+	}
+	forward := &msg.ForwardPlayerMessage{
+		UUID:   uuid,
+		Buffer: buffer,
+	}
+	return n.sendMessage(msg.CMD_FORWARD_CLIENT_MESSAGE, sequence, forward, gate)
 }
 
 // TODO 缺少取消监听
@@ -329,4 +348,17 @@ func (n *INNet) pushToMessageChan(message *msg.Message) {
 		}
 	}
 	messageChan <- message
+}
+
+func (n *INNet) pack(command msg.CMD, sequence uint64, message proto.Message) ([]byte, error) {
+	header := &msg.MessageHeader{
+		Command:  command,
+		Sequence: sequence,
+		From:     global.CurrentServerID,
+	}
+	bytes, err := proto.Marshal(message)
+	if err != nil {
+		return nil, err
+	}
+	return proto.Marshal(&msg.Message{Header: header, Buffer: bytes})
 }

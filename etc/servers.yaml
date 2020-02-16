@@ -38,6 +38,7 @@ servers:
     servertype: World
     serverconfig:
       worldconfig:
+        fps: 100
         zones:
           - {zoneid: 0, staticmaps: [1]}
           - {zoneid: 1, staticmaps: [1]}
@@ -46,6 +47,7 @@ servers:
     servertype: World
     serverconfig:
       worldconfig:
+        fps: 100
         zones:
           - {zoneid: 1, staticmaps: [2]}
           - {zoneid: 2, staticmaps: [1,2]}
@@ -54,6 +56,7 @@ servers:
     servertype: World
     serverconfig:
       worldconfig:
+        fps: 100
         zones:
           - {zoneid: 3, staticmaps: [1,2]}
           - {zoneid: 4, staticmaps: [1,2]}

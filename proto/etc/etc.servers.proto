@@ -40,6 +40,7 @@ message ZoneWorld {
 
 message WorldConfig {
     repeated ZoneWorld Zones = 1; // 游戏区配置
+    int32 FPS = 2; // 帧率
 }
 
 message AIConfig {

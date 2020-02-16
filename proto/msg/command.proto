@@ -34,7 +34,7 @@ enum CMD {
     SAVE_ROLE_REQ = 32; // any -> database
     GET_MAP_ID = 33; // gate -> world
     MOVE_INF = 34; // client -> world
-    FORWARD_PLAYER_MESSAGE = 35; // any -> gate -> client
+    FORWARD_CLIENT_MESSAGE = 35; // any -> gate -> client
     STOP_MOVE_INF = 36; // client -> world
 
     NODE_START_NTF = 1000; // any -> center

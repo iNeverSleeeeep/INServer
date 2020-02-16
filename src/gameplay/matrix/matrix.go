@@ -22,8 +22,8 @@ func New() *Matrix {
 func (m *Matrix) OnGamemapCreate(gameMap *gamemap.Map) {
 	if len(gameMap.MapData().Entities) == 0 {
 		for _, scene := range gameMap.Scenes() {
-			for x := scene.Width / -2; x < scene.Width/2; x++ {
-				for z := scene.Height / -2; z < scene.Height/2; z++ {
+			for x := scene.Width / -2; x < scene.Width/2; x = x + 10 {
+				for z := scene.Height / -2; z < scene.Height/2; z = z + 10 {
 					entityUUID := uuid.New()
 					components := ecs.InitComponents(data.EntityType_MonsterEntity)
 					components[data.ComponentType_Transofrm].Transform.Position = &engine.Vector3{

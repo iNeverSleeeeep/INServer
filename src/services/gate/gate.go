@@ -73,6 +73,7 @@ func (g *Gate) Start() {
 
 func (g *Gate) initMessageHandler() {
 	node.Net.Listen(msg.CMD_UPDATE_ROLE_ADDRESS_NTF, g.HANDLE_UPDATE_ROLE_ADDRESS_NTF)
+	node.Net.Listen(msg.CMD_FORWARD_CLIENT_MESSAGE, g.HANDLE_FORWARD_CLIENT_MESSAGE)
 }
 
 func (g *Gate) HANDLE_UPDATE_ROLE_ADDRESS_NTF(header *msg.MessageHeader, buffer []byte) {
@@ -87,6 +88,24 @@ func (g *Gate) HANDLE_UPDATE_ROLE_ADDRESS_NTF(header *msg.MessageHeader, buffer 
 		if ntf.Address.World != global.InvalidServerID {
 			session.info.Address.World = ntf.Address.World
 		}
+	}
+}
+
+func (g *Gate) HANDLE_FORWARD_CLIENT_MESSAGE(header *msg.MessageHeader, buffer []byte) {
+	forward := &msg.ForwardPlayerMessage{}
+	err := proto.Unmarshal(buffer, forward)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+	if role, ok := g.roles[forward.UUID]; ok {
+		if role.conn != nil {
+			innet.SendBytesHelper(role.conn, forward.Buffer)
+		} else {
+			innet.SendWebBytesHelper(role.webconn, forward.Buffer)
+		}
+	} else {
+		logger.Error("角色不在这 为啥发到我这来了 UUID:", forward.UUID)
 	}
 }
 
