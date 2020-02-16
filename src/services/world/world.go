@@ -45,6 +45,7 @@ func (w *World) Start() {
 	resp := &msg.LoadStaticMapResp{}
 	for _, zoneConfig := range global.CurrentServerConfig.WorldConfig.Zones {
 		for _, gameMapID := range zoneConfig.StaticMaps {
+			logger.Info(fmt.Sprintf("加载地图 游戏区:%d-%s, 地图ID:%d", zoneConfig.ZoneID, zoneConfig.ZoneID, gameMapID))
 			req.ZoneID = zoneConfig.ZoneID
 			req.StaticMapID = gameMapID
 			resp.Reset()
@@ -89,6 +90,7 @@ func (w *World) Start() {
 }
 
 func (w *World) Stop() {
+	logger.Info("保存地图中...")
 	staticMaps := make([]*data.MapData, 0)
 	for _, gamemap := range w.gameMaps {
 		staticMaps = append(staticMaps, gamemap.MapData())
@@ -102,6 +104,7 @@ func (w *World) Stop() {
 		logger.Error(err)
 	}
 
+	logger.Info("保存玩家角色中...")
 	roles := make([]*data.Role, 0)
 	for _, role := range w.roles {
 		roles = append(roles, role)
