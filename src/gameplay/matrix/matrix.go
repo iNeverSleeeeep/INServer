@@ -5,6 +5,7 @@ import (
 	"INServer/src/gameplay/ecs"
 	"INServer/src/gameplay/gamemap"
 	"INServer/src/proto/data"
+	"INServer/src/proto/engine"
 )
 
 // Matrix 控制地图内实体的产生消亡
@@ -24,7 +25,21 @@ func (m *Matrix) OnGamemapCreate(gameMap *gamemap.Map) {
 			for x := scene.Width / -2; x < scene.Width/2; x++ {
 				for z := scene.Height / -2; z < scene.Height/2; z++ {
 					entityUUID := uuid.New()
-					entity := ecs.NewEntity(&data.EntityData{EntityUUID: entityUUID}, data.EntityType_MonsterEntity)
+					components := ecs.InitComponents(data.EntityType_MonsterEntity)
+					components[data.ComponentType_Transofrm].Transform.Position = &engine.Vector3{
+						X: float64(x),
+						Y: 0,
+						Z: float64(z),
+					}
+					entityData := &data.EntityData{
+						EntityUUID: entityUUID,
+						Components: components,
+						RealTimeData: &data.EntityRealtimeData{
+							LastStaticMapUUID: gameMap.MapData().MapUUID,
+							CurrentMapUUID:    gameMap.MapData().MapUUID,
+						},
+					}
+					entity := ecs.NewEntity(entityData, data.EntityType_MonsterEntity)
 					if entity != nil {
 						gameMap.EntityEnter(entity.UUID(), entity)
 					}

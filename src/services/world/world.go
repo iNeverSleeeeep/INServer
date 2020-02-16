@@ -7,6 +7,7 @@ import (
 	"INServer/src/gameplay/ecs"
 	"INServer/src/gameplay/gamemap"
 	"INServer/src/gameplay/matrix"
+	"INServer/src/proto/config"
 	"INServer/src/proto/data"
 	"INServer/src/proto/msg"
 	"INServer/src/services/node"
@@ -35,6 +36,7 @@ func New() *World {
 	w.roleGate = make(map[string]int32)
 	w.matrix = matrix.New()
 	w.initMessageHandler()
+	global.RoleGateGetter = w
 	return w
 }
 
@@ -60,7 +62,7 @@ func (w *World) Start() {
 			}
 
 			if mapData != nil {
-				staticMap := gamemap.NewMap(nil, mapData)
+				staticMap := gamemap.NewMap(&config.Map{}, mapData)
 				w.gameMaps[mapData.MapUUID] = staticMap
 				w.matrix.OnGamemapCreate(staticMap)
 				updateMapAddress := &msg.UpdateMapAddressNTF{
@@ -237,7 +239,8 @@ func (w *World) HANDLE_STOP_MOVE_INF(header *msg.MessageHeader, buffer []byte) {
 	}
 }
 
-func (w *World) RoleGate(uuid string) int32 {
+// GetRoleGate 取得角色所在的门服务器
+func (w *World) GetRoleGate(uuid string) int32 {
 	if gate, ok := w.roleGate[uuid]; ok {
 		return gate
 	}

@@ -1,6 +1,8 @@
 package global
 
-import "INServer/src/proto/etc"
+import (
+	"INServer/src/proto/etc"
+)
 
 var (
 	// CurrentServerID 当前服务器ID
@@ -15,4 +17,7 @@ var (
 
 	// PendingExit 等待进程终止状态
 	PendingExit bool
+
+	// RoleGateGetter 根据角色UUID取得所在门服务器
+	RoleGateGetter IRoleGateGetter
 )
