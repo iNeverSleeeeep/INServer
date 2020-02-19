@@ -17,6 +17,8 @@ var (
 
 	// PendingExit 等待进程终止状态
 	PendingExit bool
+	// Exit 由命令行或消息引起的进程退出使用这个chan
+	Exit chan bool
 
 	// RoleGateGetter 根据角色UUID取得所在门服务器
 	RoleGateGetter IRoleGateGetter

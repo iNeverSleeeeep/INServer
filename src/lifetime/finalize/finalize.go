@@ -13,6 +13,7 @@ import (
 
 // Wait 等待结束
 func Wait() {
+	global.Exit = make(chan bool)
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT)
 
@@ -20,11 +21,16 @@ func Wait() {
 		stopped := false
 		select {
 		case sig := <-sigs:
-			if sig.String() == "interrupt" {
+			if sig.String() == "interrupt" && stopped == false {
 				stopped = true
 				stopNode()
 			}
 			break
+		case exit := <-global.Exit:
+			if exit == true && stopped == false {
+				stopped = true
+				stopNode()
+			}
 		}
 		if stopped {
 			break

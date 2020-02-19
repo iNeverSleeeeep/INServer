@@ -45,7 +45,7 @@ func (w *World) Start() {
 	resp := &msg.LoadStaticMapResp{}
 	for _, zoneConfig := range global.CurrentServerConfig.WorldConfig.Zones {
 		for _, gameMapID := range zoneConfig.StaticMaps {
-			logger.Info(fmt.Sprintf("加载地图 游戏区:%d-%s, 地图ID:%d", zoneConfig.ZoneID, zoneConfig.ZoneID, gameMapID))
+			logger.Info(fmt.Sprintf("加载地图 游戏区:%d, 地图ID:%d", zoneConfig.ZoneID, gameMapID))
 			req.ZoneID = zoneConfig.ZoneID
 			req.StaticMapID = gameMapID
 			resp.Reset()

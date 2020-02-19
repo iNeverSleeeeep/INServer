@@ -1,6 +1,7 @@
 package main
 
 import (
+	"INServer/src/cli"
 	"INServer/src/common/global"
 	"INServer/src/common/logger"
 	"INServer/src/common/profiler"
@@ -10,12 +11,12 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net/http"
 	"runtime"
 )
 
 var serverID = flag.Int("id", -1, "本服务器ID(范围0~65535)")
 var centerIP = flag.String("center", "127.0.0.1", "中心服务器IP")
+var interactive = flag.Bool("i", false, "开启交互命令行")
 
 func main() {
 	runtime.GOMAXPROCS(1)
@@ -29,13 +30,15 @@ func main() {
 		log.Fatalln("服务器ID范围0~999")
 	}
 
-	go http.ListenAndServe(fmt.Sprintf("127.0.0.1:%d", 8000+global.CurrentServerID), nil)
-
 	logger.Setup()
 
 	profiler.Start()
 
 	startup.Run()
+
+	if *interactive {
+		go cli.Run()
+	}
 
 	finalize.Wait()
 

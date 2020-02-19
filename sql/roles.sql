@@ -7,8 +7,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `roles`;
 CREATE TABLE `roles`  (
   `UUID` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `SummaryData` blob NULL,
-  `OnlineData` blob NULL,
+  `SummaryData` longblob NULL,
+  `OnlineData` longblob NULL,
   PRIMARY KEY (`UUID`) USING BTREE,
   UNIQUE INDEX `UUID_UNIQUE`(`UUID`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;

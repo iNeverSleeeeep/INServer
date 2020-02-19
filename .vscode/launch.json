@@ -57,7 +57,7 @@
             "mode": "debug",
             "program": "${workspaceFolder}",
             "env": {},
-            "args": ["-id", "5"]
+            "args": ["-id", "5", "-i", "true"]
         },
     ]
 }
