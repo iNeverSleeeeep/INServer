@@ -44,3 +44,12 @@ func Wait(f func() bool, message string, d time.Duration) {
 		time.Sleep(d)
 	}
 }
+
+// PathExists 文件或目录是否存在
+func PathExists(path string) bool {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true
+	}
+	return false
+}

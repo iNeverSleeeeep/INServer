@@ -25,3 +25,9 @@ etc/local*
 # go build 产生的文件
 INServer
 main
+
+# https
+*.crt
+*.key
+
+*.zip

@@ -3,6 +3,7 @@ package web
 import (
 	"INServer/src/common/global"
 	"INServer/src/common/logger"
+	"INServer/src/common/util"
 	"INServer/src/proto/msg"
 	"INServer/src/services/etcmgr"
 	"INServer/src/services/node"
@@ -41,7 +42,9 @@ func (w *Web) Start() {
 	}
 	certFile := fmt.Sprintf("%s/web/server.crt", dir)
 	keyFile := fmt.Sprintf("%s/web/server.key", dir)
-	go http.ListenAndServeTLS(":"+strconv.Itoa(int(global.CurrentServerConfig.WebConfig.Port)), certFile, keyFile, nil)
+	if util.PathExists(certFile) && util.PathExists(keyFile) {
+		go http.ListenAndServeTLS(":"+strconv.Itoa(int(global.CurrentServerConfig.WebConfig.Port)), certFile, keyFile, nil)
+	}
 	go http.ListenAndServe(":"+strconv.Itoa(int(global.CurrentServerConfig.WebConfig.Port)), nil)
 }
 
