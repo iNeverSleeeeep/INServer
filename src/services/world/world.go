@@ -121,7 +121,9 @@ func (w *World) Stop() {
 }
 
 func (w *World) tick() {
-
+	for _, gameMap := range w.gameMaps {
+		gameMap.Tick()
+	}
 }
 
 func (w *World) initMessageHandler() {
@@ -186,7 +188,7 @@ func (w *World) HANDLE_ROLE_LEAVE_REQ(header *msg.MessageHeader, buffer []byte) 
 				gameMap.EntityLeave(uuid)
 			}
 		} else {
-			logger.Error("角色不在当前服务器 %s", uuid)
+			logger.Error("角色不在当前服务器", uuid)
 		}
 		ntf := &msg.RemoveRoleAddressNTF{
 			RoleUUID: uuid,

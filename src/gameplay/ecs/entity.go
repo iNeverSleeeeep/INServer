@@ -56,6 +56,11 @@ func (e *Entity) UUID() string {
 	return e.entityData.EntityUUID
 }
 
+// Controller 返回Controller
+func (e *Entity) Controller() Controller {
+	return e.controller
+}
+
 // InitComponents 根据实体类型初始化组件
 func InitComponents(entityType data.EntityType) []*data.Component {
 	components := make([]*data.Component, len(data.ComponentType_name))

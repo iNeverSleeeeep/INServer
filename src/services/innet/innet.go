@@ -183,8 +183,16 @@ func (n *INNet) NotifyClient(command msg.CMD, message proto.Message, uuid string
 	if gate == global.InvalidServerID {
 		return fmt.Errorf("找不到玩家所在Gate UUID:%s", uuid)
 	}
-	sequence++
-	buffer, err := n.pack(command, sequence, message)
+	buffer, err := proto.Marshal(message)
+	if err != nil {
+		return err
+	}
+	ntf := &msg.GateToClient{
+		Command:  command,
+		Sequence: 0,
+		Buffer:   buffer,
+	}
+	buffer, err = proto.Marshal(ntf)
 	if err != nil {
 		return err
 	}
@@ -283,7 +291,7 @@ func (n *INNet) handleMessage(message *msg.Message) {
 	} else if resp, ok := n.responces[message.Header.Sequence]; ok {
 		resp.c <- message.Buffer
 	} else {
-		logger.Debug("handleMessage error:" + message.Header.String())
+		logger.Info("handleMessage error:" + message.Header.String())
 	}
 }
 

@@ -46,6 +46,13 @@ func (m *Matrix) OnGamemapCreate(gameMap *gamemap.Map) {
 				}
 			}
 		}
+	} else {
+		for _, entityData := range gameMap.MapData().Entities {
+			entity := ecs.NewEntity(entityData, data.EntityType_MonsterEntity)
+			if entity != nil {
+				gameMap.EntityEnter(entity.UUID(), entity)
+			}
+		}
 	}
 }
 

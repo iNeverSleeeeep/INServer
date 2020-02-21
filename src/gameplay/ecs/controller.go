@@ -3,6 +3,7 @@ package ecs
 import (
 	"INServer/src/proto/data"
 	"INServer/src/proto/msg"
+	"INServer/src/services/node"
 
 	"github.com/gogo/protobuf/proto"
 )
@@ -11,6 +12,7 @@ type (
 	// Controller 全部Controller的接口
 	Controller interface {
 		OnOtherMove(entity *Entity, ntf *msg.MoveNTF)
+		OnNearEntities([]*msg.NearEntity)
 	}
 
 	// DummyController 占位 什么事情也不做
@@ -42,11 +44,25 @@ func initController(entity *Entity) {
 func (c *DummyController) OnOtherMove(entity *Entity, ntf *msg.MoveNTF) {
 
 }
+func (c *DummyController) OnNearEntities([]*msg.NearEntity) {
+
+}
 func (c *AIController) OnOtherMove(entity *Entity, ntf *msg.MoveNTF) {
+
+}
+func (c *AIController) OnNearEntities([]*msg.NearEntity) {
 
 }
 func (c *PlayerController) OnOtherMove(entity *Entity, ntf *msg.MoveNTF) {
 	c.sendMessage(msg.CMD_MOVE_NTF, ntf)
+}
+func (c *PlayerController) OnNearEntities(items []*msg.NearEntity) {
+	if len(items) > 1 {
+		nearEntitiesNTF := &msg.NearEntitiesNTF{
+			Entities: items,
+		}
+		node.Net.NotifyClient(msg.CMD_NEAR_ENTITIES_NTF, nearEntitiesNTF, c.entity.UUID())
+	}
 }
 
 func (c *PlayerController) sendMessage(command msg.CMD, message proto.Message) {

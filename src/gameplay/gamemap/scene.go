@@ -10,7 +10,6 @@ import (
 	"INServer/src/proto/data"
 	"INServer/src/proto/engine"
 	"INServer/src/proto/msg"
-	"INServer/src/services/node"
 	"time"
 )
 
@@ -107,16 +106,14 @@ func (s *Scene) onEntityStopMoveINF(entity *ecs.Entity, inf *msg.StopMoveINF) {
 
 func (s *Scene) syncEntitiesNTF() {
 	for _, entity := range s.entities {
+		controller := entity.GetComponent(data.ComponentType_Controller).Controller
+		if controller.ControllerType != data.ControllerType_PlayerController {
+			continue
+		}
 		transform := entity.GetComponent(data.ComponentType_Transofrm).Transform
 		if transform != nil {
 			items := s.search.GetNearItems(transform.Position)
-			if len(items) > 1 {
-				nearEntitiesNTF := &msg.NearEntitiesNTF{
-					Entities: items,
-				}
-				gate := global.RoleGateGetter.GetRoleGate(entity.UUID())
-				node.Net.NotifyServer(msg.CMD_NEAR_ENTITIES_NTF, nearEntitiesNTF, gate)
-			}
+			entity.Controller().OnNearEntities(items)
 		}
 	}
 }
