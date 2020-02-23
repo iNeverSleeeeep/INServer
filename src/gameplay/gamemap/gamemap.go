@@ -140,3 +140,12 @@ func (m *Map) OnRoleStopMoveINF(role *data.Role, inf *msg.StopMoveINF) {
 		m.firstScene.onEntityStopMoveINF(entity, inf)
 	}
 }
+
+// FillEntityData 填充实体信息
+func (m *Map) FillEntityData(uuids []string, resp *msg.EntityDataRes) {
+	for _, uuid := range uuids {
+		if entity, ok := m.entitiesMap[uuid]; ok {
+			resp.Entities = append(resp.Entities, entity.EntityData())
+		}
+	}
+}

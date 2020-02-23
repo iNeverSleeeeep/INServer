@@ -132,6 +132,7 @@ func (w *World) initMessageHandler() {
 	node.Net.Listen(msg.CMD_MOVE_INF, w.HANDLE_MOVE_INF)
 	node.Net.Listen(msg.CMD_STOP_MOVE_INF, w.HANDLE_STOP_MOVE_INF)
 	node.Net.Listen(msg.CMD_ROLE_LEAVE_REQ, w.HANDLE_ROLE_LEAVE_REQ)
+	node.Net.Listen(msg.CMD_ENTITY_DATA_REQ, w.HANDLE_ENTITY_DATA_REQ)
 }
 
 // GetMap 根据UUID返回Map实例
@@ -252,6 +253,20 @@ func (w *World) HANDLE_STOP_MOVE_INF(header *msg.MessageHeader, buffer []byte) {
 		if gameMap, ok2 := w.gameMaps[role.SummaryData.GetMapUUID()]; ok2 {
 			gameMap.OnRoleStopMoveINF(role, inf)
 		}
+	}
+}
+
+func (w *World) HANDLE_ENTITY_DATA_REQ(header *msg.MessageHeader, buffer []byte) {
+	req := &msg.EntityDataReq{}
+	err := proto.Unmarshal(buffer, req)
+	resp := &msg.EntityDataRes{}
+	defer node.Net.Responce(header, resp)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+	for _, gameMap := range w.gameMaps {
+		gameMap.FillEntityData(req.EntityUUIDs, resp)
 	}
 }
 
